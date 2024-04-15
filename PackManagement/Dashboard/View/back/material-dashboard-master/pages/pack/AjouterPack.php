@@ -1,49 +1,70 @@
-<!--
-=========================================================
-* Material Dashboard 2 - v3.1.0
-=========================================================
+<?php
+include '../../../../../Controller/OffreC.php';
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-* Coded by Creative Tim
+session_start();
 
-=========================================================
+$errorMessage = "";
+$successMessage = "";
 
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
+// create pack
+$pack = null;
+
+// create an instance of the controller
+$packC = new OffreC();
+if (
+  isset($_POST["nom_offre"]) &&
+  isset($_POST["date_debut"]) &&
+  isset($_POST["date_fin"])
+) {
+  if (
+    !empty($_POST["nom_offre"]) &&
+    !empty($_POST["date_debut"])  &&
+    !empty($_POST["date_fin"])
+  ) {
+    $pack = new Offre($_POST["nom_offre"], $_POST["date_debut"], $_POST["date_fin"]);
+    $packC->AjouterOffre($pack); // 
+    header("Location:afficherPack.php?successMessage= offre ajouté avec succés");
+  } else
+    $errorMessage = "<label id = 'form' style = 'color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>   ";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-User Management  </title>
+    Wild Wander
+  </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
-  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <link href="../../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css">
+  <link href="../../assets/css/nucleo-svg.css" rel="stylesheet" />
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <link id="pagestyle" href="../../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+  <script src="assets/controle.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
+
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
-        <img src="../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
+        <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
         <span class="ms-1 font-weight-bold text-white">Wild wander</span>
       </a>
     </div>
@@ -51,7 +72,7 @@ User Management  </title>
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/dashboard.html">
+          <a class="nav-link text-white " href="../../pages/dashboard.php">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">dashboard</i>
             </div>
@@ -59,7 +80,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/user.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -67,7 +88,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/flight.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -75,23 +96,42 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/accomodation.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
             <span class="nav-link-text ms-1">Accomodation Management</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary " href="../pages/pack.html">
+        <li class="nav-item" onmouseover="showSubmenu()" onmouseout="hideSubmenu()">
+          <a class="nav-link text-white active bg-gradient-primary" href="#">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
             <span class="nav-link-text ms-1">Pack Management</span>
           </a>
+          <ul id="submenu" class="submenu">
+            <li>
+              <a href="AjouterPack.php" class="nav-link text-white">Add</a>
+            </li>
+            <li>
+              <a href="afficherPack.php" class="nav-link text-white">Show</a>
+            </li>
+          </ul>
         </li>
+
+        <script>
+          function showSubmenu() {
+            document.getElementById("submenu").style.display = "block";
+          }
+
+          function hideSubmenu() {
+            document.getElementById("submenu").style.display = "none";
+          }
+        </script>
+
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/claim.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -99,16 +139,15 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/blog.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
             <span class="nav-link-text ms-1">Blog Management</span>
           </a>
         </li>
-        
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/notifications.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
             </div>
@@ -119,7 +158,7 @@ User Management  </title>
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/profile.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">person</i>
             </div>
@@ -127,7 +166,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/sign-in.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">login</i>
             </div>
@@ -135,7 +174,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/sign-up.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">assignment</i>
             </div>
@@ -152,9 +191,9 @@ User Management  </title>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tables</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Tables</h6>
+          <h6 class="font-weight-bolder mb-0">Template</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -164,6 +203,12 @@ User Management  </title>
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center">
+              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
+            </li>
+            <li class="mt-2">
+              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -205,7 +250,7 @@ User Management  </title>
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
                       <div class="my-auto">
-                        <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
+                        <img src="../../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -251,247 +296,66 @@ User Management  </title>
                 </li>
               </ul>
             </li>
-            <li class="nav-item d-flex align-items-center">
-              <a href="../pages/sign-in.html" class="nav-link text-body font-weight-bold px-0">
-                <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">Sign In</span>
-              </a>
             </li>
+
+
           </ul>
         </div>
       </div>
     </nav>
-    <!-- End Navbar -->
-    <div class="container-fluid py-4">
-      <div class="row">
-        <div class="col-12">
-          <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">Packs table</h6>
-              </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Pack ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nom offre</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date debut</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Fin</th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <!--<tbody>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">John Michael</h6>
-                            <p class="text-xs text-secondary mb-0">john@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Manager</p>
-                        <p class="text-xs text-secondary mb-0">Organization</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">john@creative-tim.com</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">23/04/18</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          <select class="form-select form-select-sm font-weight-bold text-xs">
-                            <option disabled selected>Action</option>
-                            <option value="edit">Modifier</option>
-                            <option value="delete">Supprimer</option>
-                            <option value="disable">Désactiver le compte</option>
-                          </select>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-3.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user2">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Alexa Liras</h6>
-                            <p class="text-xs text-secondary mb-0">alexa@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Programator</p>
-                        <p class="text-xs text-secondary mb-0">Developer</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">john@creative-tim.com</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">11/01/19</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          <select class="form-select form-select-sm font-weight-bold text-xs">
-                            <option disabled selected>Action</option>
-                            <option value="edit">Modifier</option>
-                            <option value="delete">Supprimer</option>
-                            <option value="disable">Désactiver le compte</option>
-                          </select>
-                        </a>
-                        
-                        
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-4.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user3">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Laurent Perrier</h6>
-                            <p class="text-xs text-secondary mb-0">laurent@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Executive</p>
-                        <p class="text-xs text-secondary mb-0">Projects</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">john@creative-tim.com</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">19/09/17</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          <select class="form-select form-select-sm font-weight-bold text-xs">
-                            <option disabled selected>Action</option>
-                            <option value="edit">Modifier</option>
-                            <option value="delete">Supprimer</option>
-                            <option value="disable">Désactiver le compte</option>
-                          </select>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-3.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user4">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Michael Levi</h6>
-                            <p class="text-xs text-secondary mb-0">michael@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Programator</p>
-                        <p class="text-xs text-secondary mb-0">Developer</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">john@creative-tim.com</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">24/12/08</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          <select class="form-select form-select-sm font-weight-bold text-xs">
-                            <option disabled selected>Action</option>
-                            <option value="edit">Modifier</option>
-                            <option value="delete">Supprimer</option>
-                            <option value="disable">Désactiver le compte</option>
-                          </select>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user5">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Richard Gran</h6>
-                            <p class="text-xs text-secondary mb-0">richard@creative-tim.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">Manager</p>
-                        <p class="text-xs text-secondary mb-0">Executive</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-success">john@creative-tim.com</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">04/10/21</span>
-                      </td>
-                      <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          <select class="form-select form-select-sm font-weight-bold text-xs">
-                            <option disabled selected>Action</option>
-                            <option value="edit">Modifier</option>
-                            <option value="delete">Supprimer</option>
-                            <option value="disable">Désactiver le compte</option>
-                          </select>
-                        </a>
-                      </td>
-                    </tr>
-                  </tbody> !-->
-                </table>
+
+    <div class="main-panel">
+      <div class="content-wrapper">
+        <div class="row">
+
+
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">New Pack</h4>
+
+
+
+                <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
+                <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validerFormulaire();">
+                  <div class="form-group">
+                    <label for="packname">Nom du Pack</label>
+                    <input type="text" class="form-control" id="nom_offre" name="nom_offre" placeholder="Nom du Pack" style="border: 1px solid #dee2e6;">
+                  </div>
+                  <div class="form-group">
+                    <label for="date_debut">Date de début</label>
+                    <input type="date" class="form-control" name="date_debut" id="date_debut" style="border: 1px solid #dee2e6;">
+                  </div>
+                  <div class="form-group">
+                    <label for="date_fin">Date de fin</label>
+                    <input type="date" class="form-control" id="date_fin" name="date_fin" style="border: 1px solid #dee2e6;">
+                  </div>
+                  <br>
+                  <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Soumettre</button>
+                  <a class="btn btn-light" href="afficherPack.php" role="button">Annuler</a>
+                </form>
+
+
+
               </div>
             </div>
           </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:../../partials/_footer.html -->
+          <footer class="footer">
+
+          </footer>
+          <!-- partial -->
         </div>
-      </div>
-     
-      <footer class="footer py-4  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with <i class="fa fa-heart"></i> by
-                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">NetTitans</a>
-                for a better travel experience.
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">NetTitans</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                </li>
-              </ul>
-            </div>
-          </div>
+
+
+
+        <!-- End Navbar -->
+        <div class="container-fluid py-4">
+          <footer class="footer py-4  ">
+
+          </footer>
         </div>
-      </footer>
-    </div>
   </main>
   <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
@@ -568,10 +432,10 @@ User Management  </title>
     </div>
   </div>
   <!--   Core JS Files   -->
-  <script src="../assets/js/core/popper.min.js"></script>
-  <script src="../assets/js/core/bootstrap.min.js"></script>
-  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="../../assets/js/core/popper.min.js"></script>
+  <script src="../../assets/js/core/bootstrap.min.js"></script>
+  <script src="../../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../../assets/js/plugins/smooth-scrollbar.min.js"></script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -584,7 +448,8 @@ User Management  </title>
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="../../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="assets/javascript.js"></script>
 </body>
 
 </html>

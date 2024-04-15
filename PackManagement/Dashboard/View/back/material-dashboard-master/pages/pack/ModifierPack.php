@@ -1,22 +1,52 @@
-
 <?php
-include '../../../../../Controller/UserC.php';
+include '../../../../../Controller/OffreC.php';
 
-session_start();
 
-$UserC = new UserC();
-$userList = $UserC->AfficherUser();
+$error = "";
+$mess = "";
+
+$pack =null ; 
+$packC = new OffreC();
+//$nom_offre,$date_debut,$date_fin
+
+if(
+  isset($_POST['nom_offre'])&&
+  isset($_POST['date_debut'])&&
+  isset($_POST['date_fin'])
+)
+{
+  if(
+    !empty($_POST['nom_offre'])&&
+    !empty($_POST['date_debut'])&&
+    !empty($_POST['date_fin'])
+    )
+    {
+         
+      $pack = new Offre(
+        $_POST['nom_offre'], 
+        $_POST['date_debut'],
+        $_POST['date_fin'],
+      );
+      $packC->modifierPack($pack,$_GET["ID_offre"]); 
+      header("Location:afficherPack.php?successMessage= offre modifié avec succés");
+    }
+}
+
+
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
+  <script src="assets/controle.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-User Management  </title>
+Wild Wander
+  </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
@@ -28,13 +58,14 @@ User Management  </title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="../../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css">
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
@@ -46,7 +77,7 @@ User Management  </title>
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/dashboard.html">
+          <a class="nav-link text-white " href="../../pages/dashboard.php">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">dashboard</i>
             </div>
@@ -54,7 +85,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary " href="../../pages/user.html">
+          <a class="nav-link text-white" >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -62,7 +93,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/flight.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -70,23 +101,42 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/accomodation.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
             <span class="nav-link-text ms-1">Accomodation Management</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/pack.html">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">table_view</i>
-            </div>
-            <span class="nav-link-text ms-1">Pack Management</span>
-          </a>
+        <li class="nav-item" onmouseover="showSubmenu()" onmouseout="hideSubmenu()">
+    <a class="nav-link text-white active bg-gradient-primary" href="#">
+        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="material-icons opacity-10">table_view</i>
+        </div>
+        <span class="nav-link-text ms-1">Pack Management</span>
+    </a>
+    <ul id="submenu" class="submenu">
+        <li>
+            <a href="AjouterPack.php" class="nav-link text-white">Add</a>
         </li>
+        <li>
+            <a href="afficherPack.php" class="nav-link text-white">Show</a>
+        </li>
+    </ul>
+</li>
+
+<script>
+    function showSubmenu() {
+        document.getElementById("submenu").style.display = "block";
+    }
+
+    function hideSubmenu() {
+        document.getElementById("submenu").style.display = "none";
+    }
+</script>
+
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/claim.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -94,7 +144,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/blog.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -102,7 +152,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/notifications.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
             </div>
@@ -113,7 +163,7 @@ User Management  </title>
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/profile.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">person</i>
             </div>
@@ -121,7 +171,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/sign-in.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">login</i>
             </div>
@@ -129,7 +179,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/sign-up.html">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">assignment</i>
             </div>
@@ -146,9 +196,9 @@ User Management  </title>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tables</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Tables</h6>
+          <h6 class="font-weight-bolder mb-0">Template</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -158,6 +208,12 @@ User Management  </title>
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center">
+              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
+            </li>
+            <li class="mt-2">
+              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -245,123 +301,101 @@ User Management  </title>
                 </li>
               </ul>
             </li>
-            
-            <li class="nav-item d-flex align-items-center">
-            <?php if(!(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1)){
-								?>
-              <a href="../../../../../../login.php" class="nav-link text-body font-weight-bold px-0">
-                <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">Login</span>
-              </a>
-              <?php }
-                ?>
-              <?php if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
-						?>
-              	<a href="../../../../../../logoutBack.php" class="nav-link text-body font-weight-bold px-0">
-                <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">Logout</span>
-              </a>
-                <?php }
-                 ?>
             </li>
+            
+            
           </ul>
         </div>
       </div>
     </nav>
+
+    <?php
+            if(isset($_GET['ID_offre']))    /// recuperation d'offre par id
+            {
+              $pack =$packC->Recupereroffre($_GET['ID_offre']); 
+            ?>
+        
+    <div class="main-panel">        
+        <div class="content-wrapper">
+          <div class="row">
+
+        
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Modifier Offre</h4>
+                  
+
+                            
+                  <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
+                  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validerFormulaire();" >
+
+
+                     <div class="form-group">
+                      <label for="nom_offre">Pack Name</label>
+                      <input type="text" class="form-control" id="nom_offre" name="nom_offre" placeholder=" nom_offre" value="<?php echo $pack['nom_offre']; ?>" style="border: 1px solid #dee2e6;">
+                      <div id="usernameError" class="error-message"></div>
+                    </div>
+
+                  
+                    <div class="form-group">
+                      <label for="date_debut">Start Date</label>
+                      <input type="date" class="form-control" name="date_debut" id="date_debut" placeholder=" date_debut" value="<?php echo $pack['date_debut']; ?>" style="border: 1px solid #dee2e6;">
+                      <div id="emailError" class="error-message"></div>
+                    </div>
+
+                   
+                    <div class="form-group">
+                      <label for="date_fin">End Date</label>
+                      <input type="date" class="form-control" id="date_fin" name="date_fin" value="<?php echo $pack['date_fin']; ?>" style="border: 1px solid #dee2e6;">
+                    </div>
+
+                    
+
+                    <br>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Modifier</button>
+                    <a class="btn btn-light" href="afficherPack.php" role="button">Cancel</a>
+                  </form>
+                </div>
+              </div>
+            </div> 
+
+            
+
+
     <!-- End Navbar -->
     <div class="container-fluid py-4">
-    <?php
-           if(isset($_GET['successMessage'])){
-            $successMessage = $_GET['successMessage'];
-              
-            echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
-            '$successMessage'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>"; 
-           }
-
-		   if(isset($_GET['message'])){
-            $message = $_GET['message'];
-              
-            echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-            '$message'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>"; 
-           }
-
-		   if(isset($_GET['mess'])){
-            $mess = $_GET['mess'];
-              
-            echo "<div class='alert alert-warning alert-dismissible fade show' role='alert'>
-            '$mess'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>"; 
-           }
-
-          ?>
-
-      <div class="row">
-        <div class="col-12">
-          <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">users table</h6>
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+                for a better web.
               </div>
-              <br>
-              <a class="btn btn-primary" href="AjouterUtilisateur.php" role="button">Create new User</a>
             </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Username</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Password</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date of Birth</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Role</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Edit</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Delete</th>
-                    </tr>
-                  </thead>
-                 
-                 <?php
-		
-				          foreach($userList as $user){
-			            ?>
-                  <tbody>
-                    <tr>
-                      <td><?php echo $user['idUser']; ?></td>
-                      <td><?php echo $user['username']; ?></td>
-                      <td><?php echo $user['email']; ?></td>
-                      <td><?php echo $user['password']; ?></td>
-                      <td><?php echo $user['dob']; ?></td>
-                      <td><?php echo $user['role']; ?></td>
-                      <td>
-                       <form method="GET" action="ModifierUtilisateur.php">
-                        <input type="submit"  class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                        <input type="hidden"  value=<?php echo $user['idUser']; ?>  name="idUser">  
-                       </form>
-                      </td>
-                  <td>
-                    <a  class="btn btn-danger btn-sm"   href="SupprimerUser.php?idUser=<?php echo $user['idUser']; ?>">Delete</a>
-                  </td>
-                    </tr>
-                  </tbody>
-                  <?php
-                }
-                ?>
-                </table>
-                
-              </div>
+            <div class="col-lg-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-      </div>
-     
-      <footer class="footer py-4  ">
-
       </footer>
     </div>
   </main>
@@ -457,6 +491,10 @@ User Management  </title>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="assets/javascript.js"></script>
+          <?php
+             }
+            ?>
 </body>
 
 </html>

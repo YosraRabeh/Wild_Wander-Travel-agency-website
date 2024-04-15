@@ -1,46 +1,8 @@
 <?php
-include '../../../../../Controller/UserC.php';
+include '../../../../../Controller/OffreC.php';
 
-session_start();
-
-$errorMessage = "";
-$successMessage = "" ;
-
-
-// create user
-$user = null;
-
-// create an instance of the controller
-$UserC = new UserC();
-if (		
-    isset($_POST["username"]) &&
-    isset($_POST["email"]) &&
-    isset($_POST["password"])&&
-    isset($_POST["dob"])&&
-    isset($_POST["role"])
-){
-    if ( !empty($_POST["username"]) &&
-         !empty($_POST["email"])  &&
-         !empty($_POST["password"]) &&
-         !empty($_POST["dob"])&&
-         !empty($_POST["role"])
-    )
-    {
-      $password= password_hash($_POST['password'], PASSWORD_DEFAULT);   
-        $user = new User(
-            $_POST['username'], 
-            $_POST['email'],
-            $password,
-            $_POST['dob'],
-            $_POST['role']
-        );
-        $UserC->AjouterUser($user); // 
-        header("Location:AfficherUtilisateurs.php?successMessage= Utilisateur ajouté avec succés"); // bch thezk lel afficheruser
-    }
-    else
-        $errorMessage = "<label id = 'form' style = 'color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>   ";
-}
-
+$OffreC = new OffreC();
+$PackList = $OffreC->AfficherOffre();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +13,7 @@ if (
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-Wild Wander
+    Wild Wander
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
@@ -72,7 +34,7 @@ Wild Wander
 
 <body class="g-sidenav-show  bg-gray-200">
 
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
@@ -84,7 +46,7 @@ Wild Wander
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/dashboard.html">
+          <a class="nav-link text-white " href="../../pages/dashboard.php">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">dashboard</i>
             </div>
@@ -92,7 +54,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary " href="../../pages/user.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -100,7 +62,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/flight.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -108,23 +70,42 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/accomodation.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
             <span class="nav-link-text ms-1">Accomodation Management</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/pack.html">
+        <li class="nav-item" onmouseover="showSubmenu()" onmouseout="hideSubmenu()">
+          <a class="nav-link text-white active bg-gradient-primary" href="#">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
             <span class="nav-link-text ms-1">Pack Management</span>
           </a>
+          <ul id="submenu" class="submenu">
+            <li>
+              <a href="AjouterPack.php" class="nav-link text-white">Add</a>
+            </li>
+            <li>
+              <a href="afficherPack.php" class="nav-link text-white">Show</a>
+            </li>
+          </ul>
         </li>
+
+        <script>
+          function showSubmenu() {
+            document.getElementById("submenu").style.display = "block";
+          }
+
+          function hideSubmenu() {
+            document.getElementById("submenu").style.display = "none";
+          }
+        </script>
+
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/claim.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -132,7 +113,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/blog.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -140,7 +121,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/notifications.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
             </div>
@@ -151,7 +132,7 @@ Wild Wander
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/profile.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">person</i>
             </div>
@@ -159,7 +140,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/sign-in.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">login</i>
             </div>
@@ -167,7 +148,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../../pages/sign-up.html">
+          <a class="nav-link text-white ">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">assignment</i>
             </div>
@@ -181,13 +162,7 @@ Wild Wander
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
       <div class="container-fluid py-1 px-3">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
-          </ol>
-          <h6 class="font-weight-bolder mb-0">Template</h6>
-        </nav>
+        
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <div class="input-group input-group-outline">
@@ -196,12 +171,8 @@ Wild Wander
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
-            <li class="nav-item d-flex align-items-center">
-              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
-            </li>
-            <li class="mt-2">
-              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-            </li>
+            
+           
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -290,106 +261,89 @@ Wild Wander
               </ul>
             </li>
             </li>
-            
-            <li class="nav-item d-flex align-items-center">
-            <?php if(!(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1)){
-								?>
-              <a href="../../../../../../login.php" class="nav-link text-body font-weight-bold px-0">
-                <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">Login</span>
-              </a>
-              <?php }
-                ?>
-              <?php if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
-						?>
-              	<a href="../../../../../../logoutBack.php" class="nav-link text-body font-weight-bold px-0">
-                <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">Logout</span>
-              </a>
-                <?php }
-                 ?>
-            </li>
+
+
           </ul>
         </div>
       </div>
     </nav>
 
-    <div class="main-panel">        
-        <div class="content-wrapper">
-          <div class="row">
-
-        
-            <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Nouveau Utilisateur</h4>
-                  
-
-                            
-                  <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
-                  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validateForm();">
+    <div class="main-panel">
+      <div class="content-wrapper">
+        <div class="row">
 
 
-                     <div class="form-group">
-                      <label for="username">Username</label>
-                      <input type="text" class="form-control" id="username" name="username" placeholder=" Username" style="border: 1px solid #dee2e6;">
-                      <div id="usernameError" class="error-message"></div>
-                    </div>
-
-                  
-                    <div class="form-group">
-                      <label for="email">Email</label>
-                      <input type="text" class="form-control" name="email" id="email" placeholder=" Email" style="border: 1px solid #dee2e6;">
-                      <div id="emailError" class="error-message"></div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="password">Password</label>
-                      <input type="password" class="form-control" id="password" name="password" placeholder="Password" style="border: 1px solid #dee2e6; width: 1350px;">
-                      <div id="passwordError" class="error-message"></div>
-                      <span class="toggle-password" onclick="togglePasswordVisibility()">
-                          <i class="fa fa-eye" aria-hidden="true"></i>
-                      </span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="dob">Date of Birth</label>
-                      <input type="date" class="form-control" id="dob" name="dob" style="border: 1px solid #dee2e6;">
-                    </div>
-
-                    <div class="form-group">
-                    <label for="role">Role</label>
-                    <select class="form-select" name="role" id="role" aria-label="Default select example">
-                      <option value="Admin">Admin</option>
-                      <option value="Client">Client</option>
-                    </select>
-                    </div>
-
-                    <br>
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Submit</button>
-                    <a class="btn btn-light" href="AfficherUtilisateurs.php" role="button">Cancel</a>
-                  </form>
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Pack Table</h4>
 
 
-                </div>
+
+                <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
+                <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Id</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Name</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start date</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">End date</th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  <?php
+
+                  foreach ($PackList as $Pack) {
+                  ?>
+                    <tbody>
+                      <tr>
+                      <td><?php echo $Pack['ID_offre']; ?></td>
+                        <td><?php echo $Pack['nom_offre']; ?></td>
+                        <td><?php echo $Pack['date_debut']; ?></td>
+                        <td><?php echo $Pack['date_fin']; ?></td>
+
+                        <td>
+                          <form method="GET" action="modifierPack.php">
+                            <input type="submit" class="btn btn-success btn-sm" name="Modifier" value="Edit">
+                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
+                          </form>
+                        </td>
+                        <td>
+                          <a class="btn btn-danger btn-sm" href="supprimerPack.php?ID_offre=<?php echo $Pack['ID_offre']; ?>">Delete</a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  <?php
+                  }
+                  ?>
+
+                </table>
               </div>
-            </div> 
-        <!-- content-wrapper ends -->
-        <!-- partial:../../partials/_footer.html -->
-        <footer class="footer">
-          
-        </footer>
-        <!-- partial -->
-      </div>
+            </div>
 
 
 
-    <!-- End Navbar -->
-    <div class="container-fluid py-4">
-      <footer class="footer py-4  ">
-        
-      </footer>
-    </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:../../partials/_footer.html -->
+          <footer class="footer">
+
+          </footer>
+          <!-- partial -->
+        </div>
+
+
+
+        <!-- End Navbar -->
+        <div class="container-fluid py-4">
+          <footer class="footer py-4  ">
+
+          </footer>
+        </div>
   </main>
   <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
@@ -449,11 +403,8 @@ Wild Wander
             <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
           </div>
         </div>
-        <hr class="horizontal dark my-sm-4">
-        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
-        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
+        <!-- <hr class="horizontal dark my-sm-4">
         <div class="w-100 text-center">
-          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
           <h6 class="mt-3">Thank you for sharing!</h6>
           <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
             <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
@@ -461,7 +412,7 @@ Wild Wander
           <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
             <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
           </a>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
