@@ -195,11 +195,13 @@ if (
 					<div class="contact_form_container">
 						<div class="contact_title text-center">blog</div>
 						<form action="#" id="contact_form" class="contact_form text-center"     method="post">
-                            <input type="text" name="title" class="contact_form_subject input_field" placeholder="Title" required="required" data-error="title is required.">
-                            <textarea name="contenu" class="text_field contact_form_message" rows="4" placeholder="Content" required="required" data-error="Please, write us a message."></textarea>
-                            <input type="text" name="date" class="contact_form_subject input_field" placeholder="DD/MM/YY" required="required" data-error="Subject is required.">
+                            <input type="text" name="title" class="contact_form_subject input_field" placeholder="Title"  data-error="title is required.">
+                            <textarea name="contenu" class="text_field contact_form_message" rows="4" placeholder="Content"  data-error="Please, write us a message."></textarea>
+                            <input type="text" name="date" class="contact_form_subject input_field" placeholder="DD/MM/YY" data-error="Subject is required.">
                             <button type="submit" id="form_submit_button" class="form_submit_button button trans_200">add blog<span></span><span></span><span></span></button>
                         </form>
+						
+						
 					</div>
 
 				</div>
