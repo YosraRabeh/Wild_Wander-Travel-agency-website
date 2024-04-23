@@ -1,8 +1,43 @@
 <?php
-include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
+include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\ReservationC.php';
 
-$OffreC = new OffreC();
-$PackList = $OffreC->AfficherOffre();
+session_start();
+
+$errorMessage = "";
+$successMessage = "";
+
+$ReservationC = new ReservationC();
+
+// Check if 'Reserver' and 'idL' are set in GET parameters
+if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
+    $idOffre = $_GET["ID_offre"];
+
+    // Check if POST data is set
+    if (isset($_POST["nombrePlaces"]) &&
+        isset($_POST["source"]) &&
+        isset($_POST["paiement"])) {
+
+        // Check if POST data is not empty
+        if (!empty($_POST["nombrePlaces"]) &&
+            !empty($_POST["source"]) &&
+            !empty($_POST["paiement"])) {
+
+            // Create Reservation object and add reservation
+            $Reservation = new Reservation(
+                $_POST['nombrePlaces'], 
+                $_POST['source'],
+                $_POST['paiement'],
+                $idOffre
+            );
+            $ReservationC->AjouterReservation($Reservation);
+            header("Location: AfficherReservations.php?successMessage=reservation ajouté avec succès");
+            exit();
+        } else {
+            $errorMessage = "<label id='form' style='color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>";
+        }
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,6 +65,7 @@ $PackList = $OffreC->AfficherOffre();
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+  <script src="assets/controle.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
@@ -86,10 +122,10 @@ $PackList = $OffreC->AfficherOffre();
           </a>
           <ul id="submenu" class="submenu">
             <li>
-              <a href="AjouterPack.php" class="nav-link text-white">Add</a>
+              <a href="AjouterPack.php" class="nav-link text-white">Add Pack</a>
             </li>
             <li>
-              <a href="afficherPack.php" class="nav-link text-white">Show</a>
+              <a href="afficherPack.php" class="nav-link text-white">Show Pack </a>
             </li>
           </ul>
         </li>
@@ -162,8 +198,10 @@ $PackList = $OffreC->AfficherOffre();
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
       <div class="container-fluid py-1 px-3">
-      <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
-
+        <nav aria-label="breadcrumb">
+          
+          <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
+        </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <div class="input-group input-group-outline">
@@ -172,8 +210,7 @@ $PackList = $OffreC->AfficherOffre();
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
-            
-           
+          
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -203,32 +240,12 @@ $PackList = $OffreC->AfficherOffre();
                         <h6 class="text-sm font-weight-normal mb-1">
                           <span class="font-weight-bold">New message</span> from Laur
                         </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          13 minutes ago
-                        </p>
+                      
                       </div>
                     </div>
                   </a>
                 </li>
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="../../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">New album</span> by Travis Scott
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          1 day
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+                
                 <li>
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
@@ -247,15 +264,7 @@ $PackList = $OffreC->AfficherOffre();
                           </g>
                         </svg>
                       </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          Payment successfully completed
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          2 days
-                        </p>
-                      </div>
+                    
                     </div>
                   </a>
                 </li>
@@ -272,69 +281,43 @@ $PackList = $OffreC->AfficherOffre();
     <div class="main-panel">
       <div class="content-wrapper">
         <div class="row">
-
-
           <div class="col-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">Pack Table</h4>
+                <h4 class="card-title">New Pack</h4>
 
 
-                <a href="AfficherReservations.php" class="btn btn-primary">Liste Reservation</a>
+
                 <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
-                <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Id</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Name</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">End date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prix</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modifier</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Supprimer</th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <?php
+                <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validerFormulaire();">
+                  <div class="form-group">
 
-                  foreach ($PackList as $Pack) {
-                  ?>
-                    <tbody>
-                      <tr>
-                      <td><?php echo $Pack['ID_offre']; ?></td>
-                        <td><?php echo $Pack['nom_offre']; ?></td>
-                        <td><?php echo $Pack['date_debut']; ?></td>
-                        <td><?php echo $Pack['date_fin']; ?></td>
-                        <td><img src="uploads/<?php echo $Pack['image']; ?>" height="150px" width="150px" alt=""></td>
-                        <td><?php echo $Pack['prix']; ?> $</td>
-                        <td>
-                          <form method="GET" action="ajouterReservation.php">
-                            <input type="submit" class="btn btn-info btn-sm" name="Reserver" value="Reserver">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
-                        <td>
-                          <form method="GET" action="modifierPack.php">
-                            <input type="submit" class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
-                        <td>
-                          <a class="btn btn-danger btn-sm" href="supprimerPack.php?ID_offre=<?php echo $Pack['ID_offre']; ?>">Delete</a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  <?php
-                  }
-                  ?>
+                    <label for="packname">Nombre des Places</label>
+                    <input type="number" class="form-control" id="nombrePlaces" name="nombrePlaces" placeholder="nombre Places" style="border: 1px solid #dee2e6;">
+                  </div>
 
-                </table>
-              </div>
-            </div>
+                  <div class="form-group">
+                  <label for="source">Source</label>
+                  <select class="form-select" id="source" name="source" aria-label="Default select example">
+                    <option value="Online">Online</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="In-Person">In-Person</option>
+                  </select>
+                  </div>
+
+                  <div class="form-group">
+                  <label for="source">Paiement par:</label>
+                  <select class="form-select" id="paiement" name="paiement" aria-label="Default select example">
+                    <option value="Online">Espèce</option>
+                    <option value="Carte">Carte</option>
+                    <option value="Cheque">Cheque</option>
+                  </select>
+                  </div>
+
+                  <br>
+                  <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Soumettre</button>
+                  <a class="btn btn-light" href="AfficherReservations.php" role="button">Annuler</a>
+                </form>
 
 
 
@@ -416,16 +399,11 @@ $PackList = $OffreC->AfficherOffre();
             <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
           </div>
         </div>
-        <!-- <hr class="horizontal dark my-sm-4">
+        <hr class="horizontal dark my-sm-4">
         <div class="w-100 text-center">
-          <h6 class="mt-3">Thank you for sharing!</h6>
-          <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-          </a>
-        </div> -->
+          <h6 class="mt-3">Thank you visiting</h6>
+          
+        </div>
       </div>
     </div>
   </div>

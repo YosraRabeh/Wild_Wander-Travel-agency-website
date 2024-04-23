@@ -1,5 +1,5 @@
 <?php
-	include '../../../../../Controller/OffreC.php';
+	include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
 
 	$message = "" ; 
 	$OffreC=new OffreC();

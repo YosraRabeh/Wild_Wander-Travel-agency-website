@@ -1,5 +1,5 @@
 <?php
-include '../../../../../Controller/OffreC.php';
+include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
 
 
 $error = "";
@@ -12,20 +12,33 @@ $packC = new OffreC();
 if(
   isset($_POST['nom_offre'])&&
   isset($_POST['date_debut'])&&
-  isset($_POST['date_fin'])
+  isset($_POST['date_fin'])&&
+  isset($_FILES['image'])&&
+  isset($_POST['prix'])
 )
 {
   if(
     !empty($_POST['nom_offre'])&&
     !empty($_POST['date_debut'])&&
-    !empty($_POST['date_fin'])
+    !empty($_POST['date_fin'])&&
+    !empty($_FILES['image'])&&
+    !empty($_POST['prix'])
     )
     {
-         
+      $filename = $_FILES["image"]["name"];
+      $tempname = $_FILES["image"]["tmp_name"];
+      $folder = "./uploads/" . $filename;
+      if (move_uploaded_file($tempname, $folder)) {
+          echo "<h3>  Image uploaded successfully!</h3>";
+      } else {
+          echo "<h3>  Failed to upload image!</h3>";
+      }
       $pack = new Offre(
         $_POST['nom_offre'], 
         $_POST['date_debut'],
         $_POST['date_fin'],
+        $filename,
+        $_POST['prix'],
       );
       $packC->modifierPack($pack,$_GET["ID_offre"]); 
       header("Location:afficherPack.php?successMessage= offre modifié avec succés");
@@ -348,6 +361,18 @@ Wild Wander
                     <div class="form-group">
                       <label for="date_fin">End Date</label>
                       <input type="date" class="form-control" id="date_fin" name="date_fin" value="<?php echo $pack['date_fin']; ?>" style="border: 1px solid #dee2e6;">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="image">Image</label>
+                      <input type="file" class="form-control" id="image" name="image" value="<?php echo $pack['image']; ?>" style="border: 1px solid #dee2e6;">
+                      <br>
+                      <span value="">Image path : <?php echo $pack['image']; ?></span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="prix">Prix</label>
+                      <input type="number" class="form-control" id="prix" name="prix" value="<?php echo $pack['prix']; ?>" style="border: 1px solid #dee2e6;">
                     </div>
 
                     

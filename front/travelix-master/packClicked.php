@@ -1,3 +1,46 @@
+<?php
+include '../../Dashboard/Controller/ReservationC.php';
+
+$reservation = null ;
+$reservationC = new ReservationC();
+
+$errorMessage = "";
+$successMessage = "";
+
+$ReservationC = new ReservationC();
+
+// Check if 'Reserver' and 'idL' are set in GET parameters
+if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
+    $idOffre = $_GET["ID_offre"];
+
+    // Check if POST data is set
+    if (isset($_POST["nombrePlaces"]) &&
+        isset($_POST["source"]) &&
+        isset($_POST["paiement"])) {
+
+        // Check if POST data is not empty
+        if (!empty($_POST["nombrePlaces"]) &&
+            !empty($_POST["source"]) &&
+            !empty($_POST["paiement"])) {
+
+            // Create Reservation object and add reservation
+            $Reservation = new Reservation(
+                $_POST['nombrePlaces'], 
+                $_POST['source'],
+                $_POST['paiement'],
+                $idOffre
+            );
+            $ReservationC->AjouterReservation($Reservation);
+            header("Location: ListReservations.php?successMessage=reservation ajouté avec succès");
+            exit();
+        } else {
+            $errorMessage = "<label id='form' style='color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>";
+        }
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -133,7 +176,6 @@
 
 		<!-- Search -->
 
-		<div class="search">
 			<div class="search_inner">
 
 				<!-- Search Contents -->
@@ -141,43 +183,34 @@
 				<div class="container fill_height no-padding">
 					<div class="row fill_height no-margin">
 						<div class="col fill_height no-padding">
-
-							<!-- Search Tabs -->
-
-							<!-- Search Panel -->
-
+							<center> <h1 class="card-title">New Reservation</h1></center>
+							<br><br><br>
 							<div class="search_panel active">
-								<form action="#" id="search_form_1" class="search_panel_content d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-lg-between justify-content-start">
+								<form method="POST"  id="formR" class="search_panel_content d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-lg-between justify-content-start">
+									
+
 									<div class="search_item">
-										<div>check in</div>
-										<input type="text" class="check_in search_input" placeholder="YYYY-MM-DD">
+										<input type="number" id="nombrePlaces" name="nombrePlaces" class="check_in search_input" placeholder="Nombre des Places">
 									</div>
+
+
 									<div class="search_item">
-										<div>check out</div>
-										<input type="text" class="check_out search_input" placeholder="YYYY-MM-DD">
-									</div>
-									<div class="search_item">
-										<div>adults</div>
-										<select name="adults" id="adults_1" class="dropdown_item_select search_input">
-											<option>01</option>
-											<option>02</option>
-											<option>03</option>
-											<option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option>
+										<select class="form-select" id="source" name="source" aria-label="Default select example">
+											<option value="Online">Online</option>
+											<option value="Mobile">Mobile</option>
+											<option value="In-Person">In-Person</option>
 										</select>
 									</div>
+
 									<div class="search_item">
-										<div>children</div>
-										<select name="children" id="children_1" class="dropdown_item_select search_input">
-											<option>0</option>
-											<option>02</option>
-											<option>03</option>
-											<option>04</option>
-											<option>05</option>
-										</select>
+									<select class="form-select" id="paiement" name="paiement" aria-label="Default select example">
+										<option value="Online">Espèce</option>
+										<option value="Carte">Carte</option>
+										<option value="Cheque">Cheque</option>
+									</select>									
 									</div>
-			
-								
-									<button class="button search_button">Book <span></span><span></span><span></span></button>
+
+									<button type="submit" id="submit" name="submit" class="button search_button">Book <span></span><span></span><span></span></button>
 								</form>
 							</div>
 
@@ -190,8 +223,7 @@
 					</div>
 				</div>	
 			</div>	
-		</div>
-
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 	
 	<!-- Footer -->
 

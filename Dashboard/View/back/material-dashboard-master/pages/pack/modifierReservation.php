@@ -1,25 +1,68 @@
 <?php
-include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
+include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\ReservationC.php';
 
-$OffreC = new OffreC();
-$PackList = $OffreC->AfficherOffre();
+
+$errorMessage = "";
+$successMessage = "";
+
+// Create an instance of the controller
+$ReservationC = new ReservationC();
+
+
+// Check if 'Reserver' and 'idL' are set in GET parameters
+    
+
+    // Check if POST data is set
+    if (isset($_POST["nombrePlaces"]) &&
+        isset($_POST["source"]) &&
+        isset($_POST["paiement"])) {
+            
+            echo "<script>console.log('Form data submitted');</script>";
+
+
+        // Check if POST data is not empty
+        if (!empty($_POST["nombrePlaces"]) &&
+            !empty($_POST["source"]) &&
+            !empty($_POST["paiement"])) {
+
+            // Create Reservation object and add reservation
+            $Reservation = new Reservation(
+                $_POST['nombrePlaces'], 
+                $_POST['source'],
+                $_POST['paiement'],
+                $_POST['idOffre'],
+            );
+            $ReservationC->ModifierReservation($Reservation,$_GET["idReservation"]);
+            header("Location: AfficherReservations.php?successMessage=reservation ajouté avec succès");
+            exit();
+        } else {
+            $errorMessage = "<label id='form' style='color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>";
+        }
+    }
+
+
+// Handling case when 'Reserver' or 'idL' are not set
+if (!isset($_GET["Reserver"]) || !isset($_GET["ID_offre"])) {
+    $errorMessage = "<label id='form' style='color: red; font-weight: bold;'>&emsp;Paramètres manquants !</label>";
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8" />
+  <script src="assets/controle.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-    Wild Wander
+Wild Wander
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
   <link href="../../assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/style.css">
   <link href="../../assets/css/nucleo-svg.css" rel="stylesheet" />
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
@@ -27,14 +70,14 @@ $PackList = $OffreC->AfficherOffre();
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="../../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css">
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
@@ -54,7 +97,7 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white" >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -62,7 +105,7 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -70,7 +113,7 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -78,34 +121,34 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item" onmouseover="showSubmenu()" onmouseout="hideSubmenu()">
-          <a class="nav-link text-white active bg-gradient-primary" href="#">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">table_view</i>
-            </div>
-            <span class="nav-link-text ms-1">Pack Management</span>
-          </a>
-          <ul id="submenu" class="submenu">
-            <li>
-              <a href="AjouterPack.php" class="nav-link text-white">Add</a>
-            </li>
-            <li>
-              <a href="afficherPack.php" class="nav-link text-white">Show</a>
-            </li>
-          </ul>
+    <a class="nav-link text-white active bg-gradient-primary" href="#">
+        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="material-icons opacity-10">table_view</i>
+        </div>
+        <span class="nav-link-text ms-1">Pack Management</span>
+    </a>
+    <ul id="submenu" class="submenu">
+        <li>
+            <a href="AjouterPack.php" class="nav-link text-white">Add</a>
         </li>
+        <li>
+            <a href="afficherPack.php" class="nav-link text-white">Show</a>
+        </li>
+    </ul>
+</li>
 
-        <script>
-          function showSubmenu() {
-            document.getElementById("submenu").style.display = "block";
-          }
+<script>
+    function showSubmenu() {
+        document.getElementById("submenu").style.display = "block";
+    }
 
-          function hideSubmenu() {
-            document.getElementById("submenu").style.display = "none";
-          }
-        </script>
+    function hideSubmenu() {
+        document.getElementById("submenu").style.display = "none";
+    }
+</script>
 
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -113,7 +156,7 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -121,7 +164,7 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
             </div>
@@ -132,7 +175,7 @@ $PackList = $OffreC->AfficherOffre();
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">person</i>
             </div>
@@ -148,7 +191,7 @@ $PackList = $OffreC->AfficherOffre();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white ">
+          <a class="nav-link text-white " >
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">assignment</i>
             </div>
@@ -162,8 +205,13 @@ $PackList = $OffreC->AfficherOffre();
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
       <div class="container-fluid py-1 px-3">
-      <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
-
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
+          </ol>
+          <h6 class="font-weight-bolder mb-0">Template</h6>
+        </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <div class="input-group input-group-outline">
@@ -172,8 +220,12 @@ $PackList = $OffreC->AfficherOffre();
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
-            
-           
+            <li class="nav-item d-flex align-items-center">
+              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
+            </li>
+            <li class="mt-2">
+              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -197,7 +249,7 @@ $PackList = $OffreC->AfficherOffre();
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
                       <div class="my-auto">
-                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                        <img src="../../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -262,101 +314,111 @@ $PackList = $OffreC->AfficherOffre();
               </ul>
             </li>
             </li>
-
-
+            
+            
           </ul>
         </div>
       </div>
     </nav>
 
-    <div class="main-panel">
-      <div class="content-wrapper">
-        <div class="row">
+    <?php
+            if (isset($_GET['idReservation'])){
+                $Reservation = $ReservationC->RecupererReservation($_GET['idReservation']);
+                
+        ?>
+        
+    <div class="main-panel">        
+        <div class="content-wrapper">
+          <div class="row">
+
+        
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Modifier Offre</h4>
+                  
+
+                            
+                  <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
+                  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validerFormulaire();" >
 
 
-          <div class="col-12 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Pack Table</h4>
+                     <div class="form-group">
+                      <label for="nombrePlaces">nombre Places</label>
+                      <input type="number" class="form-control" id="nombrePlaces" name="nombrePlaces" placeholder=" nombrePlaces" value="<?php echo $Reservation['nombrePlaces']; ?>" style="border: 1px solid #dee2e6;">
+                    </div>
+
+                    <div>
+                    <label class="col-sm-3 col-form-label ">Offre </label>
+                    <input class="form-control" type="text" name="idOffre" id="idOffre" placeholder="idOffre" value="<?php echo $Reservation['idOffre']; ?>">
+                    </div>
+
+                    <div>
+                    <label class="col-sm-3 col-form-label ">Source</label>
+                    <div class="col-sm-13"> <!-- Adjust the column width as needed -->
+                    <select class="form-select" id="source" name="source" aria-label="Default select example">
+                    <option value="Online"<?php if ($Reservation['source'] == 'Online') echo ' selected'; ?>>Online</option>
+                    <option value="Mobile"<?php if ($Reservation['source'] == 'Mobile') echo ' selected'; ?>>Mobile</option>
+                    <option value="In-Person"<?php if ($Reservation['source'] == 'In-Person') echo ' selected'; ?>>In-Person</option>
+                    </select>
+                    </div>
+
+                    <div>
+                    <label class="col-sm-3 col-form-label ">Paiement Par :</label>
+                    <div class="col-sm-13"> <!-- Adjust the column width as needed -->
+                    <select class="form-select" id="paiement" name="paiement" aria-label="Default select example">
+                    <option value="Espèce"<?php if ($Reservation['paiement'] == 'Espèce') echo ' selected'; ?>>Espèce</option>
+                    <option value="Carte"<?php if ($Reservation['paiement'] == 'Carte') echo ' selected'; ?>>Carte</option>
+                    <option value="Cheque"<?php if ($Reservation['paiement'] == 'Cheque') echo ' selected'; ?>>Cheque</option>
+                     </select>
+                     </div>                    
+
+                    <br>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Modifier</button>
+                    <a class="btn btn-light" href="AfficherReservations.php" role="button">Cancel</a>
+                  </form>
+                </div>
+              </div>
+            </div> 
+
+            
 
 
-                <a href="AfficherReservations.php" class="btn btn-primary">Liste Reservation</a>
-                <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
-                <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Id</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Name</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">End date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prix</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modifier</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Supprimer</th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <?php
-
-                  foreach ($PackList as $Pack) {
-                  ?>
-                    <tbody>
-                      <tr>
-                      <td><?php echo $Pack['ID_offre']; ?></td>
-                        <td><?php echo $Pack['nom_offre']; ?></td>
-                        <td><?php echo $Pack['date_debut']; ?></td>
-                        <td><?php echo $Pack['date_fin']; ?></td>
-                        <td><img src="uploads/<?php echo $Pack['image']; ?>" height="150px" width="150px" alt=""></td>
-                        <td><?php echo $Pack['prix']; ?> $</td>
-                        <td>
-                          <form method="GET" action="ajouterReservation.php">
-                            <input type="submit" class="btn btn-info btn-sm" name="Reserver" value="Reserver">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
-                        <td>
-                          <form method="GET" action="modifierPack.php">
-                            <input type="submit" class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
-                        <td>
-                          <a class="btn btn-danger btn-sm" href="supprimerPack.php?ID_offre=<?php echo $Pack['ID_offre']; ?>">Delete</a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  <?php
-                  }
-                  ?>
-
-                </table>
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+                for a better web.
               </div>
             </div>
-
-
-
-              </div>
+            <div class="col-lg-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                </li>
+              </ul>
             </div>
           </div>
-          <!-- content-wrapper ends -->
-          <!-- partial:../../partials/_footer.html -->
-          <footer class="footer">
-
-          </footer>
-          <!-- partial -->
         </div>
-
-
-
-        <!-- End Navbar -->
-        <div class="container-fluid py-4">
-          <footer class="footer py-4  ">
-
-          </footer>
-        </div>
+      </footer>
+    </div>
   </main>
   <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
@@ -416,8 +478,11 @@ $PackList = $OffreC->AfficherOffre();
             <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
           </div>
         </div>
-        <!-- <hr class="horizontal dark my-sm-4">
+        <hr class="horizontal dark my-sm-4">
+        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
+        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
         <div class="w-100 text-center">
+          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
           <h6 class="mt-3">Thank you for sharing!</h6>
           <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
             <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
@@ -425,7 +490,7 @@ $PackList = $OffreC->AfficherOffre();
           <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
             <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
           </a>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -448,6 +513,9 @@ $PackList = $OffreC->AfficherOffre();
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../../assets/js/material-dashboard.min.js?v=3.1.0"></script>
   <script src="assets/javascript.js"></script>
+          <?php
+             }
+            ?>
 </body>
 
 </html>

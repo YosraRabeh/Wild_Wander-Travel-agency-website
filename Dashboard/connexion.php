@@ -1,7 +1,7 @@
 <?php
       class Config {
         private static $pdo = NULL ; 
-        public static function GetConnexion (){
+        public static function getConnexion (){
             if (!isset(self :: $pdo)){
                 try {
                     self :: $pdo = new PDO ('mysql:host=localhost;dbname=project','root','',
@@ -16,5 +16,5 @@
             return self ::$pdo ; 
         }
    }
-
+   
 ?>

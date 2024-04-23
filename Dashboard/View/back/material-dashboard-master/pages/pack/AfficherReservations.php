@@ -1,8 +1,9 @@
 <?php
-include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
+include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\ReservationC.php';
 
-$OffreC = new OffreC();
-$PackList = $OffreC->AfficherOffre();
+$ReservationC = new ReservationC();
+$reservationList = $ReservationC->AfficherReservation();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -262,8 +263,6 @@ $PackList = $OffreC->AfficherOffre();
               </ul>
             </li>
             </li>
-
-
           </ul>
         </div>
       </div>
@@ -272,28 +271,25 @@ $PackList = $OffreC->AfficherOffre();
     <div class="main-panel">
       <div class="content-wrapper">
         <div class="row">
-
-
           <div class="col-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">Pack Table</h4>
+                <h4 class="card-title">Reservation Table</h4>
 
 
-                <a href="AfficherReservations.php" class="btn btn-primary">Liste Reservation</a>
+                <a href="afficherPack.php" class="btn btn-primary">Liste Offres</a>
+
                 <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
                 <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Id</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Name</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">End date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prix</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nombre des Places</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Source</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Paiement</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Offre</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modifier</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Supprimer</th>
                       <th class="text-secondary opacity-7"></th>
@@ -301,30 +297,29 @@ $PackList = $OffreC->AfficherOffre();
                   </thead>
                   <?php
 
-                  foreach ($PackList as $Pack) {
+                  foreach ($reservationList as $reservation) {
                   ?>
                     <tbody>
                       <tr>
-                      <td><?php echo $Pack['ID_offre']; ?></td>
-                        <td><?php echo $Pack['nom_offre']; ?></td>
-                        <td><?php echo $Pack['date_debut']; ?></td>
-                        <td><?php echo $Pack['date_fin']; ?></td>
-                        <td><img src="uploads/<?php echo $Pack['image']; ?>" height="150px" width="150px" alt=""></td>
-                        <td><?php echo $Pack['prix']; ?> $</td>
+                      <td><?php echo $reservation['idReservation']; ?></td>
+                        <td><?php echo $reservation['nombrePlaces']; ?></td>
+                        <td><?php echo $reservation['source']; ?></td>
+                        <td><?php echo $reservation['paiement']; ?></td>
                         <td>
-                          <form method="GET" action="ajouterReservation.php">
-                            <input type="submit" class="btn btn-info btn-sm" name="Reserver" value="Reserver">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
+                            <?php
+                            $offre = $ReservationC->Recupereroffre($reservation['idOffre']);
+                            $nomOffre = $offre['nom_offre'];
+                            echo "$nomOffre";
+                            ?> 
+                            </td>
                         <td>
-                          <form method="GET" action="modifierPack.php">
+                          <form method="GET" action="modifierReservation.php">
                             <input type="submit" class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
+                            <input type="hidden" value=<?php echo $reservation['idReservation']; ?> name="idReservation">
                           </form>
                         </td>
                         <td>
-                          <a class="btn btn-danger btn-sm" href="supprimerPack.php?ID_offre=<?php echo $Pack['ID_offre']; ?>">Delete</a>
+                          <a class="btn btn-danger btn-sm" href="SupprimerReservation.php?idReservation=<?php echo $reservation['idReservation']; ?>">Delete</a>
                         </td>
                       </tr>
                     </tbody>

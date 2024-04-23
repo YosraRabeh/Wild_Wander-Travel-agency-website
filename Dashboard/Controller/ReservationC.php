@@ -1,14 +1,14 @@
 <?php
 
     include_once 'C:\xampp\htdocs\Works\PackManagement\Dashboard\connexion.php';
-    include_once 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Model\offre.php';
+    include_once 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Model\Reservation.php';
 
-    class OffreC {
+    class ReservationC {
 
 
         /////..............................Afficher............................../////
-                function AfficherOffre(){
-                    $sql="SELECT * FROM offre";
+                function AfficherReservation(){
+                    $sql="SELECT * FROM Reservation";
                     $db = config::getConnexion();
                     try{
                         $liste = $db->query($sql);
@@ -20,11 +20,11 @@
                 }
         
         /////..............................Supprimer............................../////
-                function SupprimerOffre($ID_offre){
-                    $sql="DELETE FROM offre WHERE ID_offre=:ID_offre";
+                function SupprimerReservation($idReservation){
+                    $sql="DELETE FROM reservation WHERE idReservation=:idReservation";
                     $db = config::getConnexion();
                     $req=$db->prepare($sql);
-                    $req->bindValue(':ID_offre', $ID_offre);   
+                    $req->bindValue(':idReservation', $idReservation);   
                     try{
                         $req->execute();
                     }
@@ -34,19 +34,18 @@
                 }
         
         /////..............................Ajouter............................../////
-                function AjouterOffre($offre){
-                    $sql="INSERT INTO offre (nom_offre,date_debut,date_fin,image,prix) 
-                    VALUES (:nom_offre,:date_debut,:date_fin,:image,:prix)";
+                function AjouterReservation($Reservation){
+                    $sql="INSERT INTO reservation (nombrePlaces,source,paiement,idOffre) 
+                    VALUES (:nombrePlaces,:source,:paiement,:idOffre)";
                     
                     $db = config::getConnexion();
                     try{
                         $query = $db->prepare($sql);
                         $query->execute([
-                            'nom_offre' => $offre->getnom_offre(),
-                            'date_debut' => $offre->getdate_debut(),
-                            'date_fin' => $offre->getdate_fin(),
-                            'image' => $offre->getimage(),
-                            'prix' => $offre->getprix(),
+                            'nombrePlaces' => $Reservation->getnombrePlaces(),
+                            'source' => $Reservation->getsource(),
+                            'paiement' => $Reservation->getpaiement(),
+                            'idOffre' => $Reservation->getidOffre(),
                             
                     ]);
                                 
@@ -56,6 +55,21 @@
                     }			
                 }
         /////..............................Affichage par la cle Primaire............................../////
+                function RecupererReservation($idReservation){
+                    $sql="SELECT * from reservation where idReservation=$idReservation";
+                    $db = config::getConnexion();
+                    try{
+                        $query=$db->prepare($sql);
+                        $query->execute();
+        
+                        $Reservation=$query->fetch();
+                        return $Reservation;
+                    }
+                    catch (Exception $e){
+                        die('Erreur: '.$e->getMessage());
+                    }
+                }
+
                 function Recupereroffre($ID_offre){
                     $sql="SELECT * from offre where ID_offre=$ID_offre";
                     $db = config::getConnexion();
@@ -72,17 +86,16 @@
                 }
         
         /////..............................Update............................../////
-        function modifierPack($offre, $ID_offre){
+        function modifierReservation($Reservation, $idReservation){
             try {
                 $db = config::getConnexion();
-                $query = $db->prepare('UPDATE offre SET nom_offre = :nom_offre, date_debut = :date_debut, date_fin = :date_fin , image = :image , prix = :prix WHERE ID_offre = :ID_offre');
+                $query = $db->prepare('UPDATE reservation SET nombrePlaces = :nombrePlaces, source = :source, paiement = :paiement , idOffre = :idOffre  WHERE idReservation = :idReservation');
                 $query->execute([
-                    'nom_offre' => $offre->getnom_offre(),
-                    'date_debut' => $offre->getdate_debut(),
-                    'date_fin' => $offre->getdate_fin(),
-                    'image' => $offre->getimage(),
-                    'prix' => $offre->getprix(),
-                    'ID_offre' => $ID_offre, 
+                    'nombrePlaces' => $Reservation->getnombrePlaces(),
+                    'source' => $Reservation->getsource(),
+                    'paiement' => $Reservation->getpaiement(),
+                    'idOffre' => $Reservation->getidOffre(),
+                    'idReservation' => $idReservation, 
                 ]);
                 echo $query->rowCount() . " records UPDATED successfully <br>";
             } catch (PDOException $e) {

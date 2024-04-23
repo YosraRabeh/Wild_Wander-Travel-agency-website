@@ -1,7 +1,15 @@
+<?php
+include '../../Dashboard/Controller/OffreC.php';
+
+
+$OffreC = new OffreC();
+$listOffre = $OffreC->AfficherOffre();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Blog</title>
+<title>Pack</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Travelix Project">
@@ -10,7 +18,7 @@
 <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 <link href="plugins/colorbox/colorbox.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="styles/pack_style.css">
-<link rel="stylesheet" type="text/css" href="styles/blog_responsive.css">
+
 </head>
 
 <body>
@@ -61,9 +69,10 @@
 								<li class="main_nav_item"><a href="about.html">about us</a></li>
 								<li class="main_nav_item"><a href="flights.html">flights</a></li>
 								<li class="main_nav_item"><a href="accomodations.html">accomodations</a></li>
-								<li class="main_nav_item"><a href="pack.html">packs</a></li>
+								<li class="main_nav_item"><a href="pack.php">packs</a></li>
 								<li class="main_nav_item"><a href="blog.html">blogs</a></li>
 								<li class="main_nav_item"><a href="contact.html">contact</a></li>
+								<li class="main_nav_item"><a href="ListReservations.php">list</a></li>
 								<li class="main_nav_item"><a href="claim.html">claim</a></li>
 							</ul>
 						</div>
@@ -147,103 +156,43 @@
 
 				<!-- Intro Item -->
 
+				<?php
+					foreach($listOffre as $offre){
+				?>
 				<div class="col-lg-4 intro_col">
 					<div class="intro_item">
 						<div class="intro_item_overlay"></div>
 						<!-- Image by https://unsplash.com/@dnevozhai -->
-						<div class="intro_item_background" style="background-image:url(images/intro_1.jpg)"></div>
-						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center">
-							<div class="intro_date">May 25th - June 01st</div>
-							<div class="button intro_button"><div class="button_bcg"></div><a href="packClicked.html">Book Now<span></span><span></span><span></span></a></div>
+						<div class="intro_item_background">
+							<img src="../../Dashboard/View/back/material-dashboard-master/pages/pack/uploads/<?php echo $offre['image']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(2px);" alt="Background Image">
+						</div>
+						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center" style="margin-bottom: -20px;">
+						<?php
+								$dateDebut = new DateTime($offre['date_debut']);
+								$monthDebut = $dateDebut->format('M');
+								$dayDebut = $dateDebut->format('d');
+
+								$dateFin = new DateTime($offre['date_fin']);
+								$monthFin = $dateFin->format('M');
+								$dayFin = $dateFin->format('d');
+							?>
+							<div class="intro_date"><?php echo $monthDebut; echo $dayDebut;?> - <?php echo $monthFin; echo $dayFin;?></div>
+							<div class="button intro_button"><div class="button_bcg"></div>
+							<form method="GET" action="packClicked.php">
+								<input type="submit" name="Reserver"class="button search_button" value="Reserver">
+								<input type="hidden" value=<?php echo $offre['ID_offre']; ?> name="ID_offre">
+							</form>
+						</div>
 							<div class="intro_center text-center">
-								<h1>Mauritius</h1>
-								<div class="intro_price">From $1450</div>
-								<div class="rating rating_4">
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-								</div>
+								<h1><i><?php echo $offre['nom_offre']; ?></i></h1>
+								<div class="intro_price"><b>From <?php echo $offre['prix']; ?> $</b></div>
 							</div>
 						</div>
 					</div>
 				</div>
-
-				<!-- Intro Item -->
-
-				<div class="col-lg-4 intro_col">
-					<div class="intro_item">
-						<div class="intro_item_overlay"></div>
-						<!-- Image by https://unsplash.com/@hellolightbulb -->
-						<div class="intro_item_background" style="background-image:url(images/intro_2.jpg)"></div>
-						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center">
-							<div class="intro_date">May 25th - June 01st</div>
-							<div class="button intro_button"><div class="button_bcg"></div><a href="#">see more<span></span><span></span><span></span></a></div>
-							<div class="intro_center text-center">
-								<h1>Greece</h1>
-								<div class="intro_price">From $1450</div>
-								<div class="rating rating_4">
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Intro Item -->
-
-				<div class="col-lg-4 intro_col">
-					<div class="intro_item">
-						<div class="intro_item_overlay"></div>
-						<!-- Image by https://unsplash.com/@willianjusten -->
-						<div class="intro_item_background" style="background-image:url(images/intro_3.jpg)"></div>
-						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center">
-							<div class="intro_date">May 25th - June 01st</div>
-							<div class="button intro_button"><div class="button_bcg"></div><a href="#">see more<span></span><span></span><span></span></a></div>
-							<div class="intro_center text-center">
-								<h1>Scotland</h1>
-								<div class="intro_price">From $1450</div>
-								<div class="rating rating_4">
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Intro Item -->
-
-				<div class="col-lg-4 intro_col">
-					<div class="intro_item">
-						<div class="intro_item_overlay"></div>
-						<!-- Image by https://unsplash.com/@willianjusten -->
-						<div class="intro_item_background" style="background-image:url(images/intro_4.png)"></div>
-						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center">
-							<div class="intro_date">May 25th - June 01st</div>
-							<div class="button intro_button"><div class="button_bcg"></div><a href="#">see more<span></span><span></span><span></span></a></div>
-							<div class="intro_center text-center">
-								<h1>iceland</h1>
-								<div class="intro_price">From $1790</div>
-								<div class="rating rating_4">
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<?php
+					}
+				?>
 
 			</div>
 		</div>

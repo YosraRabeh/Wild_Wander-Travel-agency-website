@@ -1,5 +1,5 @@
 <?php
-include '../../../../../Controller/OffreC.php';
+include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
 
 session_start();
 
@@ -14,14 +14,31 @@ $packC = new OffreC();
 if (
   isset($_POST["nom_offre"]) &&
   isset($_POST["date_debut"]) &&
-  isset($_POST["date_fin"])
+  isset($_POST["date_fin"])&&
+  isset($_FILES["image"])&&
+  isset($_POST["prix"])
 ) {
   if (
     !empty($_POST["nom_offre"]) &&
     !empty($_POST["date_debut"])  &&
-    !empty($_POST["date_fin"])
+    !empty($_POST["date_fin"]) &&
+    !empty($_FILES["image"]) &&
+    !empty($_POST["prix"]) 
   ) {
-    $pack = new Offre($_POST["nom_offre"], $_POST["date_debut"], $_POST["date_fin"]);
+    $filename = $_FILES["image"]["name"];
+        $tempname = $_FILES["image"]["tmp_name"];
+        $folder = "./uploads/" . $filename;
+        if (move_uploaded_file($tempname, $folder)) {
+            echo "<h3>  Image uploaded successfully!</h3>";
+        } else {
+            echo "<h3>  Failed to upload image!</h3>";
+        }
+    $pack = new Offre($_POST["nom_offre"],
+      $_POST["date_debut"],
+      $_POST["date_fin"],
+      $filename,
+      $_POST["prix"],
+    );
     $packC->AjouterOffre($pack); // 
     header("Location:afficherPack.php?successMessage= offre ajouté avec succés");
   } else
@@ -112,10 +129,10 @@ if (
           </a>
           <ul id="submenu" class="submenu">
             <li>
-              <a href="AjouterPack.php" class="nav-link text-white">Add</a>
+              <a href="AjouterPack.php" class="nav-link text-white">Add Pack</a>
             </li>
             <li>
-              <a href="afficherPack.php" class="nav-link text-white">Show</a>
+              <a href="afficherPack.php" class="nav-link text-white">Show Pack </a>
             </li>
           </ul>
         </li>
@@ -189,11 +206,8 @@ if (
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
-          </ol>
-          <h6 class="font-weight-bolder mb-0">Template</h6>
+          
+          <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -203,12 +217,7 @@ if (
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
-            <li class="nav-item d-flex align-items-center">
-              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
-            </li>
-            <li class="mt-2">
-              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-            </li>
+          
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -238,32 +247,12 @@ if (
                         <h6 class="text-sm font-weight-normal mb-1">
                           <span class="font-weight-bold">New message</span> from Laur
                         </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          13 minutes ago
-                        </p>
+                      
                       </div>
                     </div>
                   </a>
                 </li>
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="../../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">New album</span> by Travis Scott
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          1 day
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </li>
+                
                 <li>
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
@@ -282,15 +271,7 @@ if (
                           </g>
                         </svg>
                       </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          Payment successfully completed
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          2 days
-                        </p>
-                      </div>
+                    
                     </div>
                   </a>
                 </li>
@@ -319,16 +300,29 @@ if (
                 <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
                 <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validerFormulaire();">
                   <div class="form-group">
+
                     <label for="packname">Nom du Pack</label>
                     <input type="text" class="form-control" id="nom_offre" name="nom_offre" placeholder="Nom du Pack" style="border: 1px solid #dee2e6;">
                   </div>
+
                   <div class="form-group">
                     <label for="date_debut">Date de début</label>
                     <input type="date" class="form-control" name="date_debut" id="date_debut" style="border: 1px solid #dee2e6;">
                   </div>
+
                   <div class="form-group">
                     <label for="date_fin">Date de fin</label>
                     <input type="date" class="form-control" id="date_fin" name="date_fin" style="border: 1px solid #dee2e6;">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="image">Image</label>
+                    <input type="file" class="form-control" id="image" name="image" style="border: 1px solid #dee2e6;">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="prix">Prix</label>
+                    <input type="number" class="form-control" id="prix" name="prix" style="border: 1px solid #dee2e6;"><span>TND</span>
                   </div>
                   <br>
                   <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Soumettre</button>
@@ -416,17 +410,9 @@ if (
           </div>
         </div>
         <hr class="horizontal dark my-sm-4">
-        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
-        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
         <div class="w-100 text-center">
-          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-          <h6 class="mt-3">Thank you for sharing!</h6>
-          <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-          </a>
+          <h6 class="mt-3">Thank you visiting</h6>
+          
         </div>
       </div>
     </div>
