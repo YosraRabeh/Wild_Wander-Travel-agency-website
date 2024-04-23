@@ -4,6 +4,7 @@ include '../../Dashboard/Controller/accomodationC.php';
 
 $accomodationC = new accomodationC();
 $listaccomodation = $accomodationC->Afficheraccomodation();
+//n
 ?>
 
 <!DOCTYPE html>
