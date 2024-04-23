@@ -1,77 +1,115 @@
 <?php
+ include '../../../controller/blogC.php';
+ $id=$_GET["blogid"];
+$commentsC = new commentsC();
+$tab = $commentsC->listcomments($id);
+ ?>
 
-include '../../../controller/blogC.php';
-include '../../../Model/blog.php';
-$id=$_GET["id"];
-$token=$_GET['token'] ?? null;
-$error = "";
-// create client
-$valid=0;
-$blogC = new blogC();
-$blog = $blogC->showblog($id);
-$user= $blog['user'];
-$date=$blog['date'];
-$dateObj = new DateTime($date);
-$formattedDate = $dateObj->format('d/m/Y');
-// create an instance of the controller
-if (
-  isset($_POST["contenu"]) &&
-  isset($_POST["date"]) &&
-  isset($_POST["title"])
-  ) {
-    if (
-      !empty($_POST["contenu"]) &&
-      !empty($_POST["date"]) &&
-      !empty($_POST["title"])
-      ) {
-        // Server-side validation
-        $exist= $blogC->getbytitle($_POST["title"]);
-        $titlePattern = '/^[A-Z][a-zA-Z ]{1,19}$/';
-        $datePattern = '/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/';
-
-        if (!preg_match($titlePattern, $_POST["title"])) {
-            echo "<script>alert('Invalid title format. Please enter a valid title.');</script>";
-        } elseif (!preg_match($datePattern, $_POST["date"])) {
-          echo "<script>alert('Invalid date. Date should be in the format DD/MM/YY.');</script>";
-        }elseif($exist && $exist["id"]!=$id){
-          echo "<script>alert('title already exists. Please try another one.');</script>";
-        }else {
-            $valid = 1; // Form validation passed
-        }
-    } else {
-		echo "<script>alert('missing information. Please try another one.');</script>";
-    }
-  }
-  if ($valid == 1) { 
-     
-    // Form is valid, proceed with adding the user
-    $blog = new blog(
-        $_POST["title"],
-        $user,
-        $_POST["date"],
-        $_POST["contenu"]
-    );
-
-	$blogC->updateblog($blog,$id);
-    if($token==null)
-    	header('Location: blog.php');
-	else
-		header('Location: ../../back/material-dashboard-master/pages/blog.php');
-    exit;
-} 
-
-?>
-<html lang="en">
-<head>
-<title>Contact</title>
-<meta charset="utf-8">
+<!DOCTYPE html>
+ <html lang="en">
+ <head>
+ +<title>Comments</title>
+ <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Travelix Project">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
 <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="styles/contact_styles.css">
-<link rel="stylesheet" type="text/css" href="styles/contact_responsive.css">
+<link href="plugins/colorbox/colorbox.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="styles/blog_styles.css">
+<link rel="stylesheet" type="text/css" href="styles/blog_responsive.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
+    }
+
+    .blog_post {
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .blog_post_title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .blog_post_meta {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .blog_post_text {
+        line-height: 1.6;
+    }
+
+    .blog_post_link {
+        margin-top: 15px;
+    }
+
+    .blog_post_link a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .blog_post_link a:hover {
+        text-decoration: underline;
+    }
+
+    .blog_post_date {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .blog_post_day {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .blog_post_month {
+        font-size: 16px;
+    }
+    .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+/* Transparent button style */
+.trans_button {
+    background-color: transparent;
+    color: #007bff;
+    border: 2px solid #007bff;
+}
+
+.trans_button:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+</style>
 </head>
 
 <body>
@@ -99,8 +137,8 @@ if (
 								<li class="social_list_item"><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
 							</ul>
 						</div>
-						<div class="blog_box ml-auto">
-							<div class="icon" ><img src="images/blog.png" alt=""></div>
+						<div class="user_box ml-auto">
+							<div class="icon" ><img src="images/user.png" alt=""></div>
 						</div>
 					</div>
 				</div>
@@ -123,7 +161,7 @@ if (
 								<li class="main_nav_item"><a href="flights.html">flights</a></li>
 								<li class="main_nav_item"><a href="accomodations.html">accomodations</a></li>
 								<li class="main_nav_item"><a href="pack.html">packs</a></li>
-								<li class="main_nav_item"><a href="blog.php">blogs</a></li>
+								<li class="main_nav_item"><a href="blog.html">blogs</a></li>
 								<li class="main_nav_item"><a href="contact.html">contact</a></li>
 								<li class="main_nav_item"><a href="claim.html">claim</a></li>
 							</ul>
@@ -174,8 +212,8 @@ if (
 				<li class="menu_item"><a href="index.html">home</a></li>
 				<li class="menu_item"><a href="about.html">about us</a></li>
 				<li class="menu_item"><a href="flights.html">offers</a></li>
-				<li class="menu_item"><a href="blog.php">news</a></li>
-				<li class="menu_item"><a href="#">contact</a></li>
+				<li class="menu_item"><a href="#">news</a></li>
+				<li class="menu_item"><a href="contact.html">contact</a></li>
 			</ul>
 		</div>
 	</div>
@@ -183,106 +221,46 @@ if (
 	<!-- Home -->
 
 	<div class="home">
-		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="images/contact_background.jpg"></div>
+		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="images/blog_background.jpg"></div>
 		<div class="home_content">
-			<div class="home_title">claim</div>
+			<div class="home_title">the blog</div>
 		</div>
 	</div>
 
-	<!-- Contact -->
+	<!-- Blog -->
 
-	<div class="contact_form_section">
-		<div class="container">
-			<div class="row">
-				<div class="col">
-
-					<!-- Contact Form -->
-					<div class="contact_form_container">
-						<div class="contact_title text-center">Blog</div>
-						<form method="post" id="contact_form" class="contact_form text-center">
-							<input type="text" id="title" name="title" class="contact_form_subject input_field" value="<?php echo $blog['title'];?>" required="required" data-error="title is required.">
-							<textarea id="contenu" name="contenu" class="text_field contact_form_message" name="message" rows="4" required="required" data-error="Please, write us a message."><?php echo $blog['contenu'];?></textarea>
-							<input type="text" id="date" name="date" class="contact_form_subject input_field" value="<?php echo $formattedDate;?>" required="required" data-error="Subject is required.">
-							<button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Update<span></span><span></span><span></span></button>
-						</form>
-					</div>
-
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- About -->
-	<div class="about">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-5">
-					
-					<!-- About - Image -->
-
-					<div class="about_image">
-						<img src="images/man.png" alt="">
-					</div>
-
-				</div>
-
-				<div class="col-lg-4">
-					
-					<!-- About - Content -->
-
-					<div class="about_content">
-						<div class="logo_container about_logo">
-							<div class="logo"><a href="#"><img src="images/logo.png" alt="">travelix</a></div>
-						</div>
-						<p class="about_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis vu lputate eros, iaculis consequat nisl. Nunc et suscipit urna. Integer eleme ntum orci eu vehicula iaculis consequat nisl. Nunc et suscipit urna pretium.</p>
-						<ul class="about_social_list">
-							<li class="about_social_item"><a href="#"><i class="fa fa-pinterest"></i></a></li>
-							<li class="about_social_item"><a href="#"><i class="fa fa-facebook-f"></i></a></li>
-							<li class="about_social_item"><a href="#"><i class="fa fa-twitter"></i></a></li>
-							<li class="about_social_item"><a href="#"><i class="fa fa-dribbble"></i></a></li>
-							<li class="about_social_item"><a href="#"><i class="fa fa-behance"></i></a></li>
-						</ul>
-					</div>
-
-				</div>
-
-				<div class="col-lg-3">
-					
-					<!-- About Info -->
-
-					<div class="about_info">
-						<ul class="contact_info_list">
-							<li class="contact_info_item d-flex flex-row">
-								<div><div class="contact_info_icon"><img src="images/placeholder.svg" alt=""></div></div>
-								<div class="contact_info_text">4127 Raoul Wallenber 45b-c Gibraltar</div>
-							</li>
-							<li class="contact_info_item d-flex flex-row">
-								<div><div class="contact_info_icon"><img src="images/phone-call.svg" alt=""></div></div>
-								<div class="contact_info_text">2556-808-8613</div>
-							</li>
-							<li class="contact_info_item d-flex flex-row">
-								<div><div class="contact_info_icon"><img src="images/message.svg" alt=""></div></div>
-								<div class="contact_info_text"><a href="mailto:contactme@gmail.com?Subject=Hello" target="_top">contactme@gmail.com</a></div>
-							</li>
-							<li class="contact_info_item d-flex flex-row">
-								<div><div class="contact_info_icon"><img src="images/planet-earth.svg" alt=""></div></div>
-								<div class="contact_info_text"><a href="https://colorlib.com">www.colorlib.com</a></div>
-							</li>
-						</ul>
-					</div>
-
-				</div>
-
-			</div>
-		</div>
-	</div>
-
-	<!-- Google Map -->
+	<a href="addcomments.php?blogid=<?php echo $id;?>"><button class="button">ADD</button></a>	<div class="blog">
+	<?php
+                        foreach ($tab as $comments) {
+                            $date = new DateTime($comments['date']);
+                            echo '<div class="container">
+							<div class="row">
+				
+								<!-- Blog Content -->
+				
+								<div class="col-lg-8">
+									
+									
+									<div class="blog_post">
+										<div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
+													<div class="blog_post_day">'.$date->format('d').'</div>
+													<div class="blog_post_month">'.$date->format('M, Y').'</div>
+												</div><br><br><br><br>
+												<div class="blog_post_meta">'.$comments['user'].' |</a></div>
+										<div class="blog_post_text">
+											<p>'.$blog['contenu'].'</p>
+										</div>
+                                        <div class="blog_post_link"><a href="updatecomment.php?id='.$comments['id_comment'].'">update</a></div>
++                                        <div class="blog_post_link"><a href="deletecomment.php?id='.$comments['id_comment'].'">delete</a></div>
+									</div>
+								<!-- Blog Sidebar -->
+								</div>
+								</div>
+								</div>';
+                        }
+                    ?>
 		
-	<div class="travelix_map">
-		<div id="google_map" class="google_map">
-			<div class="map_container">
-				<div id="map"></div>
+
 			</div>
 		</div>
 	</div>
@@ -322,7 +300,7 @@ if (
 							<div class="footer_blog_item clearfix">
 								<div class="footer_blog_image"><img src="images/footer_blog_1.jpg" alt="https://unsplash.com/@avidenov"></div>
 								<div class="footer_blog_content">
-									<div class="footer_blog_title"><a href="blog.php">Travel with us this year</a></div>
+									<div class="footer_blog_title"><a href="blog.html">Travel with us this year</a></div>
 									<div class="footer_blog_date">Nov 29, 2017</div>
 								</div>
 							</div>
@@ -331,7 +309,7 @@ if (
 							<div class="footer_blog_item clearfix">
 								<div class="footer_blog_image"><img src="images/footer_blog_2.jpg" alt="https://unsplash.com/@deannaritchie"></div>
 								<div class="footer_blog_content">
-									<div class="footer_blog_title"><a href="blog.php">New destinations for you</a></div>
+									<div class="footer_blog_title"><a href="blog.html">New destinations for you</a></div>
 									<div class="footer_blog_date">Nov 29, 2017</div>
 								</div>
 							</div>
@@ -340,7 +318,7 @@ if (
 							<div class="footer_blog_item clearfix">
 								<div class="footer_blog_image"><img src="images/footer_blog_3.jpg" alt="https://unsplash.com/@bergeryap87"></div>
 								<div class="footer_blog_content">
-									<div class="footer_blog_title"><a href="blog.php">Travel with us this year</a></div>
+									<div class="footer_blog_title"><a href="blog.html">Travel with us this year</a></div>
 									<div class="footer_blog_date">Nov 29, 2017</div>
 								</div>
 							</div>
@@ -418,8 +396,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 								<li class="footer_nav_item"><a href="index.html">home</a></li>
 								<li class="footer_nav_item"><a href="about.html">about us</a></li>
 								<li class="footer_nav_item"><a href="flights.html">offers</a></li>
-								<li class="footer_nav_item"><a href="blog.php">news</a></li>
-								<li class="footer_nav_item"><a href="#">contact</a></li>
+								<li class="footer_nav_item"><a href="#">news</a></li>
+								<li class="footer_nav_item"><a href="contact.html">contact</a></li>
 							</ul>
 						</div>
 					</div>
@@ -433,10 +411,10 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="styles/bootstrap4/popper.js"></script>
 <script src="styles/bootstrap4/bootstrap.min.js"></script>
+<script src="plugins/colorbox/jquery.colorbox-min.js"></script>
 <script src="plugins/parallax-js-master/parallax.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script>
-<script src="js/contact_custom.js"></script>
+<script src="js/blog_custom.js"></script>
 
 </body>
 
-</html>
+</html> 

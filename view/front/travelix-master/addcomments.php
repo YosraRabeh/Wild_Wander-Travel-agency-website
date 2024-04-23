@@ -1,64 +1,36 @@
 <?php
 
 include '../../../controller/blogC.php';
-include '../../../Model/blog.php';
-$id=$_GET["id"];
-$token=$_GET['token'] ?? null;
+include '../../../model/comments.php';
+$id=$_GET['blogid'];//this is from the page where u view comments of a blog
 $error = "";
+$user="commment writer";
 // create client
-$valid=0;
-$blogC = new blogC();
-$blog = $blogC->showblog($id);
-$user= $blog['user'];
-$date=$blog['date'];
-$dateObj = new DateTime($date);
-$formattedDate = $dateObj->format('d/m/Y');
+$comments = null;
+$token=$_GET['token'] ?? null;
+$commentsC = new commentsC();
 // create an instance of the controller
 if (
-  isset($_POST["contenu"]) &&
-  isset($_POST["date"]) &&
-  isset($_POST["title"])
-  ) {
-    if (
-      !empty($_POST["contenu"]) &&
-      !empty($_POST["date"]) &&
-      !empty($_POST["title"])
-      ) {
-        // Server-side validation
-        $exist= $blogC->getbytitle($_POST["title"]);
-        $titlePattern = '/^[A-Z][a-zA-Z ]{1,19}$/';
-        $datePattern = '/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/';
-
-        if (!preg_match($titlePattern, $_POST["title"])) {
-            echo "<script>alert('Invalid title format. Please enter a valid title.');</script>";
-        } elseif (!preg_match($datePattern, $_POST["date"])) {
-          echo "<script>alert('Invalid date. Date should be in the format DD/MM/YY.');</script>";
-        }elseif($exist && $exist["id"]!=$id){
-          echo "<script>alert('title already exists. Please try another one.');</script>";
-        }else {
-            $valid = 1; // Form validation passed
-        }
-    } else {
-		echo "<script>alert('missing information. Please try another one.');</script>";
+  isset($_POST["contenu"])) {
+    if (!empty($_POST["contenu"])) {
+		$date = date("d/m/Y"); // Get current date in dd/mm/yyyy format
+        $comments = new comments(
+            $_POST["contenu"],
+            $date,
+            $user,
+            $id,
+        );
+        $commentsC->addcomments($comments);
+        if($token==null)
+			header("Location: comments.php?blogid={$id}");
+        else
+            header('Location: ../../back/material-dashboard-master/pages/comments.php');
+        exit;
     }
-  }
-  if ($valid == 1) { 
-     
-    // Form is valid, proceed with adding the user
-    $blog = new blog(
-        $_POST["title"],
-        $user,
-        $_POST["date"],
-        $_POST["contenu"]
-    );
-
-	$blogC->updateblog($blog,$id);
-    if($token==null)
-    	header('Location: blog.php');
-	else
-		header('Location: ../../back/material-dashboard-master/pages/blog.php');
-    exit;
-} 
+	else {echo "<script>alert('missing information. Please try another one.');</script>";
+	   }
+	
+}
 
 ?>
 <html lang="en">
@@ -185,7 +157,7 @@ if (
 	<div class="home">
 		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="images/contact_background.jpg"></div>
 		<div class="home_content">
-			<div class="home_title">claim</div>
+			<div class="home_title">comments</div>
 		</div>
 	</div>
 
@@ -198,13 +170,15 @@ if (
 
 					<!-- Contact Form -->
 					<div class="contact_form_container">
-						<div class="contact_title text-center">Blog</div>
-						<form method="post" id="contact_form" class="contact_form text-center">
-							<input type="text" id="title" name="title" class="contact_form_subject input_field" value="<?php echo $blog['title'];?>" required="required" data-error="title is required.">
-							<textarea id="contenu" name="contenu" class="text_field contact_form_message" name="message" rows="4" required="required" data-error="Please, write us a message."><?php echo $blog['contenu'];?></textarea>
-							<input type="text" id="date" name="date" class="contact_form_subject input_field" value="<?php echo $formattedDate;?>" required="required" data-error="Subject is required.">
-							<button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Update<span></span><span></span><span></span></button>
-						</form>
+						<div class="contact_title text-center">comment</div>
+						<form action="#" id="contact_form" class="contact_form text-center"     method="post">
+                           <!-- <input type="text" name="title" class="contact_form_subject input_field" placeholder="Title"  data-error="title is required."> -->
+                            <textarea name="contenu" class="text_field contact_form_message" rows="4" placeholder="Content"  data-error="Please, write us a message."></textarea>
+                            <!--<input type="text" name="date" class="contact_form_subject input_field" placeholder="DD/MM/YY" data-error="Subject is required."> -->
+                            <button type="submit" id="form_submit_button" class="form_submit_button button trans_200">add comment<span></span><span></span><span></span></button>
+                        </form>
+						
+						
 					</div>
 
 				</div>

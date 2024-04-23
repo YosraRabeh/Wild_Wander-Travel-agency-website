@@ -1,64 +1,41 @@
-<?php
+comment<?php
 
 include '../../../controller/blogC.php';
-include '../../../Model/blog.php';
+include '../../../Model/comments.php';
 $id=$_GET["id"];
 $token=$_GET['token'] ?? null;
 $error = "";
 // create client
 $valid=0;
-$blogC = new blogC();
-$blog = $blogC->showblog($id);
-$user= $blog['user'];
-$date=$blog['date'];
-$dateObj = new DateTime($date);
-$formattedDate = $dateObj->format('d/m/Y');
+$commentsC = new commentsC();
++$comments = $commentsC->showcomments($id);
++$blog=$comments['blog'];
++$user= $comments['user'];
 // create an instance of the controller
-if (
-  isset($_POST["contenu"]) &&
-  isset($_POST["date"]) &&
-  isset($_POST["title"])
-  ) {
-    if (
-      !empty($_POST["contenu"]) &&
-      !empty($_POST["date"]) &&
-      !empty($_POST["title"])
-      ) {
-        // Server-side validation
-        $exist= $blogC->getbytitle($_POST["title"]);
-        $titlePattern = '/^[A-Z][a-zA-Z ]{1,19}$/';
-        $datePattern = '/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/';
-
-        if (!preg_match($titlePattern, $_POST["title"])) {
-            echo "<script>alert('Invalid title format. Please enter a valid title.');</script>";
-        } elseif (!preg_match($datePattern, $_POST["date"])) {
-          echo "<script>alert('Invalid date. Date should be in the format DD/MM/YY.');</script>";
-        }elseif($exist && $exist["id"]!=$id){
-          echo "<script>alert('title already exists. Please try another one.');</script>";
-        }else {
-            $valid = 1; // Form validation passed
+if (isset($_POST["contenu"]) ) {
+        if ( !empty($_POST["contenu"])) {
+            $date = date("d/m/Y");
+            //$date = "11/09/2001";
+            $comments = new comments(
+                $_POST["contenu"],
+               $date,
+               $user,
+               $blog
+           );
+           $commentsC->updatecomments($comments,$id);
+           if($token==null)
+               header('Location: comments.php');
+           else
+                header('Location: ../../back/material-dashboard-master/pages/comments.php');
+            exit;
+        } else {
+            
+            echo "<script>alert('missing information. Please try another one.');</script>";
+         }
         }
-    } else {
-		echo "<script>alert('missing information. Please try another one.');</script>";
-    }
-  }
-  if ($valid == 1) { 
-     
-    // Form is valid, proceed with adding the user
-    $blog = new blog(
-        $_POST["title"],
-        $user,
-        $_POST["date"],
-        $_POST["contenu"]
-    );
-
-	$blogC->updateblog($blog,$id);
-    if($token==null)
-    	header('Location: blog.php');
-	else
-		header('Location: ../../back/material-dashboard-master/pages/blog.php');
-    exit;
-} 
+    
+ 
+ 
 
 ?>
 <html lang="en">
@@ -99,9 +76,10 @@ if (
 								<li class="social_list_item"><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
 							</ul>
 						</div>
-						<div class="blog_box ml-auto">
-							<div class="icon" ><img src="images/blog.png" alt=""></div>
-						</div>
+						<div class="comments_box ml-auto">
+							<div class="icon" ><img src="images/comments.png" alt=""></div>
+ 						</div>
+
 					</div>
 				</div>
 			</div>		
@@ -123,7 +101,7 @@ if (
 								<li class="main_nav_item"><a href="flights.html">flights</a></li>
 								<li class="main_nav_item"><a href="accomodations.html">accomodations</a></li>
 								<li class="main_nav_item"><a href="pack.html">packs</a></li>
-								<li class="main_nav_item"><a href="blog.php">blogs</a></li>
+    							<li class="main_nav_item"><a href="comments.php">commentss</a></li>
 								<li class="main_nav_item"><a href="contact.html">contact</a></li>
 								<li class="main_nav_item"><a href="claim.html">claim</a></li>
 							</ul>
@@ -174,7 +152,7 @@ if (
 				<li class="menu_item"><a href="index.html">home</a></li>
 				<li class="menu_item"><a href="about.html">about us</a></li>
 				<li class="menu_item"><a href="flights.html">offers</a></li>
-				<li class="menu_item"><a href="blog.php">news</a></li>
+				<li class="menu_item"><a href="comments.php">news</a></li>
 				<li class="menu_item"><a href="#">contact</a></li>
 			</ul>
 		</div>
@@ -198,11 +176,11 @@ if (
 
 					<!-- Contact Form -->
 					<div class="contact_form_container">
-						<div class="contact_title text-center">Blog</div>
+                    <div class="contact_title text-center">comments</div>
 						<form method="post" id="contact_form" class="contact_form text-center">
-							<input type="text" id="title" name="title" class="contact_form_subject input_field" value="<?php echo $blog['title'];?>" required="required" data-error="title is required.">
-							<textarea id="contenu" name="contenu" class="text_field contact_form_message" name="message" rows="4" required="required" data-error="Please, write us a message."><?php echo $blog['contenu'];?></textarea>
-							<input type="text" id="date" name="date" class="contact_form_subject input_field" value="<?php echo $formattedDate;?>" required="required" data-error="Subject is required.">
+                        <input type="text" id="title" name="title" class="contact_form_subject input_field"   data-error="title is required.">
++							<textarea id="contenu" name="contenu" class="text_field contact_form_message" name="message" rows="4" data-error="Please, write us a message."><?php echo $comments['content'];?></textarea>
++							<input type="text" id="date" name="date" class="contact_form_subject input_field"   data-error="Subject is required.">
 							<button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Update<span></span><span></span><span></span></button>
 						</form>
 					</div>
@@ -315,33 +293,33 @@ if (
 				<!-- Footer Column -->
 				<div class="col-lg-3 footer_column">
 					<div class="footer_col">
-						<div class="footer_title">blog posts</div>
-						<div class="footer_content footer_blog">
+                    <div class="footer_title">comments posts</div>
+ 					<div class="footer_content footer_comments">
+
 							
-							<!-- Footer blog item -->
-							<div class="footer_blog_item clearfix">
-								<div class="footer_blog_image"><img src="images/footer_blog_1.jpg" alt="https://unsplash.com/@avidenov"></div>
-								<div class="footer_blog_content">
-									<div class="footer_blog_title"><a href="blog.php">Travel with us this year</a></div>
-									<div class="footer_blog_date">Nov 29, 2017</div>
+							<!-- Footer comments item -->							<div class="footer_comments_item clearfix">
+								<div class="footer_comments_image"><img src="images/footer_comments_1.jpg" alt="https://unsplash.com/@avidenov"></div>
+								<div class="footer_comments_content">
+									<div class="footer_comments_title"><a href="comments.php">Travel with us this year</a></div>
+									<div class="footer_comments_date">Nov 29, 2017</div>
 								</div>
 							</div>
 							
-							<!-- Footer blog item -->
-							<div class="footer_blog_item clearfix">
-								<div class="footer_blog_image"><img src="images/footer_blog_2.jpg" alt="https://unsplash.com/@deannaritchie"></div>
-								<div class="footer_blog_content">
-									<div class="footer_blog_title"><a href="blog.php">New destinations for you</a></div>
-									<div class="footer_blog_date">Nov 29, 2017</div>
+							<!-- Footer comments item -->
+							<div class="footer_comments_item clearfix">
+								<div class="footer_comments_image"><img src="images/footer_comments_2.jpg" alt="https://unsplash.com/@deannaritchie"></div>
+								<div class="footer_comments_content">
+									<div class="footer_comments_title"><a href="comments.php">New destinations for you</a></div>
+									<div class="footer_comments_date">Nov 29, 2017</div>
 								</div>
 							</div>
 
-							<!-- Footer blog item -->
-							<div class="footer_blog_item clearfix">
-								<div class="footer_blog_image"><img src="images/footer_blog_3.jpg" alt="https://unsplash.com/@bergeryap87"></div>
-								<div class="footer_blog_content">
-									<div class="footer_blog_title"><a href="blog.php">Travel with us this year</a></div>
-									<div class="footer_blog_date">Nov 29, 2017</div>
+							<!-- Footer comments item -->
+							<div class="footer_comments_item clearfix">
+								<div class="footer_comments_image"><img src="images/footer_comments_3.jpg" alt="https://unsplash.com/@bergeryap87"></div>
+								<div class="footer_comments_content">
+									<div class="footer_comments_title"><a href="comments.php">Travel with us this year</a></div>
+									<div class="footer_comments_date">Nov 29, 2017</div>
 								</div>
 							</div>
 
@@ -418,7 +396,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 								<li class="footer_nav_item"><a href="index.html">home</a></li>
 								<li class="footer_nav_item"><a href="about.html">about us</a></li>
 								<li class="footer_nav_item"><a href="flights.html">offers</a></li>
-								<li class="footer_nav_item"><a href="blog.php">news</a></li>
+								<li class="footer_nav_item"><a href="comments.php">news</a></li>
 								<li class="footer_nav_item"><a href="#">contact</a></li>
 							</ul>
 						</div>

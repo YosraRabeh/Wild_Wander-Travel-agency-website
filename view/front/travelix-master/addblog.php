@@ -36,7 +36,7 @@ if (
             $valid = 1; // Form validation passed
         }
     } else {
-        $error = "Missing information";
+        echo "<script>alert('missing information. Please try another one.');</script>";
     }
   }
   if ($valid == 1) {  
