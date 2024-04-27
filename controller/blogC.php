@@ -127,6 +127,41 @@ class blogC
           die('Error: '. $e->getMessage());
         }
       }
+      public function searchBlogs($search, $search_type) {
+        $db = config::getConnexion();
+        $sql = "";
+        $searchParam = '%' . $search . '%'; // Add wildcards for partial matching
+    
+        // Construct the SQL query based on the search type
+        switch ($search_type) {
+            case 'title':
+                $sql = "SELECT * FROM blog WHERE title LIKE :search";
+                break;
+            case 'date':
+                $sql = "SELECT * FROM blog WHERE date LIKE :search";
+                break;
+            case 'user':
+                $sql = "SELECT * FROM blog WHERE user LIKE :search";
+                break;
+            default:
+                echo "<script>alert('Missing information. Please try another one.');</script>";
+                return null; // Return null or handle error as needed
+                break;
+        }
+    
+        try {
+            $query = $db->prepare($sql);
+            $query->bindValue(':search', $searchParam, PDO::PARAM_STR);
+            $query->execute();
+            $searchResults = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $searchResults;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+     
+    
+    
 }
 
 class commentsC

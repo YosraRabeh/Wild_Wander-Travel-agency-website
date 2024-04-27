@@ -8,9 +8,9 @@ $error = "";
 // create client
 $valid=0;
 $commentsC = new commentsC();
-+$comments = $commentsC->showcomments($id);
-+$blog=$comments['blog'];
-+$user= $comments['user'];
+$comments = $commentsC->showcomments($id);
+$blog=$comments['blog'];
+$user= $comments['user'];
 // create an instance of the controller
 if (isset($_POST["contenu"]) ) {
         if ( !empty($_POST["contenu"])) {
@@ -24,9 +24,9 @@ if (isset($_POST["contenu"]) ) {
            );
            $commentsC->updatecomments($comments,$id);
            if($token==null)
-               header('Location: comments.php');
+               header("Location: comments.php?blogid=".$blog);
            else
-                header('Location: ../../back/material-dashboard-master/pages/comments.php');
+                header('Location: ../../back/material-dashboard-master/pages/blog.php');
             exit;
         } else {
             
@@ -179,8 +179,8 @@ if (isset($_POST["contenu"]) ) {
                     <div class="contact_title text-center">comments</div>
 						<form method="post" id="contact_form" class="contact_form text-center">
                         <input type="text" id="title" name="title" class="contact_form_subject input_field"   data-error="title is required.">
-+							<textarea id="contenu" name="contenu" class="text_field contact_form_message" name="message" rows="4" data-error="Please, write us a message."><?php echo $comments['content'];?></textarea>
-+							<input type="text" id="date" name="date" class="contact_form_subject input_field"   data-error="Subject is required.">
+							<textarea id="contenu" name="contenu" class="text_field contact_form_message" name="message" rows="4" data-error="Please, write us a message."><?php echo $comments['content'];?></textarea>
+							<input type="text" id="date" name="date" class="contact_form_subject input_field"   data-error="Subject is required.">
 							<button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Update<span></span><span></span><span></span></button>
 						</form>
 					</div>

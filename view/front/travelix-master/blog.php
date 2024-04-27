@@ -1,8 +1,21 @@
 <?php
 include '../../../controller/blogC.php';
 $blogC = new blogC();
-$tab = $blogC->listblogs();
+
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$search_type = isset($_GET['search_type']) ? $_GET['search_type'] : '';
+
+if (!empty($search) && !empty($search_type)) {
+    // Fetch filtered blog posts based on search criteria
+    $tab = $blogC->searchBlogs($search, $search_type);
+} else {
+    // Fetch all blog posts if no search parameters are set
+    $tab = $blogC->listblogs();
+}
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -228,41 +241,52 @@ $tab = $blogC->listblogs();
 
 	<!-- Blog -->
 
-    <a href="addblog.php"><button class="button">ADD</button></a>
-	<div class="blog">
-	<?php
-                        foreach ($tab as $blog) {
-                            $date = new DateTime($blog['date']);
-                            echo '<div class="container">
-							<div class="row">
-				
-								<!-- Blog Content -->
-				
-								<div class="col-lg-8">
-									
-									
-									<div class="blog_post">
-										<div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
-													<div class="blog_post_day">'.$date->format('d').'</div>
-													<div class="blog_post_month">'.$date->format('M, Y').'</div>
-												</div><br><br><br><br>
-										<div class="blog_post_title">'.$blog['title'].'</div>
-										<div class="blog_post_meta">'.$blog['user'].' | 3 Comments</div>
-										<div class="blog_post_text">
-											<p>'.$blog['contenu'].'</p>
-										</div>
-                                        <div class="blog_post_link"><a href="updateblog.php?id='.$blog['id'].'">update</a></div>
-                                        <div class="blog_post_link"><a href="deleteblog.php?id='.$blog['id'].'">delete</a></div>
-									</div>
-								<!-- Blog Sidebar -->
-								</div>
-								</div>
-								</div>';
-                        }
-                    ?>
-		
+    
+	<div class="button intro_button"><div class="button_bcg"></div><a href="addblog.php">ADD <span></span><span></span><span></span></button></a></div>
+	<!-- Search Form -->
+	<form method="GET" action="" class="search-form">
+    <input type="text" name="search" placeholder="Enter search keyword" class="search-input">
+    <select name="search_type" class="search-type">
+        <option value="title">Title</option>
+        <option value="date">Date</option>
+        <option value="user">User</option>
+    </select>
+    <button type="submit" class="button intro_button">Search</button>
+</form>
 
-			</div>
+
+
+
+
+<div class="blog">
+    <?php
+    foreach ($tab as $blog) {
+        $date = new DateTime($blog['date']);
+        echo '<div class="container">
+            <div class="row">
+                <!-- Blog Content -->
+                <div class="col-lg-8">
+                    <div class="blog_post">
+                        <div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
+                            <div class="blog_post_day">' . $date->format('d') . '</div>
+                            <div class="blog_post_month">' . $date->format('M, Y') . '</div>
+                        </div><br><br><br><br>
+                        <div class="blog_post_title">' . $blog['title'] . '</div>
+                        <div class="blog_post_meta">' . $blog['user'] . ' | <a href="comments.php?blogid=' . $blog['id'] . '">comments</a></div>
+                        <div class="blog_post_text">
+                            <p>' . $blog['contenu'] . '</p>
+                        </div>
+                        <div class="blog_post_link"><a href="updateblog.php?id=' . $blog['id'] . '">update</a></div>
+                        <div class="blog_post_link"><a href="deleteblog.php?id=' . $blog['id'] . '">delete</a></div>
+                    </div>
+                    <!-- Blog Sidebar -->
+                </div>
+            </div>
+        </div>';
+    }
+    ?>
+</div>
+
 		</div>
 	</div>
 

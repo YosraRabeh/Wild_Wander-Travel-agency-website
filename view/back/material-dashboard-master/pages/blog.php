@@ -320,6 +320,7 @@ Blog Management  </title>
                         <td>
                           <div class="blog_post_link"><a href="../../../front/travelix-master/updateblog.php?id=<?= $blog['id'] ?>&token=1">Update</a></div>
                           <div class="blog_post_link"><a href="../../../front/travelix-master/deleteblog.php?id=<?= $blog['id'] ?>&token=1">Delete</a></div>
+                          <div class="blog_post_link"><a href="../../../front/travelix-master/comments.php?blogid=<?= $blog['id'] ?>&token=1">comments</a></div>
                         </td>
                       </tr>
                     </tbody>

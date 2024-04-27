@@ -1,6 +1,7 @@
 <?php
  include '../../../controller/blogC.php';
  $id=$_GET["blogid"];
+ $token=$_GET['token']?? null;
 $commentsC = new commentsC();
 $tab = $commentsC->listcomments($id);
  ?>
@@ -8,7 +9,7 @@ $tab = $commentsC->listcomments($id);
 <!DOCTYPE html>
  <html lang="en">
  <head>
- +<title>Comments</title>
+ <title>Comments</title>
  <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Travelix Project">
@@ -229,7 +230,7 @@ $tab = $commentsC->listcomments($id);
 
 	<!-- Blog -->
 
-	<a href="addcomments.php?blogid=<?php echo $id;?>"><button class="button">ADD</button></a>	<div class="blog">
+	<div class="button intro_button"><div class="button_bcg"></div><a href="addcomments.php?blogid=<?php echo $id;?>&token=<?php echo $token;?>">ADD</button></a></div>	<div class="blog">
 	<?php
                         foreach ($tab as $comments) {
                             $date = new DateTime($comments['date']);
@@ -248,10 +249,10 @@ $tab = $commentsC->listcomments($id);
 												</div><br><br><br><br>
 												<div class="blog_post_meta">'.$comments['user'].' |</a></div>
 										<div class="blog_post_text">
-											<p>'.$blog['contenu'].'</p>
+											<p>'.$comments['content'].'</p>
 										</div>
-                                        <div class="blog_post_link"><a href="updatecomment.php?id='.$comments['id_comment'].'">update</a></div>
-+                                        <div class="blog_post_link"><a href="deletecomment.php?id='.$comments['id_comment'].'">delete</a></div>
+                                        <div class="blog_post_link"><a href="updatecomment.php?id='.$comments['id_comment'].'&token='.$token.'">update</a></div>
++                                        <div class="blog_post_link"><a href="deletecomment.php?id='.$comments['id_comment'].'&token='.$token.'">delete</a></div>
 									</div>
 								<!-- Blog Sidebar -->
 								</div>

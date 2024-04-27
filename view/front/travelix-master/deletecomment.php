@@ -9,6 +9,6 @@ $commentsC->deletecomments($id);
 if($token==null)
 header("Location: comments.php?blogid={$id}");
 else
-    header('Location: ../../back/material-dashboard-master/pages/comments.php');
+    header('Location: ../../back/material-dashboard-master/pages/blog.php');
 exit;
 ?>
