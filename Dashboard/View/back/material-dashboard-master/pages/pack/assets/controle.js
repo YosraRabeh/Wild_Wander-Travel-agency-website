@@ -28,4 +28,23 @@ function validerFormulaire() {
 
     return true;
 }
+function valider_reservation() {
+    var nombrePlaces = document.getElementById("nombrePlaces").value;
+    var source = document.getElementById("source").value;
+    var paiement = document.getElementById("paiement").value;
 
+    if (nombrePlaces.trim() === "") {
+        alert("Veuillez saisir le nombre de places .");
+        return false;
+    }
+    if (source.trim() === " ") {
+        alert("Veuillez sélectionner un source.");
+        return false;
+    }
+    if (paiement.trim() === "") {
+        alert("Veuillez sélectionner une option pour paiement.");
+        return false;
+    }
+    return true ; 
+    
+}

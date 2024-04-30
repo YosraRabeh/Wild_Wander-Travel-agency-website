@@ -8,7 +8,7 @@
 
         /////..............................Afficher............................../////
                 function AfficherReservation(){
-                    $sql="SELECT * FROM Reservation";
+                    $sql="SELECT * FROM reservation";
                     $db = config::getConnexion();
                     try{
                         $liste = $db->query($sql);
@@ -103,5 +103,83 @@
             }
         }
         
-                        //$nom_offre,$date_debut,$date_fin
-            }
+           
+
+
+
+
+            
+     public function getTotalres()
+     {
+        $sql = 'SELECT COUNT(*) AS nbrres FROM reservation';
+         $db = config::getConnexion();
+
+        try {
+         $query = $db->query($sql);
+         $result = $query->fetch();
+         return (int) $result['nbrres'];
+         } catch (Exception $e) {
+          die('Erreur: ' . $e->getMessage());
+         }
+    
+     }
+        
+        
+
+  /////..............................recherche par id ............................../////
+  function Recherche($idReservation){
+    $sql="SELECT * from reservation where idReservation like '".$idReservation."%' ";
+    $db = config::getConnexion();
+    try{
+        $liste = $db->query($sql);
+        return $liste;
+    }
+    catch(Exception $e){
+        die('Erreur:'. $e->getMessage());
+    }
+}
+ //...............Function to get pack with pagination.........................//
+ public function getresWithPagination($start, $itemsPerPage)
+         {
+            $sql = 'SELECT * FROM reservation LIMIT :start, :itemsPerPage';
+            $db = config::getConnexion();
+
+            try {
+                 $query = $db->prepare($sql);
+                 $query->bindValue(':start', $start, PDO::PARAM_INT);
+                 $query->bindValue(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
+                 $query->execute();
+                 return $query->fetchAll(PDO::FETCH_ASSOC);
+                } catch (Exception $e) {
+                     die('Erreur: ' . $e->getMessage());
+                     }
+          }
+
+///...............trie par date de creation asc .........////////
+function tridatecreation(){
+    $sql="SELECT * FROM reservation  ORDER BY dateCreation ASC";
+    $db = config::getConnexion();
+    try{
+        $liste = $db->query($sql);
+        return $liste;
+    }
+    catch(Exception $e){
+        die('Erreur:'. $e->getMessage());
+    }
+}
+
+ ///...............trie par date de creation dasc .........////////
+function tridatecreationD(){
+    $sql="SELECT * FROM reservation  ORDER BY dateCreation DESC";
+    $db = config::getConnexion();
+    try{
+        $liste = $db->query($sql);
+        return $liste;
+    }
+    catch(Exception $e){
+        die('Erreur:'. $e->getMessage());
+    }
+}
+
+
+}

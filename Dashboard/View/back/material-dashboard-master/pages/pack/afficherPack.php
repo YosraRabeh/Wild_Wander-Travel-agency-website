@@ -3,6 +3,54 @@ include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\OffreC.php';
 
 $OffreC = new OffreC();
 $PackList = $OffreC->AfficherOffre();
+
+$PuckNumber = $OffreC->getTotaloffre();
+
+	//// number of taxis per page
+	$itemsPerPage = 3; // Adjust as needed
+	// Get the total number of users
+	$totalPack = $OffreC->getTotaloffre();
+	// Calculate the total number of pages
+	$totalPages = ceil($totalPack / $itemsPerPage);
+	$currentPage = 1;
+	$start = 0;    
+  
+
+    if (isset($_GET['page']) && !empty($_GET['page'])) {
+        $currentPage = (int) strip_tags($_GET['page']);
+
+			$currentPage = max(1, min($currentPage, $totalPages));
+			$start = ($currentPage - 1) * $itemsPerPage;
+
+    }	elseif(isset($_GET['Search']))
+		{
+		$PackList = $OffreC->Recherche($_GET['Search']);
+		} elseif(isset($_GET['nomOf']))
+    {
+      $PackList = $OffreC->Trioffre();
+    }elseif(isset($_GET['prix']))
+    {
+      $PackList = $OffreC->Triprix();
+    }elseif(isset($_GET['prixd']))
+    {
+      $PackList = $OffreC->Triprixdesc();
+    }
+	 else 
+		{
+		$PackList = $OffreC->AfficherOffre();
+		}
+
+	if (!isset($_GET['Search']) && !isset($_GET['nomOf']) && !isset($_GET['prix']) && !isset($_GET['prixd']) ) {          ////// if cat (Afficher taxis per category) not present he display the pagination
+		$PackList = $OffreC->getPackWithPagination($start, $itemsPerPage);
+	}
+
+
+
+
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +61,7 @@ $PackList = $OffreC->AfficherOffre();
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-    Wild Wander
+    Pack
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
@@ -39,7 +87,7 @@ $PackList = $OffreC->AfficherOffre();
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
         <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white">Wild wander</span>
+        <span class="ms-1 font-weight-bold text-white">Wild Wander</span>
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
@@ -160,17 +208,26 @@ $PackList = $OffreC->AfficherOffre();
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
+
+    <div class="container-fluid py-4">
+          <footer class="footer py-4  ">
+        
+
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
       <div class="container-fluid py-1 px-3">
-      <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
-
+      <h6 class="font-weight-bolder mb-0">Pack</h6>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-          <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-            <div class="input-group input-group-outline">
+        <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+
+            <!------------------------Search bar----------------------->
+          <div class="input-group input-group-outline">
               <label class="form-label">Type here...</label>
-              <input type="text" class="form-control">
-            </div>
-          </div>
+               <form method="GET">
+               <input type="text" name="Search" id="Search" class="form-control">
+               </form>
+           </div>
+
+</div>
           <ul class="navbar-nav  justify-content-end">
             
            
@@ -183,6 +240,7 @@ $PackList = $OffreC->AfficherOffre();
                 </div>
               </a>
             </li>
+            
             <li class="nav-item px-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0">
                 <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
@@ -211,6 +269,7 @@ $PackList = $OffreC->AfficherOffre();
                     </div>
                   </a>
                 </li>
+                
                 <li class="mb-2">
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
@@ -247,15 +306,7 @@ $PackList = $OffreC->AfficherOffre();
                           </g>
                         </svg>
                       </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          Payment successfully completed
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          2 days
-                        </p>
-                      </div>
+                      
                     </div>
                   </a>
                 </li>
@@ -281,6 +332,17 @@ $PackList = $OffreC->AfficherOffre();
 
 
                 <a href="AfficherReservations.php" class="btn btn-primary">Liste Reservation</a>
+                <a href="../../../../../../front/travelix-master/index.php" class="btn btn-primary">Front office</a>
+                <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" href="afficherPack.php" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  Filter By
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li><a class="dropdown-item" href="afficherPack.php?nomOf">Pack Name</a></li>
+                  <li><a class="dropdown-item" href="afficherPack.php?prix">Price in ascending order</a></li>
+                  <li><a class="dropdown-item" href="afficherPack.php?prixd">Price in descending order</a></li>
+                </ul>
+           </div>
                 <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
                 <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
@@ -300,7 +362,6 @@ $PackList = $OffreC->AfficherOffre();
                     </tr>
                   </thead>
                   <?php
-
                   foreach ($PackList as $Pack) {
                   ?>
                     <tbody>
@@ -332,8 +393,44 @@ $PackList = $OffreC->AfficherOffre();
                   }
                   ?>
 
-                </table>
+                  </table> 
+                <div class="pagination">
+            <?php
+                for ($i = 1; $i <= $totalPages; $i++) {
+                    echo "<a href='afficherPack.php?page=$i' ";
+                    if ($i == $currentPage) {
+                        echo "class='active'";
+                    }
+                    echo ">$i</a>";
+                }
+            ?>
               </div>
+              <style>
+.pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.pagination a {
+  border: 1px solid #ddd;
+  color: black;
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+
+.pagination a.active {
+  background-color: #6B4CAF;
+  color: white;
+  border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #ddd;
+}   </style>
+
+
+</style>
             </div>
 
 
@@ -352,9 +449,7 @@ $PackList = $OffreC->AfficherOffre();
 
 
         <!-- End Navbar -->
-        <div class="container-fluid py-4">
-          <footer class="footer py-4  ">
-
+        
           </footer>
         </div>
   </main>
@@ -368,6 +463,9 @@ $PackList = $OffreC->AfficherOffre();
           <h5 class="mt-3 mb-0">Material UI Configurator</h5>
           <p>See our dashboard options.</p>
         </div>
+        
+
+
         <div class="float-end mt-4">
           <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
             <i class="material-icons">clear</i>

@@ -48,7 +48,7 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-    Wild Wander
+    add reservation
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
@@ -69,13 +69,20 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
+  <style>
+    .error-message
+    {
+      color : red ;
+      font-size: 12px;
+    }
+  </style>
 
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
         <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white">Wild wander</span>
+        <span class="ms-1 font-weight-bold text-white">Safrti</span>
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
@@ -200,7 +207,7 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           
-          <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
+          <h6 class="font-weight-bolder mb-0">Pack</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -284,40 +291,44 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
           <div class="col-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">New Pack</h4>
+                <h4 class="card-title">New Reservation </h4>
 
 
 
                 <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
-                <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validerFormulaire();">
-                  <div class="form-group">
+   <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return InputControl();">
+    <div class="form-group">
+        <label for="nombrePlaces">Nombre des Places</label>
+        <input type="number" class="form-control" id="nombrePlaces" name="nombrePlaces" placeholder="Nombre Places" style="border: 1px solid #dee2e6;">
+        <div id="nbPlaceError" class="error-message"></div>
+    </div>
 
-                    <label for="packname">Nombre des Places</label>
-                    <input type="number" class="form-control" id="nombrePlaces" name="nombrePlaces" placeholder="nombre Places" style="border: 1px solid #dee2e6;">
-                  </div>
+    <div class="form-group">
+        <label for="source">Source</label>
+        <select class="form-select" id="source" name="source" aria-label="Source">
+            <option value="Select choice">Select choice</option>
+            <option value="Online">Online</option>
+            <option value="Mobile">Mobile</option>
+            <option value="In-Person">In-Person</option>
+        </select>
+        <div id="sourceError" class="error-message"></div>
+    </div>
 
-                  <div class="form-group">
-                  <label for="source">Source</label>
-                  <select class="form-select" id="source" name="source" aria-label="Default select example">
-                    <option value="Online">Online</option>
-                    <option value="Mobile">Mobile</option>
-                    <option value="In-Person">In-Person</option>
-                  </select>
-                  </div>
+    <div class="form-group">
+        <label for="paiement">Paiement par:</label>
+        <select class="form-select" id="paiement" name="paiement" aria-label="Paiement">
+            <option value="Select choice">Select choice</option>
+            <option value="Espèce">Espèce</option>
+            <option value="Carte">Carte</option>
+            <option value="Cheque">Cheque</option>
+        </select>
+        <div id="paiementError" class="error-message"></div>
+    </div>
 
-                  <div class="form-group">
-                  <label for="source">Paiement par:</label>
-                  <select class="form-select" id="paiement" name="paiement" aria-label="Default select example">
-                    <option value="Online">Espèce</option>
-                    <option value="Carte">Carte</option>
-                    <option value="Cheque">Cheque</option>
-                  </select>
-                  </div>
-
-                  <br>
-                  <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Soumettre</button>
-                  <a class="btn btn-light" href="AfficherReservations.php" role="button">Annuler</a>
-                </form>
+    <br>
+    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Add reservation</button>
+    <a class="btn btn-light" href="AfficherReservations.php" role="button">Cancel</a>
+</form>
 
 
 

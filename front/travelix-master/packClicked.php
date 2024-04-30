@@ -56,7 +56,6 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 </head>
 
 <body>
-
 <div class="super_container">
 	
 	<!-- Header -->
@@ -166,7 +165,7 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 	<div class="home">
 		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="images/about_background.jpg"></div>
 		<div class="home_content">
-			<div class="home_title">The pack</div>
+			<div class="home_title">Our pack</div>
 		</div>
 	</div>
 
@@ -210,7 +209,7 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 									</select>									
 									</div>
 
-									<button type="submit" id="submit" name="submit" class="button search_button">Book <span></span><span></span><span></span></button>
+									<button type="submit" id="submit" name="submit" class="button search_button" >reservee <span></span><span></span><span></span></button>
 								</form>
 							</div>
 

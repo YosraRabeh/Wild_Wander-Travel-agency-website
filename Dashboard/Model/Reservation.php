@@ -10,7 +10,7 @@ class Reservation
     private $dateCreation=null ;
     private $idOffre=null ;
     
-    function __construct($nombrePlaces,$source,$paiement,$idOffre)
+    function __construct($nombrePlaces,$source,$paiement,$idOffre )
     {
         $this->nombrePlaces = $nombrePlaces;
         $this->source = $source;
@@ -69,5 +69,18 @@ class Reservation
     {
         $this->nom_offre = $nom_offre;
     }
+
+
+    function getdateCreation()
+    {
+        return $this->dateCreation;
+    }
+    function setdateCreation(int $dateCreation)
+    {
+        $this->dateCreation = $dateCreation;
+    }
+
+
+
 }
 ?>

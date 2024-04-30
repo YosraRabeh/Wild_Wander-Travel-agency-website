@@ -4,6 +4,48 @@ include 'C:\xampp\htdocs\Works\PackManagement\Dashboard\Controller\ReservationC.
 $ReservationC = new ReservationC();
 $reservationList = $ReservationC->AfficherReservation();
 
+$PuckNumber = $ReservationC->getTotalres();
+
+	//// number of taxis per page
+	$itemsPerPage = 3; // Adjust as needed
+	// Get the total number of users
+	$totalRES = $ReservationC->getTotalres();
+	// Calculate the total number of pages
+	$totalPages = ceil($totalRES / $itemsPerPage);
+	$currentPage = 1;
+	$start = 0;    
+
+    if (isset($_GET['page']) && !empty($_GET['page'])) {
+        $currentPage = (int) strip_tags($_GET['page']);
+
+			$currentPage = max(1, min($currentPage, $totalPages));
+			$start = ($currentPage - 1) * $itemsPerPage;
+
+    }	elseif(isset($_GET['Search']))
+		{
+		$reservationList = $ReservationC->Recherche($_GET['Search']);
+		}
+     elseif(isset($_GET['dateACS']))
+    {
+      $reservationList = $ReservationC->tridatecreation();
+    }
+    elseif(isset($_GET['dateDESC']))
+    {
+      $reservationList = $ReservationC->tridatecreationD();
+    }
+	 else 
+		{
+		$reservationList = $ReservationC->AfficherReservation();
+		}
+
+	if (!isset($_GET['Search']) && !isset($_GET['dateACS']) && !isset($_GET['dateDESC']) ) {          ////// if cat (Afficher taxis per category) not present he display the pagination
+		$reservationList = $ReservationC->getresWithPagination($start, $itemsPerPage);
+	}
+
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +56,7 @@ $reservationList = $ReservationC->AfficherReservation();
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-    Wild Wander
+    Pack
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
@@ -40,7 +82,7 @@ $reservationList = $ReservationC->AfficherReservation();
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
         <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white">Wild wander</span>
+        <span class="ms-1 font-weight-bold text-white">Safrti</span>
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
@@ -168,8 +210,13 @@ $reservationList = $ReservationC->AfficherReservation();
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <div class="input-group input-group-outline">
+                  <!------------------------Search bar----------------------->
+          <div class="input-group input-group-outline">
               <label class="form-label">Type here...</label>
-              <input type="text" class="form-control">
+               <form method="GET">
+               <input type="text" name="Search" id="Search" class="form-control">
+             </form>
+           </div>
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
@@ -277,8 +324,21 @@ $reservationList = $ReservationC->AfficherReservation();
                 <h4 class="card-title">Reservation Table</h4>
 
 
-                <a href="afficherPack.php" class="btn btn-primary">Liste Offres</a>
+                <a href="afficherPack.php" class="btn btn-primary">Pack List </a>
+                <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" href="AfficherReservations.php" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  Filter By
+                </a>
+                   
 
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="AfficherReservations.php?dateACS">date cration in ascending order</a></li>
+                <li><a class="dropdown-item" href="AfficherReservations.php?dateDESC">date cration in descending order </a></li>
+                </ul>
+                <!-- Add a button or link to trigger PDF download -->
+<a class="btn btn-primary" href="generate_pdf.php" target="_blank">Download PDF</a>
+
+           </div>
                 <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
                 <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
@@ -286,12 +346,13 @@ $reservationList = $ReservationC->AfficherReservation();
                   <thead>
                     <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nombre des Places</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Seats Number</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Source</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Paiement</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Offre</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modifier</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Supprimer</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Creation</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">pack name</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Update</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Delete</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
@@ -301,15 +362,17 @@ $reservationList = $ReservationC->AfficherReservation();
                   ?>
                     <tbody>
                       <tr>
-                      <td><?php echo $reservation['idReservation']; ?></td>
-                        <td><?php echo $reservation['nombrePlaces']; ?></td>
-                        <td><?php echo $reservation['source']; ?></td>
-                        <td><?php echo $reservation['paiement']; ?></td>
+                        
+                              <td><?php echo $reservation['idReservation']; ?></td>
+                              <td><?php echo $reservation['nombrePlaces']; ?></td>
+                              <td><?php echo $reservation['source']; ?></td>
+                              <td><?php echo $reservation['paiement']; ?></td>
+                              <td><?php echo $reservation['dateCreation']; ?></td>
                         <td>
                             <?php
-                            $offre = $ReservationC->Recupereroffre($reservation['idOffre']);
-                            $nomOffre = $offre['nom_offre'];
-                            echo "$nomOffre";
+                                $offre = $ReservationC->Recupereroffre($reservation['idOffre']);
+                                $nomOffre = $offre['nom_offre'];
+                                echo "$nomOffre";
                             ?> 
                             </td>
                         <td>
@@ -328,8 +391,45 @@ $reservationList = $ReservationC->AfficherReservation();
                   ?>
 
                 </table>
-              </div>
-            </div>
+                <div class="pagination">
+    <?php
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo "<a href='AfficherReservations.php?page=$i' ";
+            if ($i == $currentPage) {
+                echo "class='active'";
+            }
+            echo ">$i</a>";
+        }
+    ?>
+</div>
+
+     <style>
+.pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.pagination a {
+  border: 1px solid #ddd;
+  color: black;
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+
+.pagination a.active {
+  background-color: #6B4CAF;
+  color: white;
+  border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #ddd;
+}   </style>
+
+
+   </div>
+  </div>
 
 
 

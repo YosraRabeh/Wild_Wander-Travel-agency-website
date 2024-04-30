@@ -91,4 +91,105 @@
         }
         
                         //$nom_offre,$date_debut,$date_fin
+            
+
+
+            		/////..............................nb total d'offre ............................../////
+
+            public function getTotaloffre()
+            {
+                $sql = 'SELECT COUNT(*) AS nbPack FROM offre';
+                $db = config::getConnexion();
+
+                try {
+                    $query = $db->query($sql);
+                    $result = $query->fetch();
+                    return (int) $result['nbPack'];
+                } catch (Exception $e) {
+                    die('Erreur: ' . $e->getMessage());
+                }
+         
             }
+        
+        
+                // Function to get pack with pagination
+            public function getPackWithPagination($start, $itemsPerPage)
+                        {
+                            $sql = 'SELECT * FROM offre LIMIT :start, :itemsPerPage';
+                            $db = config::getConnexion();
+
+                            try {
+                                $query = $db->prepare($sql);
+                                $query->bindValue(':start', $start, PDO::PARAM_INT);
+                                $query->bindValue(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
+                                $query->execute();
+                                return $query->fetchAll(PDO::FETCH_ASSOC);
+                            } catch (Exception $e) {
+                                die('Erreur: ' . $e->getMessage());
+                            }
+                        }
+
+        
+        
+       
+
+
+
+
+
+        
+                        		/////..............................recherche par nom ............................../////
+		function Recherche($nom_offre){
+			$sql="SELECT * from offre where nom_offre like '".$nom_offre."%' ";
+			$db = config::getConnexion();
+			try{
+				$liste = $db->query($sql);
+				return $liste;
+			}
+			catch(Exception $e){
+				die('Erreur:'. $e->getMessage());
+			}
+		}
+
+
+
+		/////..............................tri par nom ............................../////
+	function Trioffre(){
+		$sql="SELECT * FROM offre order by nom_offre ASC";
+		$db = config::getConnexion();
+		try{
+			$liste = $db->query($sql);
+			return $liste;
+		}
+		catch(Exception $e){
+			die('Erreur:'. $e->getMessage());
+		}
+	}
+		/////..............................tri par pric c ............................../////
+
+    function Triprixdesc(){
+		$sql="SELECT * FROM offre order by prix DESC";
+		$db = config::getConnexion();
+		try{
+			$liste = $db->query($sql);
+			return $liste;
+		}
+		catch(Exception $e){
+			die('Erreur:'. $e->getMessage());
+		}
+	}
+		/////..............................tri par prix D ............................../////
+
+    function Triprix(){
+		$sql="SELECT * FROM offre order by prix ASC";
+		$db = config::getConnexion();
+		try{
+			$liste = $db->query($sql);
+			return $liste;
+		}
+		catch(Exception $e){
+			die('Erreur:'. $e->getMessage());
+		}
+	}
+
+    }

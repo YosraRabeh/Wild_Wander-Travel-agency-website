@@ -55,7 +55,7 @@ if (
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-    Wild Wander
+    Pack
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
@@ -82,7 +82,7 @@ if (
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
         <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white">Wild wander</span>
+        <span class="ms-1 font-weight-bold text-white">Pack management</span>
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
@@ -207,7 +207,7 @@ if (
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           
-          <h6 class="font-weight-bolder mb-0">Wild Wander</h6>
+          <h6 class="font-weight-bolder mb-0">Pack management</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -322,10 +322,10 @@ if (
 
                   <div class="form-group">
                     <label for="prix">Prix</label>
-                    <input type="number" class="form-control" id="prix" name="prix" style="border: 1px solid #dee2e6;"><span>TND</span>
+                    <input type="number" class="form-control" id="prix" name="prix" style="border: 1px solid #dee2e6;"><span>$</span>
                   </div>
                   <br>
-                  <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Soumettre</button>
+                  <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Add</button>
                   <a class="btn btn-light" href="afficherPack.php" role="button">Annuler</a>
                 </form>
 

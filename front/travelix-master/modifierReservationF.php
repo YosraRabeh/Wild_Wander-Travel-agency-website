@@ -39,7 +39,7 @@ if (!isset($_GET["idReservation"])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Blog</title>
+<title>Pack </title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Travelix Project">
@@ -47,8 +47,8 @@ if (!isset($_GET["idReservation"])) {
 <link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
 <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 <link href="plugins/colorbox/colorbox.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="styles/blog_styles.css">
-<link rel="stylesheet" type="text/css" href="styles/blog_responsive.css">
+<link rel="stylesheet" type="text/css" href="styles/offers_styles.css">
+<link rel="stylesheet" type="text/css" href="styles/offers_responsive.css">
 </head>
 
 <body>
@@ -171,14 +171,10 @@ if (!isset($_GET["idReservation"])) {
 	<!-- Blog -->
 
 	<div class="blog">
-	<?php
-								if (isset($_GET['idReservation'])) {
-									// Retrieve reservation data
-									$Reservation = $ReservationC->RecupererReservation($_GET['idReservation']);
-								
-							?>
+
 		<div class="container">
 			<div class="row">
+		
 
 				<!-- Blog Content -->
 
@@ -194,13 +190,20 @@ if (!isset($_GET["idReservation"])) {
 							<br><br><br>
 							
 							<div class="search_panel active">
-
+							
 							<form method="POST" id="formR" class="search_panel_content d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-lg-between justify-content-start">
 								<div class="search_item">
+								<?php
+		if (isset($_GET['idReservation'])) {
+		// Retrieve reservation data
+		$Reservation = $ReservationC->RecupererReservation($_GET['idReservation']);						
+		?>
 									<label for="nombrePlaces">Number of Seats:</label>
 									<input type="number" id="nombrePlaces" name="nombrePlaces" class="check_in search_input" value="<?php echo $Reservation['nombrePlaces']; ?>" placeholder="Enter number of seats">
 								</div>
+								
 								<div class="search_item">
+
 									<label for="idOffre">Offer ID:</label>
 									<input class="form-control" type="text" name="idOffre" id="idOffre" placeholder="Enter offer ID" value="<?php echo $Reservation['idOffre']; ?>">
 								</div>
@@ -222,7 +225,8 @@ if (!isset($_GET["idReservation"])) {
 								</div>
 								<button type="submit" id="submit" name="submit" class="button search_button">Book <span></span><span></span><span></span></button>
 							</form>
-
+							<?php
+			}?>
 							</div>
 
 							
@@ -232,9 +236,9 @@ if (!isset($_GET["idReservation"])) {
 							
 				
 						</div>
-						
-					</div>
 				
+					</div>
+					
 				</div>
 
 				
@@ -242,11 +246,11 @@ if (!isset($_GET["idReservation"])) {
 				<!-- Blog Sidebar -->
 
 				
+				
 			</div>
+			
 		</div>
-		<?php
-								}
-							?>
+		
 	</div>
 
 	<!-- Footer -->

@@ -172,9 +172,9 @@ $listReservation = $ReservationC->AfficherReservation();
 						</div>
 						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center" style="margin-bottom: -20px;">
 
-							<form method="GET" action="modifierReservationF.php">
+							<form method="GET" action="modifierReservation.php">
 								<input type="submit" class="btn btn-success" name="Modifier" value="Modifier">
-								<input type="hidden" value=<?php echo $offre['ID_offre']; ?> name="ID_offre">								
+								<input type="hidden" value=<?php echo $reservation['idReservation']; ?> name="idReservation">							
 							</form>
 						  <a class="btn btn-danger" href="SupprimerReservationF.php?idReservation=<?php echo $reservation['idReservation']; ?>">Supprimer</a>
 							<div class="intro_center text-center">

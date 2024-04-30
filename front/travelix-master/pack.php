@@ -3,7 +3,48 @@ include '../../Dashboard/Controller/OffreC.php';
 
 
 $OffreC = new OffreC();
-$listOffre = $OffreC->AfficherOffre();
+//$listOffre = $OffreC->AfficherOffre();
+
+$PuckNumber = $OffreC->getTotaloffre();
+
+	//// number of taxis per page
+	$itemsPerPage = 3; // Adjust as needed
+	// Get the total number of users
+	$totalPack = $OffreC->getTotaloffre();
+	// Calculate the total number of pages
+	$totalPages = ceil($totalPack / $itemsPerPage);
+	$currentPage = 1;
+	$start = 0;    
+  
+
+    if (isset($_GET['page']) && !empty($_GET['page'])) {
+        $currentPage = (int) strip_tags($_GET['page']);
+
+			$currentPage = max(1, min($currentPage, $totalPages));
+			$start = ($currentPage - 1) * $itemsPerPage;
+
+    }	elseif(isset($_GET['Search']))
+		{
+		$listOffre = $OffreC->Recherche($_GET['Search']);
+		} elseif(isset($_GET['nomO']))
+    {
+      $listOffre = $OffreC->Trioffre();
+    }elseif(isset($_GET['prixx']))
+    {
+      $listOffre = $OffreC->Triprix();
+    }elseif(isset($_GET['prixxd']))
+    {
+      $listOffre = $OffreC->Triprixdesc();
+    }
+	 else 
+		{
+		$listOffre = $OffreC->AfficherOffre();
+		}
+
+	if (!isset($_GET['Search']) && !isset($_GET['nomO']) && !isset($_GET['prixx']) && !isset($_GET['prixxd']) ) {          ////// if cat (Afficher taxis per category) not present he display the pagination
+		$listOffre = $OffreC->getPackWithPagination($start, $itemsPerPage);
+	}
+
 ?>
 
 <!DOCTYPE html>
@@ -100,8 +141,8 @@ $listOffre = $OffreC->AfficherOffre();
 							</svg>
 						</div>
 
-						<form id="search_form" class="search_form bez_1">
-							<input type="search" class="search_content_input bez_1">
+						<form method="get" id="search_form" class="search_form bez_1">
+							<input type="text"  name="Search" placeholder="Search..."  class="search_content_input bez_1">
 						</form>
 						
 						<div class="hamburger">
@@ -143,6 +184,7 @@ $listOffre = $OffreC->AfficherOffre();
 			<div class="row">
 				<div class="col">
 					<h2 class="intro_title text-center">We have the best tours</h2>
+					<a class="btn btn-warning" style="margin-left: 500px;" href="../../Dashboard/View/back/material-dashboard-master/pages/pack/afficherPack.php">back office</a>
 				</div>
 			</div>
 			<div class="row">
@@ -151,7 +193,20 @@ $listOffre = $OffreC->AfficherOffre();
 						<p>Discover our exciting range of packs designed to cater to your every need. Whether you're a seasoned adventurer looking for the perfect gear bundle, a tech enthusiast seeking the latest gadgets, or a wellness aficionado in pursuit of holistic solutions, we've got you covered. Explore our diverse selection of packs meticulously curated to deliver unparalleled convenience, quality, and value. From travel essentials to lifestyle upgrades, each pack is thoughtfully crafted to enhance your experience and elevate your lifestyle. </p>
 					</div>
 				</div>
+				
+				<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Filter By
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="pack.php?nomO">Pack Name</a>
+					<a class="dropdown-item" href="pack.php?prixx">Prix ASC</a>
+					<a class="dropdown-item" href="pack.php?prixxd">Prix DESC</a>
+				</div>
+				</div>
+
 			</div>
+			
 			<div class="row intro_items">
 
 				<!-- Intro Item -->
@@ -163,8 +218,8 @@ $listOffre = $OffreC->AfficherOffre();
 					<div class="intro_item">
 						<div class="intro_item_overlay"></div>
 						<!-- Image by https://unsplash.com/@dnevozhai -->
-						<div class="intro_item_background">
-							<img src="../../Dashboard/View/back/material-dashboard-master/pages/pack/uploads/<?php echo $offre['image']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(2px);" alt="Background Image">
+							<div class="intro_item_background">
+								<img src="../../Dashboard/View/back/material-dashboard-master/pages/pack/uploads/<?php echo $offre['image']; ?>" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(2px);" alt="Background Image">
 						</div>
 						<div class="intro_item_content d-flex flex-column align-items-center justify-content-center" style="margin-bottom: -20px;">
 						<?php
@@ -177,9 +232,9 @@ $listOffre = $OffreC->AfficherOffre();
 								$dayFin = $dateFin->format('d');
 							?>
 							<div class="intro_date"><?php echo $monthDebut; echo $dayDebut;?> - <?php echo $monthFin; echo $dayFin;?></div>
-							<div class="button intro_button"><div class="button_bcg"></div>
+							<div class="button intro_button">
 							<form method="GET" action="packClicked.php">
-								<input type="submit" name="Reserver"class="button search_button" value="Reserver">
+								<input type="submit"  name="Reserver"class="btn btn-secondary" value="Reserver">
 								<input type="hidden" value=<?php echo $offre['ID_offre']; ?> name="ID_offre">
 							</form>
 						</div>
@@ -197,7 +252,43 @@ $listOffre = $OffreC->AfficherOffre();
 			</div>
 		</div>
 	</div>
+	<div class="pagination">
+    <?php
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo "<a href='pack.php?page=$i' ";
+            if ($i == $currentPage) {
+                echo "class='active'";
+            }
+            echo ">$i</a>";
+        }
+    ?>
+</div>
+<style>
+.pagination {
+  display: flex;
+  justify-content: center;
+}
 
+.pagination a {
+  border: 1px solid #ddd;
+  color: black;
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+
+.pagination a.active {
+  background-color: #6B4CAF;
+  color: white;
+  border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #ddd;
+}   </style>
+
+
+</style>
 	<!-- Footer -->
 
 	<footer class="footer">
