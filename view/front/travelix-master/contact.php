@@ -145,9 +145,9 @@
 							<input type="text" id="contact_form_email" class="contact_form_email input_field" placeholder="E-mail" required="required" data-error="Email is required.">-->
 							<select id="contact_form_subject" class="contact_form_subject input_field" required="required" data-error="Subject is required." name="sujet">
     <option value="">Choisissez un sujet</option>
-    <option value="question">Option 1</option>
-    <option value="reclamation">Option 2</option>
-    <option value="Option 3">Option 3</option>
+    <option value="question">question </option>
+    <option value="reclamation">reclamation </option>
+    <option value="votre_opinion ">votre_opinion </option>
 </select>
 
 							<textarea id="contact_form_message" class="text_field contact_form_message" name="message" rows="4" placeholder="Message" required="required" data-error="Please, write us a message."></textarea>

@@ -17,7 +17,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
 }
 
 
-$list = $contact_gestion->listContact();
+//$list = $contact_gestion->listContact();
+
+$list = $contact_gestion->show_etat_metier( );
+
 
 
 ?>
@@ -26,6 +29,14 @@ $list = $contact_gestion->listContact();
 <html lang="en">
 
 <head>
+
+<!-- data table --->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+
+<!----------------------------------------------------------------->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
@@ -101,7 +112,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary " href="../pages/claim.html">
+          <a class="nav-link text-white active bg-gradient-primary " href="../pages/claim.php">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -116,6 +127,9 @@ User Management  </title>
             <span class="nav-link-text ms-1">Blog Management</span>
           </a>
         </li>
+
+
+
         <li class="nav-item">
           <a class="nav-link text-white " href="../pages/notifications.html">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -169,7 +183,8 @@ User Management  </title>
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <div class="input-group input-group-outline">
               <label class="form-label">Type here...</label>
-              <input type="text" class="form-control">
+              <input type="text" class="form-control"  oninput="filterTable(this.value)">
+
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
@@ -282,7 +297,7 @@ User Management  </title>
             </div>
             <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
+                <table class="table align-items-center mb-0 table datatable"  id="ContactTable" >
                   <thead>
                     
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Num</th>
@@ -320,7 +335,7 @@ User Management  </title>
                         </td>
 
                         <td>
-                         <a  class="talwin2 " href="?delete=true&id=<?php echo $contact['id_contact']; ?>" onclick="return confirm('Mit2akid it7ib itfasa5 il reclamation ?')">Delete</a> 
+                         <a  class="talwin2 " href="?delete=true&id=<?php echo $contact['id_contact']; ?>" onclick="return confirm('are you sure  ?')">Delete</a> 
                         </td>
 
                         <!--<td>
@@ -339,7 +354,8 @@ User Management  </title>
           </div>
         </div>
       </div>
-     
+      <script src="ranim_js/claim.js"></script>
+
       <footer class="footer py-4  ">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
@@ -466,6 +482,23 @@ User Management  </title>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+
+  <!-- ------------------initialiser data table il recherche trie pagination--------  --------------------------  -->
+
+<script>
+    $(document).ready(function () {
+        $('#ContactTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "searching": true,
+            "order": [], // Clear default ordering
+            "orderSequence": ["non traite", "traiter"], // Custom order for 'etat' column
+            // Add other options as needed
+        });
+    });
+</script>
+
+
 </body>
 
 </html>

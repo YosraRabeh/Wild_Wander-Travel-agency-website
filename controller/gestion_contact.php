@@ -3,8 +3,6 @@
 include_once("C:/xampp/htdocs/PROJECT1/projet web/config.php");
 include_once("C:/xampp/htdocs/PROJECT1/projet web/Model/contact.php");
 
-
-
 class contact_gestion
 {
    
@@ -95,6 +93,31 @@ function updateContact($contact, $id)
 
 
 
+ /********************ibdit ni5dim fil metier **************************/
+ //fonction trie
+ function show_etat_metier()
+ {
+     $sql = "SELECT * FROM contact ORDER BY 
+             CASE 
+                 WHEN etat_contact = 'non traite' THEN 0
+                 WHEN etat_contact = 'traiter' THEN 1
+                 ELSE 2
+             END, etat_contact";
+ 
+     $config = new Config();
+     $db = $config->getConexion();
+ 
+     try {
+         $query = $db->prepare($sql);
+         $query->execute();
+ 
+         $notifications = $query->fetchAll(PDO::FETCH_ASSOC);
+         return $notifications;
+     } catch (Exception $e) {
+         die('Error: ' . $e->getMessage());
+     }
+ }
+ 
 
 
 }  
