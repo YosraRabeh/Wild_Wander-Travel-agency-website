@@ -35,20 +35,22 @@ include_once dirname(__FILE__) . '/../Model/reservation.php';
         
         /////..............................Ajouter............................../////
                 function AjouterReservation($Reservation){
-                    $sql="INSERT INTO reservation (id_reservation,id_acc ,id_user,date_Start,date_End,date_creation,payment_status)
-                    VALUES (:id_reservation,:id_acc ,:id_user,:date_Start,:date_End,:date_creation,:payment_status)";
+                    $sql="INSERT INTO reservation (id_acc ,idUser,date_Start,date_End ,payment_status)
+                    VALUES (:id_acc ,:id_user,:date_Start,:date_End,:payment_status)";
                     
                     $db = config::getConnexion();
                     try{
                         $query = $db->prepare($sql);
                         $query->execute([
-                            'id_reservation' => $Reservation->getid_reservation(),
-                            'id_acc' => $Reservation->getid_acc(),
+                            'id_acc' => $Reservation->getidAcc(),
                             'id_user' => $Reservation->getid_user(),
                             'date_Start' => $Reservation->getdate_Start(),
                             'date_End' => $Reservation->getdate_End(),
-                            'date_creation' => $Reservation->getdate_creation(),
-                            'payment_status' => $Reservation->getpayment_status()
+                            'payment_status' => $Reservation->checkPaymentStatus($Reservation->getpayment_status())
+
+
+
+
                     ]);
                                 
                     }
@@ -108,3 +110,25 @@ include_once dirname(__FILE__) . '/../Model/reservation.php';
             }
         }
             }
+
+            //get ids from data base
+            function getaccIDS(){
+                $sql="SELECT id_acc from accomodation ";
+                $db = config::getConnexion();
+                try{
+                    $liste=$db->query($sql);
+                    return $liste;
+                } catch (Exception $e){
+                    die('Erreur: '.$e->getMessage());
+                }
+            }
+function getuserIDS(){
+    $sql="SELECT idUser from user ";
+    $db = config::getConnexion();
+    try{
+        $liste=$db->query($sql);
+        return $liste;
+    } catch (Exception $e){
+        die('Erreur: '.$e->getMessage());
+    }
+}

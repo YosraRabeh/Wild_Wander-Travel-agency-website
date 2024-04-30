@@ -84,5 +84,18 @@ class Reservation
     {
         $this->payment_status = $payment_status;
     }
+
+
+//check payment status
+function checkPaymentStatus(string $payment_status)
+{
+    if ($payment_status == "paid") {
+        return 1;
+    } else if ($payment_status == "Unpaid") {
+        return 0;
+    } else {
+        return 2;
+    }
+}
 }
 ?>

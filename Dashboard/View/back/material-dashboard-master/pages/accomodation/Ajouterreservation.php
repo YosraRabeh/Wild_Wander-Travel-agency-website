@@ -1,13 +1,55 @@
-
 <?php
 include '../../../../../Controller/accomodationC.php';
 include '../../../../../Controller/reservationC.php';
 
 session_start();
 
-$ReservationC = new ReservationC();
-$reservationList = $ReservationC->AfficherReservation();
+$errorMessage = "";
+$successMessage = "" ;
 
+
+// create reservation
+$reservation = null;
+
+// create an instance of the controller
+$ReservationC = new ReservationC();
+if (
+        isset($_POST["id_acc"]) &&
+        isset($_POST["id_user"]) &&
+    isset($_POST["date_start"]) &&
+    isset($_POST["date_end"]) &&
+    isset($_POST["payment_method"]) &&
+    isset($_POST["payment_status"])
+
+
+
+){
+    if (
+        !empty($_POST["id_acc"]) &&
+        !empty($_POST["id_user"]) &&
+        !empty($_POST["date_start"]) &&
+        !empty($_POST["date_end"]) &&
+        !empty($_POST["payment_method"]) &&
+        !empty($_POST["payment_status"])
+    )
+    {
+        // Create accommodation instance with uploaded images
+            $reservation = new reservation(
+                $_POST['id_acc'],
+                $_POST['id_user'],
+                $_POST['date_start'],
+                $_POST['date_end'],
+                $_POST['payment_method'],
+                $_POST['payment_status'],
+            );
+
+            // Add reservation to database
+            $ReservationC->AjouterReservation($reservation); //
+            header("Location:Afficherreservation.php?successMessage= reservation ajouté avec succés"); // bch thezk lel afficheraccomodation
+    }
+    else
+        $errorMessage = "<label id = 'form' style = 'color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>   ";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,13 +58,15 @@ $reservationList = $ReservationC->AfficherReservation();
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-accomodation Management  </title>
+Wild Wander
+  </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
   <link href="../../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css">
   <link href="../../assets/css/nucleo-svg.css" rel="stylesheet" />
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
@@ -36,7 +80,8 @@ accomodation Management  </title>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
@@ -72,7 +117,7 @@ accomodation Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white  active bg-gradient-primary " href="../../pages/accomodation/Afficherhibergement.php">
+          <a class="nav-link text-white  active bg-gradient-primary " href="../../pages/accomodation.html">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -148,9 +193,9 @@ accomodation Management  </title>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tables</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Tables</h6>
+          <h6 class="font-weight-bolder mb-0">Template</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -160,6 +205,12 @@ accomodation Management  </title>
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center">
+              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
+            </li>
+            <li class="mt-2">
+              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -183,7 +234,7 @@ accomodation Management  </title>
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
                       <div class="my-auto">
-                        <img src="../../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -247,114 +298,117 @@ accomodation Management  </title>
                 </li>
               </ul>
             </li>
-
+            </li>
+            
             <li class="nav-item d-flex align-items-center">
             </li>
           </ul>
         </div>
       </div>
     </nav>
+
+    <div class="main-panel">        
+        <div class="content-wrapper">
+          <div class="row">
+
+        
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Nouveau reservation</h4>
+                  
+
+                            
+                  <!--validate-->
+                  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validate();">
+
+
+                      <div class="form-group" style="display: inline-block; width: 40%; margin-right: 1.5%;">
+                          <label for="type_acc">Accomodation ID</label>
+                          <select class="form-select" name="id_acc" id="id_acc" aria-label="Default select example">
+                              <?php
+                              //show ids as options using getaccIDS function
+                              $ids = getaccIDS();
+                              foreach ($ids as $id) {
+                                  echo '<option value="' . $id['id_acc'] . '">' . $id['id_acc'] . '</option>';
+                              }
+
+                              ?>
+                          </select>
+                      </div>
+                      <div class="form-group" style="display: inline-block; width: 40%; margin-right: 1.5%;">
+                          <label for="type_acc">user ID</label>
+                          <select class="form-select" name="id_user" id="id_user" aria-label="Default select example">
+                              <?php
+                              //show ids as options using getuserids function
+                              $ids = getuserIDS();
+                              foreach ($ids as $id) {
+                                  echo '<option value="' . $id['idUser'] . '">' . $id['idUser'] . '</option>';
+                              }
+
+                              ?>
+                          </select>
+                      </div>
+
+
+                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
+                          <label for="date_start">start date</label>
+                          <input type="date" class="form-control" name="date_start" id="date_start"  style="border: 1px solid #dee2e6;">
+                          <div id="date_startError" class="error-message"></div>
+                      </div>
+                      <div class="form-group" style="display: inline-block; width: 49%;">
+                          <label for="date_end">end date</label>
+                          <input type="date" class="form-control" name="date_end" id="date_end"  style="border: 1px solid #dee2e6;">
+                          <div id="date_endError" class="error-message"></div>
+                      </div>
+
+
+
+                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
+                          <label for="payment_method">payment method</label>
+                          <select class="form-select" name="payment_method" id="payment_method" aria-label="Default select example">
+                              <option value="in_person">in person</option>
+                              <option value="card">card</option>
+                              <option value="check">check</option>
+                          </select>
+                      </div>
+                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
+                          <label for="payment_method">payment status</label>
+                          <select class="form-select" name="payment_status" id="payment_status" aria-label="Default select example">
+                              <option value="paid">paid</option>
+                              <option value="unpaid">unpaid</option>
+                              <option value="partially_paid">partially paid</option>
+
+                          </select>
+                      </div>
+                      </div>
+
+
+
+
+                      <br>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Submit</button>
+                    <a class="btn btn-light" href="Afficherreservation.php" role="button">Cancel</a>
+                  </form>
+
+
+                </div>
+              </div>
+            </div> 
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+          
+        </footer>
+        <!-- partial -->
+      </div>
+
+
+
     <!-- End Navbar -->
     <div class="container-fluid py-4">
-    <?php
-           if(isset($_GET['successMessage'])){
-            $successMessage = $_GET['successMessage'];
-
-            echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
-            '$successMessage'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-           }
-
-		   if(isset($_GET['message'])){
-            $message = $_GET['message'];
-
-            echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-            '$message'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-           }
-
-		   if(isset($_GET['mess'])){
-            $mess = $_GET['mess'];
-
-            echo "<div class='alert alert-warning alert-dismissible fade show' role='alert'>
-            '$mess'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-           }
-
-          ?>
-
-      <div class="row">
-        <div class="col-12">
-          <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-start align-items-center">
-                    <h6 class="text-white text-capitalize ps-3 mb-0">reservations table</h6>
-                    <a class="btn btn-primary" href="afficherhibergement.php" role="button" style="width: 150px; margin-right: 30px;margin-left: auto">accomodations</a>
-                </div>
-
-
-
-                <br>
-              <a class="btn btn-primary" href="Ajouterreservation.php" role="button">Create new reservation</a>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Accomodation ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Start</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date End</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Creation</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment Status</th>
-
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Edit</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Delete</th>
-                    </tr>
-                  </thead>
-                  <?php
-
-				          foreach($reservationList as $reservation){
-			            ?>
-                  <tbody>
-                    <tr>
-                      <td><?php echo $reservation['id_reservation']; ?></td>
-                      <td><?php echo $reservation['id_acc']; ?></td>
-                      <td><?php echo $reservation['idUser']; ?></td>
-                      <td><?php echo $reservation['date_start']; ?></td>
-                      <td><?php echo $reservation['date_end']; ?></td>
-                      <td><?php echo $reservation['date_creation']; ?></td>
-                      <td><?php echo $reservation['payment_status']; ?></td>
-
-                        <td>
-                       <form method="GET" action="Modifierreservation.php">
-                        <input type="submit"  class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                        <input type="hidden"  value=<?php echo $reservation['id_reservation']; ?>  name="id_reservation">
-                       </form>
-                      </td>
-                  <td>
-                    <a  class="btn btn-danger btn-sm"   href="Supprimerreservation.php?id_reservation=<?php echo $reservation['id_reservation']; ?>">Delete</a>
-                  </td>
-                    </tr>
-                  </tbody>
-                  <?php
-                }
-                ?>
-                </table>
-                
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-     
       <footer class="footer py-4  ">
-
+        
       </footer>
     </div>
   </main>
@@ -450,6 +504,7 @@ accomodation Management  </title>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="assets/javascript.js"></script>
 </body>
 
 </html>

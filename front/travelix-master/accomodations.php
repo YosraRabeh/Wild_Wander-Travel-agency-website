@@ -558,7 +558,7 @@ $listaccomodation = $accomodationC->Afficheraccomodation();
 												<li class="offers_icons_item"><img src="images/sailboat.png" alt=""></li>
 											</ul>
 										</div>
-										<div class="button book_button"><a href="#">book<span></span><span></span><span></span></a></div>
+										<div class="button book_button"><a href="reservation.php">book<span></span><span></span><span></span></a></div>
 										<div class="offer_reviews">
 											<div class="offer_reviews_content">
 												<div class="offer_reviews_title">very good</div>

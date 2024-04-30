@@ -30,9 +30,9 @@ function validate()
         type_unitError.innerHTML = "";
     }
 
-    if(price.trim() === "")
+    if(price.isInteger()===false)
     {
-        priceError.innerHTML= "this field is required";
+        priceError.innerHTML= "this field is must be a number";
         isValid = false;
     }else
     {

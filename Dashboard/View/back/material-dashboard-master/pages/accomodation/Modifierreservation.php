@@ -1,12 +1,51 @@
-
 <?php
 include '../../../../../Controller/accomodationC.php';
-include '../../../../../Controller/reservationC.php';
-
 session_start();
 
-$ReservationC = new ReservationC();
-$reservationList = $ReservationC->AfficherReservation();
+$error = "";
+$mess = "";
+
+$accomodation =null ;
+$accomodationC = new accomodationC();
+
+if (
+    isset($_POST["Name"]) &&
+    isset($_POST["location"]) &&
+    isset($_POST["address"]) &&
+    isset($_POST["type_acc"]) &&
+    isset($_POST["type_unit"]) &&
+    isset($_POST["price"]) &&
+    isset($_POST["amenities"]) &&
+    isset($_POST["description"])
+){
+    if ( !empty($_POST["Name"]) &&
+        !empty($_POST["location"]) &&
+        !empty($_POST["address"]) &&
+        !empty($_POST["type_acc"]) &&
+        !empty($_POST["type_unit"]) &&
+        !empty($_POST["price"]) &&
+        !empty($_POST["amenities"]) &&
+        !empty($_POST["description"])
+    )
+    {
+
+        $accomodation = new accomodation(
+            $_POST['Name'],
+            $_POST['location'],
+            $_POST['address'],
+            $_POST['type_acc'],
+            $_POST['type_unit'],
+            $_POST['price'],
+            $_POST['amenities'],
+            $_POST['description'],
+            $imageUrl=GetUrls($_GET["id_Acc"])
+        );
+      $accomodationC->Modifieraccomodation($accomodation,$_GET["id_Acc"]);
+      header("Location:Afficherhibergement.php?mess= hibergement modifié avec succés");
+    }
+}
+
+
 
 ?>
 <!DOCTYPE html>
@@ -16,9 +55,10 @@ $reservationList = $ReservationC->AfficherReservation();
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
   <title>
-accomodation Management  </title>
+Wild Wander
+  </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
@@ -30,13 +70,14 @@ accomodation Management  </title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="../../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css">
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
@@ -72,7 +113,7 @@ accomodation Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white  active bg-gradient-primary " href="../../pages/accomodation/Afficherhibergement.php">
+          <a class="nav-link text-white  active bg-gradient-primary " href="../../pages/accomodation.html">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -148,9 +189,9 @@ accomodation Management  </title>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tables</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Tables</h6>
+          <h6 class="font-weight-bolder mb-0">Template</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -160,6 +201,12 @@ accomodation Management  </title>
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center">
+              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
+            </li>
+            <li class="mt-2">
+              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -247,114 +294,160 @@ accomodation Management  </title>
                 </li>
               </ul>
             </li>
-
+            </li>
+            
             <li class="nav-item d-flex align-items-center">
             </li>
           </ul>
         </div>
       </div>
     </nav>
+
+    <?php
+            if(isset($_GET['id_Acc']))    /// recuperation de l'hibergement par id
+            {
+              $accomodation = $accomodationC->Recupereraccomodation($_GET['id_Acc']);
+
+            ?>
+        
+    <div class="main-panel">        
+        <div class="content-wrapper">
+          <div class="row">
+
+        
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Modifier hibergement</h4>
+                  
+
+                            
+                  <!-- validate  -->
+                  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validate();">
+
+
+                      <div class="form-group">
+                          <label for="Name">name</label>
+                          <input type="text" class="form-control" id="Name" name="Name" placeholder=" Name" value="<?php echo $accomodation['Name']; ?>" style="border: 1px solid #dee2e6;">
+                          <div id="NameError" class="error-message"></div>
+                      </div>
+
+
+                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
+                          <label for="location">Location</label>
+                          <input type="text" class="form-control" name="location" id="location" placeholder="Location"  value="<?php echo $accomodation['Location']; ?>" style="border: 1px solid #dee2e6;">
+                          <div id="locationError" class="error-message"></div>
+                      </div>
+                      <div class="form-group" style="display: inline-block; width: 49%;">
+                          <label for="address">Address</label>
+                          <input type="text" class="form-control" name="address" id="address" placeholder="Address" value="<?php echo $accomodation['address']; ?>" style="border: 1px solid #dee2e6;">
+                          <div id="addressError" class="error-message"></div>
+                      </div>
+
+
+
+                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
+                          <label for="type_acc">Accomodation Type</label>
+                          <select class="form-select" name="type_acc" id="type_acc" aria-label="Default select example">
+                              <option value="Hotel" <?php if ($accomodation['type_acc'] == 'Hotel') echo ' selected'; ?>>Hotel</option>
+                              <option value="Guest_House" <?php if ($accomodation['type_acc'] == 'Guest_House') echo ' selected'; ?>>Guest house</option>
+                              <option value="rental" <?php if ($accomodation['type_acc'] == 'rental') echo ' selected'; ?>>Rental</option>
+                          </select>
+                      </div>
+
+                      <div class="form-group" style="display: inline-block; width: 49%;">
+                          <label for="type_unit">Unite type</label>
+                          <input type="text" class="form-control" name="type_unit" id="type_unit" placeholder="Unit type"  value="<?php echo $accomodation['type_specific']; ?>" style="border: 1px solid #dee2e6;">
+                          <div id="type_unitError" class="error-message"></div>
+                      </div>
+
+                      <div class="form-group" style="display: inline-block; width: 79%; margin-right: 1.5%;">
+                          <label for="amenities">amenities</label>
+                          <input type="text" class="form-control" name="amenities" id="amenities" placeholder="amenities(ex:wifi,swimming pool,gym,...)"  value="<?php echo $accomodation['amenities']; ?>" style="border: 1px solid #dee2e6;">
+                          <div id="amenitiesError" class="error-message"></div>
+                      </div>
+                      <div class="form-group" style="display: inline-block; width: 19%;">
+                          <label for="price">price</label>
+                          <input type="text" class="form-control" name="price" id="price" placeholder="price"  value="<?php echo $accomodation['price']; ?>" style="border: 1px solid #dee2e6;">
+                          <div id="priceError" class="error-message"></div>
+                      </div>
+
+                      <div class="form-group" style="position: relative; width: 90%;">
+                          <label for="description">Description</label>
+                          <div style="position: relative;">
+                              <textarea class="form-control" name="description" id="description" placeholder="Description" style="border: 1px solid #dee2e6; resize: vertical;" oninput="updateCharacterCount(this)"><?php echo $accomodation['description']; ?></textarea>
+                              <div id="characterCount" class="text-muted" style="position: absolute; bottom: 5px; right: 25px; opacity: 0.7;">0/600</div>
+                          </div>
+                          <div id="descriptionError" class="error-message"></div>
+                      </div>
+
+
+
+
+
+
+
+
+
+                      <script>
+                          function updateCharacterCount(textarea) {
+                              var maxLength = 600; // Maximum number of characters allowed
+                              var currentLength = textarea.value.length;
+                              var counterElement = document.getElementById("characterCount");
+                              counterElement.textContent = currentLength + "/" + maxLength;
+
+                              // Prevent further input if the maximum character limit is reached
+                              if (currentLength > maxLength) {
+                                  textarea.value = textarea.value.substring(0, maxLength);
+                              }
+                          }
+
+                      </script>
+
+                    <br>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Modifier</button>
+                    <a class="btn btn-light" href="Afficherhibergement.php" role="button">Cancel</a>
+                  </form>
+                </div>
+              </div>
+            </div> 
+
+            
+
+
     <!-- End Navbar -->
     <div class="container-fluid py-4">
-    <?php
-           if(isset($_GET['successMessage'])){
-            $successMessage = $_GET['successMessage'];
-
-            echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
-            '$successMessage'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-           }
-
-		   if(isset($_GET['message'])){
-            $message = $_GET['message'];
-
-            echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-            '$message'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-           }
-
-		   if(isset($_GET['mess'])){
-            $mess = $_GET['mess'];
-
-            echo "<div class='alert alert-warning alert-dismissible fade show' role='alert'>
-            '$mess'
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-           }
-
-          ?>
-
-      <div class="row">
-        <div class="col-12">
-          <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-start align-items-center">
-                    <h6 class="text-white text-capitalize ps-3 mb-0">reservations table</h6>
-                    <a class="btn btn-primary" href="afficherhibergement.php" role="button" style="width: 150px; margin-right: 30px;margin-left: auto">accomodations</a>
-                </div>
-
-
-
-                <br>
-              <a class="btn btn-primary" href="Ajouterreservation.php" role="button">Create new reservation</a>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Accomodation ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Start</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date End</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Creation</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment Status</th>
-
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Edit</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Delete</th>
-                    </tr>
-                  </thead>
-                  <?php
-
-				          foreach($reservationList as $reservation){
-			            ?>
-                  <tbody>
-                    <tr>
-                      <td><?php echo $reservation['id_reservation']; ?></td>
-                      <td><?php echo $reservation['id_acc']; ?></td>
-                      <td><?php echo $reservation['idUser']; ?></td>
-                      <td><?php echo $reservation['date_start']; ?></td>
-                      <td><?php echo $reservation['date_end']; ?></td>
-                      <td><?php echo $reservation['date_creation']; ?></td>
-                      <td><?php echo $reservation['payment_status']; ?></td>
-
-                        <td>
-                       <form method="GET" action="Modifierreservation.php">
-                        <input type="submit"  class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                        <input type="hidden"  value=<?php echo $reservation['id_reservation']; ?>  name="id_reservation">
-                       </form>
-                      </td>
-                  <td>
-                    <a  class="btn btn-danger btn-sm"   href="Supprimerreservation.php?id_reservation=<?php echo $reservation['id_reservation']; ?>">Delete</a>
-                  </td>
-                    </tr>
-                  </tbody>
-                  <?php
-                }
-                ?>
-                </table>
-                
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+                for a better web.
               </div>
+            </div>
+            <div class="col-lg-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-      </div>
-     
-      <footer class="footer py-4  ">
-
       </footer>
     </div>
   </main>
@@ -450,6 +543,10 @@ accomodation Management  </title>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="assets/javascript.js"></script>
+          <?php
+             }
+            ?>
 </body>
 
 </html>
