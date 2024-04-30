@@ -1,10 +1,32 @@
 <?php
- include '../../../controller/blogC.php';
- $id=$_GET["blogid"];
- $token=$_GET['token']?? null;
-$commentsC = new commentsC();
-$tab = $commentsC->listcomments($id);
- ?>
+include '../../../controller/blogC.php';
+
+$id = $_GET["blogid"] ?? null;
+$token = $_GET['token'] ?? null;
+
+if ($id !== null) {
+    $commentsC = new commentsC();
+    $search = isset($_GET['search']) ? $_GET['search'] : '';
+    $search_type = isset($_GET['search_type']) ? $_GET['search_type'] : '';
+
+    if (!empty($search) && !empty($search_type)) {
+        // Fetch filtered comments based on blog ID, search criteria, and type
+        $tab = $commentsC->searchCommentsByBlogID($id, $search, $search_type);
+
+        if (empty($tab)) {
+            echo "No comments found matching your search criteria.";
+        }
+    } else {
+        // Fetch all comments if no search parameters are set
+        $tab = $commentsC->listComments($id);
+    }
+} else {
+    // Handle the case where the blog ID is not provided
+    echo "Error: Blog ID is missing.";
+}
+?>
+
+
 
 <!DOCTYPE html>
  <html lang="en">
@@ -230,8 +252,25 @@ $tab = $commentsC->listcomments($id);
 
 	<!-- Blog -->
 
-	<div class="button intro_button"><div class="button_bcg"></div><a href="addcomments.php?blogid=<?php echo $id;?>&token=<?php echo $token;?>">ADD</button></a></div>	<div class="blog">
-	<?php
+	<div class="button intro_button"><div class="button_bcg"></div><a href="addcomments.php?blogid=<?php echo $id;?>&token=<?php echo $token;?>">ADD</button></a></div>		
+	<!-- Display search form above the blog posts -->
+	<form method="GET" action="">
+	<input type="text" name="search" placeholder="Enter search keyword">
+    <input type="hidden" name="blogid" value="<?php echo $id; ?>">
+    <select name="search_type">
+        <option value="date">Date</option>
+        <option value="user">User</option>
+        <option value="content">Content</option> <!-- Added option for content search -->
+    </select>
+    
+    <button type="submit" class="button intro_button">Search<span></span><span></span><span></span></button>
+</form>
+
+
+
+
+
+<?php
                         foreach ($tab as $comments) {
                             $date = new DateTime($comments['date']);
                             echo '<div class="container">
@@ -252,7 +291,7 @@ $tab = $commentsC->listcomments($id);
 											<p>'.$comments['content'].'</p>
 										</div>
                                         <div class="blog_post_link"><a href="updatecomment.php?id='.$comments['id_comment'].'&token='.$token.'">update</a></div>
-+                                        <div class="blog_post_link"><a href="deletecomment.php?id='.$comments['id_comment'].'&token='.$token.'">delete</a></div>
+                                        <div class="blog_post_link"><a href="deletecomment.php?id='.$comments['id_comment'].'&token='.$token.'">delete</a></div>
 									</div>
 								<!-- Blog Sidebar -->
 								</div>

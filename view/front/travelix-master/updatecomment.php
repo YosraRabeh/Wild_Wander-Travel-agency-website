@@ -1,4 +1,4 @@
-comment<?php
+<?php
 
 include '../../../controller/blogC.php';
 include '../../../Model/comments.php';

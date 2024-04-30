@@ -2,17 +2,40 @@
 include '../../../controller/blogC.php';
 $blogC = new blogC();
 
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$search_type = isset($_GET['search_type']) ? $_GET['search_type'] : '';
+$search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
+$search_type = isset($_GET['search_type']) ? htmlspecialchars($_GET['search_type']) : '';
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$perPage = 3; // Number of posts per page
 
 if (!empty($search) && !empty($search_type)) {
-    // Fetch filtered blog posts based on search criteria
-    $tab = $blogC->searchBlogs($search, $search_type);
+    if ($search_type === 'title') {
+        $tab = $blogC->trieSearchTitles($search);
+    } elseif ($search_type === 'date') {
+        $tab = $blogC->trieSearchDates($search);
+    } else {
+        $tab = $blogC->searchBlogs($search, $search_type);
+    }
+
+    // Calculate total number of blogs for pagination
+    $totalBlogs = count($tab);
+    $totalPages = ceil($totalBlogs / $perPage);
+
+    // Get paginated blog posts based on current page
+    $start = ($page - 1) * $perPage;
+    $paginatedBlogs = array_slice($tab, $start, $perPage);
 } else {
     // Fetch all blog posts if no search parameters are set
-    $tab = $blogC->listblogs();
+    $paginatedBlogs = $blogC->getBlogsPaginated($page, $perPage); // Assuming getBlogsPaginated retrieves paginated results
+
+    // Calculate total number of blogs for pagination
+    $totalBlogs = $blogC->countAllBlogs(); // Update this with the appropriate method to count all blogs
+    $totalPages = ceil($totalBlogs / $perPage);
 }
+
+
 ?>
+
+
 
 
 
@@ -250,8 +273,9 @@ if (!empty($search) && !empty($search_type)) {
         <option value="title">Title</option>
         <option value="date">Date</option>
         <option value="user">User</option>
+		<option value="contenu">Content</option>
     </select>
-    <button type="submit" class="button intro_button">Search</button>
+    <button type="submit" class="button intro_button">Search<span></span><span></span><span></span></button>
 </form>
 
 
@@ -259,35 +283,56 @@ if (!empty($search) && !empty($search_type)) {
 
 
 <div class="blog">
-    <?php
-    foreach ($tab as $blog) {
-        $date = new DateTime($blog['date']);
-        echo '<div class="container">
-            <div class="row">
-                <!-- Blog Content -->
-                <div class="col-lg-8">
-                    <div class="blog_post">
-                        <div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
-                            <div class="blog_post_day">' . $date->format('d') . '</div>
-                            <div class="blog_post_month">' . $date->format('M, Y') . '</div>
-                        </div><br><br><br><br>
-                        <div class="blog_post_title">' . $blog['title'] . '</div>
-                        <div class="blog_post_meta">' . $blog['user'] . ' | <a href="comments.php?blogid=' . $blog['id'] . '">comments</a></div>
-                        <div class="blog_post_text">
-                            <p>' . $blog['contenu'] . '</p>
-                        </div>
-                        <div class="blog_post_link"><a href="updateblog.php?id=' . $blog['id'] . '">update</a></div>
-                        <div class="blog_post_link"><a href="deleteblog.php?id=' . $blog['id'] . '">delete</a></div>
-                    </div>
-                    <!-- Blog Sidebar -->
-                </div>
-            </div>
-        </div>';
-    }
+<?php foreach ($paginatedBlogs as $blog) { 
+								$date = new DateTime($blog['date']);
+								echo '<div class="container">
+									<div class="row">
+										<!-- Blog Content -->
+										<div class="col-lg-8">
+											<div class="blog_post">
+												<div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
+													<div class="blog_post_day">' . $date->format('d') . '</div>
+													<div class="blog_post_month">' . $date->format('M, Y') . '</div>
+												</div><br><br><br><br>
+												<div class="blog_post_title">' . $blog['title'] . '</div>
+												<div class="blog_post_meta">' . $blog['user'] . ' | <a href="comments.php?blogid=' . $blog['id'] . '">comments</a></div>
+												<div class="blog_post_text">
+													<p>' . $blog['contenu'] . '</p>
+												</div>
+												<div class="blog_post_link"><a href="updateblog.php?id=' . $blog['id'] . '">update</a></div>
+												<div class="blog_post_link"><a href="deleteblog.php?id=' . $blog['id'] . '">delete</a></div>
+											</div>
+											<!-- Blog Sidebar -->
+										</div>
+									</div>
+								</div>';
+							}
     ?>
+	
 </div>
 
-		</div>
+</div>
+<!-- Pagination Links -->
+<div class="home_slider_dots">
+				<ul id="home_slider_custom_dots" class="home_slider_custom_dots">
+					
+<div class="pagination">
+    <?php if ($page > 1) : ?>
+        <a href="?search=<?php echo $search ?>&search_type=<?php echo $search_type ?>&page=<?php echo ($page - 1) ?>">  Previous|</a>
+    <?php endif; ?>
+
+    <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+        <a href="?search=<?php echo $search ?>&search_type=<?php echo $search_type ?>&page=<?php echo $i ?>">  <?php echo $i ?> |</a>
+    <?php endfor; ?>
+
+    <?php if ($page < $totalPages) : ?>
+        <a href="?search=<?php echo $search ?>&search_type=<?php echo $search_type ?>&page=<?php echo ($page + 1) ?>"> Next  </a>
+    <?php endif; ?>
+
+					
+			</div>
+			</div>
+
 	</div>
 
 	<!-- Footer -->

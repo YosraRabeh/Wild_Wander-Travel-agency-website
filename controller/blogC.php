@@ -143,6 +143,9 @@ class blogC
             case 'user':
                 $sql = "SELECT * FROM blog WHERE user LIKE :search";
                 break;
+            case 'contenu': // Added case for content search
+                $sql = "SELECT * FROM blog WHERE  contenu LIKE :search";
+                break;
             default:
                 echo "<script>alert('Missing information. Please try another one.');</script>";
                 return null; // Return null or handle error as needed
@@ -159,8 +162,67 @@ class blogC
             die('Error: ' . $e->getMessage());
         }
     }
-     
+    public function trieSearchTitles($search) {
+        $sql = "SELECT * FROM blog WHERE title LIKE :search ORDER BY title ASC"; // Alphabetical order
+        $db = config::getConnexion();
+        $searchParam = '%' . $search . '%'; // Add wildcards for partial matching
     
+        try {
+            $query = $db->prepare($sql);
+            $query->bindValue(':search', $searchParam, PDO::PARAM_STR);
+            $query->execute();
+            $searchResults = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $searchResults;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+    
+    public function trieSearchDates($search) {
+        $sql = "SELECT * FROM blog WHERE date LIKE :search ORDER BY date DESC"; // Most recent first
+        $db = config::getConnexion();
+        $searchParam = '%' . $search . '%'; // Add wildcards for partial matching
+    
+        try {
+            $query = $db->prepare($sql);
+            $query->bindValue(':search', $searchParam, PDO::PARAM_STR);
+            $query->execute();
+            $searchResults = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $searchResults;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+    public function getBlogsPaginated($page =1, $itemsPerPage = 2)
+{
+    $offset = ($page - 1) * $itemsPerPage;
+    $sql = "SELECT * FROM blog LIMIT :offset, :itemsPerPage";
+
+    $db = config::getConnexion();
+
+    try {
+        $query = $db->prepare($sql);
+        $query->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $query->bindValue(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
+        $query->execute();
+        $blogs = $query->fetchAll(PDO::FETCH_ASSOC);
+        return $blogs;
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+function countAllBlogs()
+    {
+        $sql = "SELECT COUNT(*) as total FROM blog";
+        $db = config::getConnexion();
+        try {
+            $result = $db->query($sql);
+            $row = $result->fetch(PDO::FETCH_ASSOC);
+            return $row['total'];
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
     
 }
 
@@ -295,4 +357,40 @@ class commentsC
           die('Error: '. $e->getMessage());
         }
       }
+      public function searchCommentsByBlogID($blogid, $search_query, $search_type)
+      {
+          $db = config::getConnexion();
+          $sql = "";
+          $searchParam = '%' . $search_query . '%'; // Add wildcards for partial matching
+      
+          // Construct the SQL query based on the search type
+          switch ($search_type) {
+              case 'date':
+                  $sql = "SELECT * FROM comments WHERE blog = :blogid AND date LIKE :search";
+                  break;
+              case 'user':
+                  $sql = "SELECT * FROM comments WHERE blog = :blogid AND user LIKE :search";
+                  break;
+              case 'content': // Added case for content search
+                  $sql = "SELECT * FROM comments WHERE blog = :blogid AND content LIKE :search";
+                  break;
+              default:
+                  echo "<script>alert('Missing information. Please try another one.');</script>";
+                  break;
+          }
+      
+          $req = $db->prepare($sql);
+          $req->bindValue(':blogid', $blogid);
+          $req->bindValue(':search', $searchParam, PDO::PARAM_STR);
+          try {
+              $req->execute(); // Execute the prepared statement
+              $liste = $req->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows as associative array
+              return $liste;
+          } catch (Exception $e) {
+              die('Error:' . $e->getMessage());
+          }
+      }
+    
+
+      
 }
