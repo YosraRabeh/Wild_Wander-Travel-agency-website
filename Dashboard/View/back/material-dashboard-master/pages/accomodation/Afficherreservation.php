@@ -1,118 +1,13 @@
+
 <?php
 include '../../../../../Controller/accomodationC.php';
+include '../../../../../Controller/reservationC.php';
 
 session_start();
 
-$errorMessage = "";
-$successMessage = "" ;
+$ReservationC = new ReservationC();
+$reservationList = $ReservationC->AfficherReservation();
 
-
-// create accomodation
-$accomodation = null;
-
-// create an instance of the controller
-$accomodationC = new accomodationC();
-if (
-    isset($_POST["Name"]) &&
-    isset($_POST["location"]) &&
-    isset($_POST["address"]) &&
-    isset($_POST["type_acc"]) &&
-    isset($_POST["type_unit"]) &&
-    isset($_POST["price"]) &&
-    isset($_POST["amenities"]) &&
-    isset($_POST["description"])
-){
-    if ( !empty($_POST["Name"]) &&
-        !empty($_POST["location"]) &&
-        !empty($_POST["address"]) &&
-        !empty($_POST["type_acc"]) &&
-        !empty($_POST["type_unit"]) &&
-        !empty($_POST["price"]) &&
-        !empty($_POST["amenities"]) &&
-        !empty($_POST["description"])
-    )
-    {
-        if (!empty($_FILES["images"]["name"][0])) {
-            // Initialize an array to store image URLs
-            $imageUrls = array();
-
-            // Loop through each uploaded image
-            foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
-                // Read the image data
-                $imageData = file_get_contents($tmp_name);
-                // Encode the image data as a base64 string
-                $base64Image = base64_encode($imageData);
-
-                // Set up the Imgur API endpoint URL
-                $apiUrl = "https://api.imgur.com/3/image";
-
-                // Set up the cURL request
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => $apiUrl,
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST => true,
-                    CURLOPT_POSTFIELDS => array(
-                        "image" => $base64Image,
-                        "type" => "base64"
-                    ),
-                    CURLOPT_HTTPHEADER => array(
-                        "Authorization: Client-ID 62604d90402d086" // Replace YOUR_CLIENT_ID with your Imgur API client ID
-                    )
-                ));
-
-                // Execute the cURL request
-                $response = curl_exec($curl);
-
-                // Check for errors
-                if(curl_errno($curl)){
-                    echo 'Error: ' . curl_error($curl);
-                }
-
-                // Close cURL session
-                curl_close($curl);
-
-                // Parse the JSON response
-                $responseData = json_decode($response, true);
-
-                // Check if the upload was successful
-                if ($responseData && isset($responseData["data"]["link"])) {
-                    // Image uploaded successfully
-                    $imageUrl = $responseData["data"]["link"];
-                    // Add the image URL to the array
-                    $imageUrls[] = $imageUrl;
-                } else {
-                    // Failed to upload the image
-                    echo "Error uploading image";
-                }
-            }
-            echo $imageUrls;
-
-
-            // Create accommodation instance with uploaded images
-            $accomodation = new accomodation(
-                $_POST['Name'],
-                $_POST['location'],
-                $_POST['address'],
-                $_POST['type_acc'],
-                $_POST['type_unit'],
-                $_POST['price'],
-                $_POST['amenities'],
-                $_POST['description'],
-                $imageUrls // Pass the array of uploaded images to the constructor
-            );
-
-            // Add accommodation to database
-            $accomodationC->Ajouteraccomodation($accomodation); //
-            header("Location:Afficherhibergement.php?successMessage= hibergement ajouté avec succés"); // bch thezk lel afficheraccomodation
-        } else {
-            $errorMessage .= "Please upload at least one image.";
-        }
-
-    }
-    else
-        $errorMessage = "<label id = 'form' style = 'color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>   ";
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,15 +16,13 @@ if (
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <title>
-Wild Wander
-  </title>
+accomodation Management  </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
   <link href="../../assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/style.css">
   <link href="../../assets/css/nucleo-svg.css" rel="stylesheet" />
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
@@ -143,8 +36,7 @@ Wild Wander
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
@@ -180,7 +72,7 @@ Wild Wander
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white  active bg-gradient-primary " href="../../pages/accomodation.html">
+          <a class="nav-link text-white  active bg-gradient-primary " href="../../pages/accomodation/Afficherhibergement.php">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -256,9 +148,9 @@ Wild Wander
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Template</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tables</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Template</h6>
+          <h6 class="font-weight-bolder mb-0">Tables</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -268,12 +160,6 @@ Wild Wander
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
-            <li class="nav-item d-flex align-items-center">
-              <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online Builder</a>
-            </li>
-            <li class="mt-2">
-              <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-            </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -297,7 +183,7 @@ Wild Wander
                   <a class="dropdown-item border-radius-md" href="javascript:;">
                     <div class="d-flex py-1">
                       <div class="my-auto">
-                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                        <img src="../../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -361,164 +247,114 @@ Wild Wander
                 </li>
               </ul>
             </li>
-            </li>
-            
+
             <li class="nav-item d-flex align-items-center">
             </li>
           </ul>
         </div>
       </div>
     </nav>
-
-    <div class="main-panel">        
-        <div class="content-wrapper">
-          <div class="row">
-
-        
-            <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Nouveau Hibergement</h4>
-                  
-
-                            
-                  <!--validate-->
-                  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data" onsubmit="return validate();">
-
-
-                     <div class="form-group">
-                      <label for="Name">name</label>
-                      <input type="text" class="form-control" id="Name" name="Name" placeholder=" Name" style="border: 1px solid #dee2e6;">
-                      <div id="NameError" class="error-message"></div>
-                    </div>
-
-
-                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
-                          <label for="location">Location</label>
-                          <input type="text" class="form-control" name="location" id="location" placeholder="Location" style="border: 1px solid #dee2e6;">
-                          <div id="locationError" class="error-message"></div>
-                      </div>
-                      <div class="form-group" style="display: inline-block; width: 49%;">
-                          <label for="address">Address</label>
-                          <input type="text" class="form-control" name="address" id="address" placeholder="Address" style="border: 1px solid #dee2e6;">
-                          <div id="addressError" class="error-message"></div>
-                      </div>
-
-
-
-                      <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%;">
-                          <label for="type_acc">Accomodation Type</label>
-                          <select class="form-select" name="type_acc" id="type_acc" aria-label="Default select example">
-                              <option value="Hotel">Hotel</option>
-                              <option value="Guest_House">Guest house</option>
-                              <option value="rental">Rental</option>
-                          </select>
-                      </div>
-
-                      <div class="form-group" style="display: inline-block; width: 49%;">
-                          <label for="type_unit">Unite type</label>
-                          <input type="text" class="form-control" name="type_unit" id="type_unit" placeholder="Unit type" style="border: 1px solid #dee2e6;">
-                          <div id="type_unitError" class="error-message"></div>
-                      </div>
-
-                      <div class="form-group" style="display: inline-block; width: 79%; margin-right: 1.5%;">
-                          <label for="amenities">amenities</label>
-                          <input type="text" class="form-control" name="amenities" id="amenities" placeholder="amenities(ex:wifi,swimming pool,gym,...)" style="border: 1px solid #dee2e6;">
-                          <div id="amenitiesError" class="error-message"></div>
-                      </div>
-                      <div class="form-group" style="display: inline-block; width: 19%;">
-                          <label for="price">price</label>
-                          <input type="text" class="form-control" name="price" id="price" placeholder="price" style="border: 1px solid #dee2e6;">
-                          <div id="priceError" class="error-message"></div>
-                      </div>
-
-                      <div class="form-group" style="position: relative; width: 90%;">
-                          <label for="description">Description</label>
-                          <div style="position: relative;">
-                              <textarea class="form-control" name="description" id="description" placeholder="Description" style="border: 1px solid #dee2e6; resize: vertical;" oninput="updateCharacterCount(this)"></textarea>
-                              <div id="characterCount" class="text-muted" style="position: absolute; bottom: 5px; right: 25px; opacity: 0.7;">0/200</div>
-                          </div>
-                          <div id="descriptionError" class="error-message"></div>
-                      </div>
-
-                      <div class="form-group" style="position: relative; width: 90%;">
-
-                          <input type="file" class="form-control" name="images[]" id="images" accept="image/*" multiple required onchange="previewImages(event)" style="border: 1px solid #dee2e6;"><br><br>
-                          <div id="imagesError" class="error-message"></div>
-                          <div id="imagePreviews"></div>
-
-                      </div>
-                      </div>
-
-
-
-
-
-
-
-                      <script>
-                          function updateCharacterCount(textarea) {
-                              var maxLength = 600; // Maximum number of characters allowed
-                              var currentLength = textarea.value.length;
-                              var counterElement = document.getElementById("characterCount");
-                              counterElement.textContent = currentLength + "/" + maxLength;
-
-                              // Prevent further input if the maximum character limit is reached
-                              if (currentLength > maxLength) {
-                                  textarea.value = textarea.value.substring(0, maxLength);
-                              }
-                          }
-                          // Function to preview uploaded images
-                          function previewImages(event) {
-                              var files = event.target.files;
-                              var imagePreviews = document.getElementById('imagePreviews');
-
-                              // Clear previous previews
-                              imagePreviews.innerHTML = '';
-
-                              // Loop through uploaded files
-                              for (var i = 0; i < files.length; i++) {
-                                  var file = files[i];
-                                  var reader = new FileReader();
-
-                                  reader.onload = function (e) {
-                                      var img = document.createElement('img');
-                                      img.src = e.target.result;
-                                      img.style.maxWidth = '200px'; // Limit preview size if needed
-                                      img.style.maxHeight = '200px'; // Limit preview size if needed
-                                      imagePreviews.appendChild(img);
-                                  }
-
-                                  reader.readAsDataURL(file);
-                              }
-                          }
-
-                      </script>
-
-
-                      <br>
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Submit</button>
-                    <a class="btn btn-light" href="Afficherhibergement.php" role="button">Cancel</a>
-                  </form>
-
-
-                </div>
-              </div>
-            </div> 
-        <!-- content-wrapper ends -->
-        <!-- partial:../../partials/_footer.html -->
-        <footer class="footer">
-          
-        </footer>
-        <!-- partial -->
-      </div>
-
-
-
     <!-- End Navbar -->
     <div class="container-fluid py-4">
+    <?php
+           if(isset($_GET['successMessage'])){
+            $successMessage = $_GET['successMessage'];
+
+            echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
+            '$successMessage'
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+           }
+
+		   if(isset($_GET['message'])){
+            $message = $_GET['message'];
+
+            echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            '$message'
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+           }
+
+		   if(isset($_GET['mess'])){
+            $mess = $_GET['mess'];
+
+            echo "<div class='alert alert-warning alert-dismissible fade show' role='alert'>
+            '$mess'
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+           }
+
+          ?>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-start align-items-center">
+                    <h6 class="text-white text-capitalize ps-3 mb-0">reservations table</h6>
+                    <a class="btn btn-primary" href="afficherhibergement.php" role="button" style="width: 150px; margin-right: 30px;margin-left: auto">accomodations</a>
+                </div>
+
+
+
+                <br>
+              <a class="btn btn-primary" href="Ajouterhibergement.php" role="button">Create new reservation</a>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Accomodation ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Start</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date End</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Creation</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment Status</th>
+
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Edit</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Delete</th>
+                    </tr>
+                  </thead>
+                  <?php
+
+				          foreach($reservationList as $reservation){
+			            ?>
+                  <tbody>
+                    <tr>
+                      <td><?php echo $reservation['id_reservation']; ?></td>
+                      <td><?php echo $reservation['id_acc']; ?></td>
+                      <td><?php echo $reservation['idUser']; ?></td>
+                      <td><?php echo $reservation['date_start']; ?></td>
+                      <td><?php echo $reservation['date_end']; ?></td>
+                      <td><?php echo $reservation['date_creation']; ?></td>
+                      <td><?php echo $reservation['payment_status']; ?></td>
+
+                        <td>
+                       <form method="GET" action="Modifierhibergement.php">
+                        <input type="submit"  class="btn btn-success btn-sm" name="Modifier" value="Edit">
+                        <input type="hidden"  value=<?php echo $reservation['id_reservation']; ?>  name="id_reservation">
+                       </form>
+                      </td>
+                  <td>
+                    <a  class="btn btn-danger btn-sm"   href="Supprimerhibergement.php?id_Acc=<?php echo $reservation['id_reservation']; ?>">Delete</a>
+                  </td>
+                    </tr>
+                  </tbody>
+                  <?php
+                }
+                ?>
+                </table>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
       <footer class="footer py-4  ">
-        
+
       </footer>
     </div>
   </main>
@@ -614,7 +450,6 @@ Wild Wander
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../../assets/js/material-dashboard.min.js?v=3.1.0"></script>
-  <script src="assets/javascript.js"></script>
 </body>
 
 </html>

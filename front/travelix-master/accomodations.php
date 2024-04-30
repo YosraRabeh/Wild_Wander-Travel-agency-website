@@ -525,7 +525,7 @@ $listaccomodation = $accomodationC->Afficheraccomodation();
                         <?php
                         foreach($listaccomodation as $accomodation){
                             $imageUrl = GetUrls($accomodation['id_Acc']);
-                            echo $imageUrl["images"];
+                            $json=json_decode($imageUrl["images"],true);
 
                         ?>
 
@@ -535,13 +535,13 @@ $listaccomodation = $accomodationC->Afficheraccomodation();
 								<div class="col-lg-3 col-1680-4">
 									<div class="offers_image_container">
 										<!-- Image by https://unsplash.com/@kensuarez -->
-										<div class="offers_image_background" style="background-image:url(<?php echo "https:\/\/i.imgur.com\/S09hHcg.jpeg" ?>)"></div>
+										<div class="offers_image_background" style="background-image:url(<?php if ((is_array($json))){echo $json[0];}else{echo $json;}   ?>)"></div>
 										<div class="offer_name"><a href="single_listing.html">grand castle</a></div>
 									</div>
 								</div>
 								<div class="col-lg-8">
 									<div class="offers_content">
-										<div class="offers_price">$70<span>per night</span></div>
+										<div class="offers_price">$<?php echo $accomodation['price']; ?><span>per night</span></div>
 										<div class="rating_r rating_r_4 offers_rating" data-rating="4">
 											<i></i>
 											<i></i>
@@ -549,7 +549,7 @@ $listaccomodation = $accomodationC->Afficheraccomodation();
 											<i></i>
 											<i></i>
 										</div>
-										<p class="offers_text"><?php echo $imageUrl["images"] ?></p>
+										<p class="offers_text"><?php echo $accomodation['description']; ?></p>
 										<div class="offers_icons">
 											<ul class="offers_icons_list">
 												<li class="offers_icons_item"><img src="images/post.png" alt=""></li>

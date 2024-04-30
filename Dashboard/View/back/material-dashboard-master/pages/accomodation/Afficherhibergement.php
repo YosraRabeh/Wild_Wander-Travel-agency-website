@@ -289,10 +289,14 @@ accomodation Management  </title>
         <div class="col-12">
           <div class="card my-4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">accomodations table</h6>
-              </div>
-              <br>
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 d-flex justify-content-start align-items-center">
+                    <h6 class="text-white text-capitalize ps-3 mb-0">accomodations table</h6>
+                    <a class="btn btn-primary" href="afficherreservation.php" role="button" style="width: 150px; margin-right: 30px;margin-left: auto">reservations</a>
+                </div>
+
+
+
+                <br>
               <a class="btn btn-primary" href="Ajouterhibergement.php" role="button">Create new accomodation</a>
             </div>
             <div class="card-body px-0 pb-2">
@@ -307,6 +311,7 @@ accomodation Management  </title>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">unit type</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">price</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">amenities</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Edit</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Delete</th>
                     </tr>
@@ -314,6 +319,8 @@ accomodation Management  </title>
                   <?php
 
 				          foreach($AccList as $accomodation){
+                              $imageUrl = GetUrls($accomodation['id_Acc']);
+                              $json=json_decode($imageUrl["images"],true);
 			            ?>
                   <tbody>
                     <tr>
@@ -324,6 +331,9 @@ accomodation Management  </title>
                       <td><?php echo $accomodation['type_specific']; ?></td>
                       <td><?php echo $accomodation['price']; ?></td>
                         <td><?php echo $accomodation['amenities']; ?></td>
+
+                        <td><img src="<?php if ((is_array($json))){echo $json[0];}else{echo $json;}   ?>" width="100px" height="100px"></td>
+
                       <td>
                        <form method="GET" action="Modifierhibergement.php">
                         <input type="submit"  class="btn btn-success btn-sm" name="Modifier" value="Edit">
