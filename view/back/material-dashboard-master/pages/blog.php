@@ -2,6 +2,35 @@
 include '../../../../controller/blogC.php';
 $blogC = new blogC();
 $tab = $blogC->listblogs();
+$search_type = isset($_GET['search_type']) ? htmlspecialchars($_GET['search_type']) : '';
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$perPage = 3; // Number of posts per page
+
+if (!empty($search) && !empty($search_type)) {
+    if ($search_type === 'title') {
+        $tab = $blogC->trieSearchTitles($search);
+    } elseif ($search_type === 'date') {
+        $tab = $blogC->trieSearchDates($search);
+    } else {
+        $tab = $blogC->searchBlogs($search, $search_type);
+    }
+
+    // Calculate total number of blogs for pagination
+    $totalBlogs = count($tab);
+    $totalPages = ceil($totalBlogs / $perPage);
+
+    // Get paginated blog posts based on current page
+    $start = ($page - 1) * $perPage;
+    $paginatedBlogs = array_slice($tab, $start, $perPage);
+} else {
+    // Fetch all blog posts if no search parameters are set
+    $paginatedBlogs = $blogC->getBlogsPaginated($page, $perPage); // Assuming getBlogsPaginated retrieves paginated results
+
+    // Calculate total number of blogs for pagination
+    $totalBlogs = $blogC->countAllBlogs(); // Update this with the appropriate method to count all blogs
+    $totalPages = ceil($totalBlogs / $perPage);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -258,6 +287,7 @@ Blog Management  </title>
             <button type="button" class="btn btn-primary" onclick="redirectToBlogPage()">
               Add Blog
             </button>
+             
             <script>
               function redirectToBlogPage() {
                 window.location.href = "../../../front/travelix-master/addblog.php?token=1";
@@ -272,6 +302,16 @@ Blog Management  </title>
             <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
+                <form method="GET" action="" class="search-form">
+              <input type="text" name="search" placeholder="Enter search keyword" class="search-input">
+              <select name="search_type" class="search-type">
+                  <option value="title">Title</option>
+                  <option value="date">Date</option>
+                  <option value="user">User</option>
+              <option value="contenu">Content</option>
+              </select>
+              <button type="submit" class="button intro_button">Search<span></span><span></span><span></span></button>
+            </form>
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Blog ID</th>
@@ -283,7 +323,7 @@ Blog Management  </title>
                     </tr>
                   </thead>
                   <?php
-                  foreach ($tab as $key => $blog) {
+                  foreach ($paginatedBlogs as $key => $blog) {
                       $date = new DateTime($blog['date']);
                   ?>
                     <tbody>
@@ -331,6 +371,26 @@ Blog Management  </title>
           </div>
         </div>
       </div>
+      <!-- Pagination Links -->
+<div class="home_slider_dots">
+				<ul id="home_slider_custom_dots" class="home_slider_custom_dots">
+					
+<div class="pagination">
+    <?php if ($page > 1) : ?>
+        <a href="?search=<?php echo $search ?>&search_type=<?php echo $search_type ?>&page=<?php echo ($page - 1) ?>">  Previous|</a>
+    <?php endif; ?>
+
+    <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+        <a href="?search=<?php echo $search ?>&search_type=<?php echo $search_type ?>&page=<?php echo $i ?>">  <?php echo $i ?> |</a>
+    <?php endfor; ?>
+
+    <?php if ($page < $totalPages) : ?>
+        <a href="?search=<?php echo $search ?>&search_type=<?php echo $search_type ?>&page=<?php echo ($page + 1) ?>"> Next  </a>
+    <?php endif; ?>
+
+					
+			</div>
+			</div>
      
       <footer class="footer py-4  ">
         <div class="container-fluid">

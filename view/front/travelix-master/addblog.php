@@ -56,6 +56,47 @@ if (
 } 
 
 ?>
+<?php
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check if the generate blog button is clicked
+    if (isset($_POST["generate_blog"])) {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://blog-post-generator-api-seo-optimised-with-keywords.p.rapidapi.com/generate",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode([
+                'topic' => $_POST['title'],
+                'theme' => 'Informative'
+            ]),
+            CURLOPT_HTTPHEADER => [
+                "X-RapidAPI-Host: blog-post-generator-api-seo-optimised-with-keywords.p.rapidapi.com",
+                "X-RapidAPI-Key: 01cc6023bamsh5bc68752b6b5cbap154e98jsnb30e54146190",
+                "content-type: application/json"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            echo '<div class="generated_blog">' . $response . '</div>';
+        }
+    }
+}
+?>
+
 <html lang="en">
 <head>
 <title>Contact</title>
@@ -67,6 +108,8 @@ if (
 <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="styles/contact_styles.css">
 <link rel="stylesheet" type="text/css" href="styles/contact_responsive.css">
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+
 </head>
 
 <body>
@@ -185,29 +228,33 @@ if (
 	</div>
 
 	<!-- Contact -->
-
 	<div class="contact_form_section">
-		<div class="container">
-			<div class="row">
-				<div class="col">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="blogC.php" class="search-form">
+                    <input type="text" name="text" placeholder="Enter text for speech" class="search-input">
+                    <button type="submit" class="button intro_button">Convert to Speech</button>
+                </form>
 
-					<!-- Contact Form -->
-					<div class="contact_form_container">
-						<div class="contact_title text-center">blog</div>
-						<form action="#" id="contact_form" class="contact_form text-center"     method="post">
-                            <input type="text" name="title" class="contact_form_subject input_field" placeholder="Title"  data-error="title is required.">
-                            <textarea name="contenu" class="text_field contact_form_message" rows="4" placeholder="Content"  data-error="Please, write us a message."></textarea>
-                            <input type="text" name="date" class="contact_form_subject input_field" placeholder="DD/MM/YY" data-error="Subject is required.">
-                            <button type="submit" id="form_submit_button" class="form_submit_button button trans_200">add blog<span></span><span></span><span></span></button>
-                        </form>
-						
-						
-					</div>
+                <!-- Contact Form -->
+                <div class="contact_form_container">
+                    <div class="contact_title text-center">Add Blog Post</div>
+                    <form action="#" id="contact_form" class="contact_form text-center" method="post">
+                        <input type="text" name="title" class="contact_form_subject input_field" placeholder="Title" data-error="Title is required.">
+                        <textarea name="contenu" class="text_field contact_form_message" rows="4" placeholder="Content" data-error="Please, write us a message." id="editor"></textarea>
+                        <input type="text" name="date" class="contact_form_subject input_field" placeholder="DD/MM/YY" data-error="Subject is required.">
+                        <button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Add Blog</button>
+                    </form>
+						<button id="generate_blog_button" class="button trans_200">Generate Blog</button>
+						<div id="generated_blog_content"></div> <!-- This is where the generated blog content will be displayed -->
+                </div>
 
-				</div>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 	<!-- About -->
 	<div class="about">
@@ -366,7 +413,7 @@ if (
 				</div>
 
 				<!-- Footer Column -->
-				<div class="col-lg-3 footer_column">
+				<div class="col-lg-3 footer_column clearfix">
 					<div class="footer_col">
 						<div class="footer_title">contact info</div>
 						<div class="footer_content footer_contact">
@@ -430,9 +477,44 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="styles/bootstrap4/popper.js"></script>
 <script src="styles/bootstrap4/bootstrap.min.js"></script>
+<script src="plugins/greensock/TweenMax.min.js"></script>
+<script src="plugins/greensock/TimelineMax.min.js"></script>
+<script src="plugins/scrollmagic/ScrollMagic.min.js"></script>
+<script src="plugins/greensock/animation.gsap.min.js"></script>
+<script src="plugins/greensock/ScrollToPlugin.min.js"></script>
 <script src="plugins/parallax-js-master/parallax.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script>
+<script src="plugins/easing/easing.js"></script>
 <script src="js/contact_custom.js"></script>
+<script>
+	ClassicEditor
+        .create( document.querySelector( '#editor' ) )
+        .catch( error => {
+            console.error( error );
+        } );
+</script>
+<!-- Add this JavaScript code after your HTML content -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle button click event
+        $('#generate_blog_button').click(function(e) {
+            e.preventDefault(); // Prevent form submission
+            // Make an AJAX request to generate the blog post
+            $.ajax({
+                type: 'POST',
+                url: window.location.href, // Update the URL to your PHP script handling the blog generation
+                data: $('#contact_form').serialize(), // Serialize the form data
+                success: function(response) {
+                    // Display the generated blog content
+                    $('#generated_blog_content').html('<div class="generated_blog">' + response + '</div>');
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText); // Log any errors to the console
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 

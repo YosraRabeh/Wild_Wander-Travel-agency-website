@@ -1,4 +1,5 @@
 <?php
+include 'C:/xampp/htdocs/projet_web/view/front/travelix-master/text_to_speech.php';
 include '../../../controller/blogC.php';
 $blogC = new blogC();
 
@@ -36,6 +37,41 @@ if (!empty($search) && !empty($search_type)) {
 ?>
 
 
+
+
+
+<!-- 
+// Add this PHP code to a new PHP file, for example, 'generate_content.php'
+
+$curl = curl_init();
+
+curl_setopt_array($curl, [
+	CURLOPT_URL => "https://blog-introduction.p.rapidapi.com/blog-intro?topic=lionel" .$_POST['title'],
+	CURLOPT_RETURNTRANSFER => true,
+	CURLOPT_ENCODING => "",
+	CURLOPT_MAXREDIRS => 10,
+	CURLOPT_TIMEOUT => 30,
+	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	CURLOPT_CUSTOMREQUEST => "GET",
+	CURLOPT_HTTPHEADER => [
+		"X-RapidAPI-Host: blog-introduction.p.rapidapi.com",
+		"X-RapidAPI-Key: 01cc6023bamsh5bc68752b6b5cbap154e98jsnb30e54146190"
+	],
+]);
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+
+curl_close($curl);
+
+if ($err) {
+    echo "cURL Error #:" . $err;
+} else {
+    echo $response;
+}
+?>
+
+-->
 
 
 
@@ -284,32 +320,77 @@ if (!empty($search) && !empty($search_type)) {
 
 <div class="blog">
 <?php foreach ($paginatedBlogs as $blog) { 
-								$date = new DateTime($blog['date']);
-								echo '<div class="container">
-									<div class="row">
-										<!-- Blog Content -->
-										<div class="col-lg-8">
-											<div class="blog_post">
-												<div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
-													<div class="blog_post_day">' . $date->format('d') . '</div>
-													<div class="blog_post_month">' . $date->format('M, Y') . '</div>
-												</div><br><br><br><br>
-												<div class="blog_post_title">' . $blog['title'] . '</div>
-												<div class="blog_post_meta">' . $blog['user'] . ' | <a href="comments.php?blogid=' . $blog['id'] . '">comments</a></div>
-												<div class="blog_post_text">
-													<p>' . $blog['contenu'] . '</p>
-												</div>
-												<div class="blog_post_link"><a href="updateblog.php?id=' . $blog['id'] . '">update</a></div>
-												<div class="blog_post_link"><a href="deleteblog.php?id=' . $blog['id'] . '">delete</a></div>
-											</div>
-											<!-- Blog Sidebar -->
-										</div>
-									</div>
-								</div>';
-							}
-    ?>
-	
+    $date = new DateTime($blog['date']);
+    echo '<div class="container">
+        <div class="row">
+            <!-- Blog Content -->
+            <div class="col-lg-8">
+                <div class="blog_post">
+                    <div class="blog_post_date d-flex flex-column align-items-center justify-content-center">
+                        <div class="blog_post_day">' . $date->format('d') . '</div>
+                        <div class="blog_post_month">' . $date->format('M, Y') . '</div>
+                    </div><br><br><br><br>
+                    <div class="blog_post_title">' . $blog['title'] . '</div>
+                    <div class="blog_post_meta">' . $blog['user'] . ' | <a href="comments.php?blogid=' . $blog['id'] . '">comments</a></div>
+                    <div class="blog_post_text">
+                        <p>' . $blog['contenu'] . '</p>
+						<button class="text_to_speech_btn" data-content="' . $blog['contenu'] . '">Convert to Audio</button>
+						<audio id="blog_audio" controls style="display: none;"></audio>
+						<button id="generate_new_content">Generate New Content</button>
+                    </div>
+                    <div class="blog_post_link"><a href="updateblog.php?id=' . $blog['id'] . '">update</a></div>
+                    <div class="blog_post_link"><a href="deleteblog.php?id=' . $blog['id'] . '">delete</a></div>
+                    <!-- Text-to-Speech Button -->
+                    
+                </div>
+                <!-- Blog Sidebar -->
+            </div>
+        </div>
+    </div>';
+		}
+		?>		
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ttsButtons = document.querySelectorAll('.text_to_speech_btn');
+        const audioElement = document.getElementById('blog_audio');
+
+        ttsButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const content = this.getAttribute('data-content');
+
+                // Fetch API to trigger text-to-speech and get audio URL from VoiceRSS
+                fetch('https://api.voicerss.org/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'key=b8a7f781bfaa4425b00ceb553b1570b8&hl=en-us&src=' + encodeURIComponent(content),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Server response:', response);
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob(); // Convert response to blob
+                    })
+                    .then(blob => {
+                        const audioUrl = URL.createObjectURL(blob); // Create object URL for the audio
+                        console.log('Audio URL:', audioUrl); // Log the audio URL for debugging
+                        audioElement.src = audioUrl; // Set audio source
+                        audioElement.style.display = 'block'; // Show the audio element
+                        audioElement.play(); // Play the audio
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error fetching audio');
+                    });
+            });
+        });
+    });
+</script>
 
 </div>
 <!-- Pagination Links -->
@@ -484,6 +565,31 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="plugins/colorbox/jquery.colorbox-min.js"></script>
 <script src="plugins/parallax-js-master/parallax.min.js"></script>
 <script src="js/blog_custom.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script>
+    $(document).ready(function() {
+        // Handle button click event
+        $('#generate_blog_button').click(function(e) {
+            e.preventDefault(); // Prevent form submission
+            // Make an AJAX request to generate the blog post
+            $.ajax({
+                type: 'POST',
+                url: window.location.href, // Update the URL to your PHP script handling the blog generation
+                data: $('#contact_form').serialize(), // Serialize the form data
+                success: function(response) {
+                    // Display the generated blog content
+                    $('#generated_blog_content').html('<div class="generated_blog">' + response + '</div>');
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText); // Log any errors to the console
+                }
+            });
+        });
+    });
+</script>
+
+-->
+
 
 </body>
 

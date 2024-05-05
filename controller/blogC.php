@@ -193,7 +193,7 @@ class blogC
             die('Error: ' . $e->getMessage());
         }
     }
-    public function getBlogsPaginated($page =1, $itemsPerPage = 2)
+    public function getBlogsPaginated($page , $itemsPerPage )
 {
     $offset = ($page - 1) * $itemsPerPage;
     $sql = "SELECT * FROM blog LIMIT :offset, :itemsPerPage";
