@@ -1,14 +1,45 @@
 <?php
-include 'C:/xampp/htdocs/projet_web/view/front/travelix-master/text_to_speech.php';
-include '../../../controller/blogC.php';
-$blogC = new blogC();
+// Include necessary files
+include 'C:/xampp/htdocs/projet_web/view/front/travelix-master/text_to_speech.php'; // Include your text-to-speech script
+include '../../../controller/blogC.php'; // Include your blog controller
+$blogC = new blogC(); // Initialize your blog controller
 
+// Function to call the profanity filtering API
+function filterProfanity($text) {
+    $apiKey = 'eRbd98L/mQV/7CpS4GMwaQ==28LR7fFavNEWX3Qn'; // Replace 'YOUR_API_KEY' with your actual API key
+    $url = 'https://api.api-ninjas.com/v1/profanityfilter?text=' . urlencode($text);
+    $headers = array(
+        'X-Api-Key: ' . $apiKey
+    );
+
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => $headers,
+    ));
+
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    $result = json_decode($response, true);
+
+    if ($result && isset($result['censored'])) {
+        return $result['censored'];
+    } else {
+        return $text; // Return original text if filtering fails
+    }
+}
+
+// Get search parameters and page number from URL
 $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 $search_type = isset($_GET['search_type']) ? htmlspecialchars($_GET['search_type']) : '';
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $perPage = 3; // Number of posts per page
 
 if (!empty($search) && !empty($search_type)) {
+    // Perform search based on search type
     if ($search_type === 'title') {
         $tab = $blogC->trieSearchTitles($search);
     } elseif ($search_type === 'date') {
@@ -24,6 +55,13 @@ if (!empty($search) && !empty($search_type)) {
     // Get paginated blog posts based on current page
     $start = ($page - 1) * $perPage;
     $paginatedBlogs = array_slice($tab, $start, $perPage);
+
+    // Apply profanity filter to titles and content
+    foreach ($paginatedBlogs as &$blog) {
+        $blog['title'] = filterProfanity($blog['title']);
+        $blog['contenu'] = filterProfanity($blog['contenu']);
+    }
+    unset($blog); // Unset the reference variable
 } else {
     // Fetch all blog posts if no search parameters are set
     $paginatedBlogs = $blogC->getBlogsPaginated($page, $perPage); // Assuming getBlogsPaginated retrieves paginated results
@@ -31,47 +69,19 @@ if (!empty($search) && !empty($search_type)) {
     // Calculate total number of blogs for pagination
     $totalBlogs = $blogC->countAllBlogs(); // Update this with the appropriate method to count all blogs
     $totalPages = ceil($totalBlogs / $perPage);
-}
 
-
-?>
-
-
-
-
-
-<!-- 
-// Add this PHP code to a new PHP file, for example, 'generate_content.php'
-
-$curl = curl_init();
-
-curl_setopt_array($curl, [
-	CURLOPT_URL => "https://blog-introduction.p.rapidapi.com/blog-intro?topic=lionel" .$_POST['title'],
-	CURLOPT_RETURNTRANSFER => true,
-	CURLOPT_ENCODING => "",
-	CURLOPT_MAXREDIRS => 10,
-	CURLOPT_TIMEOUT => 30,
-	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	CURLOPT_CUSTOMREQUEST => "GET",
-	CURLOPT_HTTPHEADER => [
-		"X-RapidAPI-Host: blog-introduction.p.rapidapi.com",
-		"X-RapidAPI-Key: 01cc6023bamsh5bc68752b6b5cbap154e98jsnb30e54146190"
-	],
-]);
-
-$response = curl_exec($curl);
-$err = curl_error($curl);
-
-curl_close($curl);
-
-if ($err) {
-    echo "cURL Error #:" . $err;
-} else {
-    echo $response;
+    // Apply profanity filter to titles and content
+    foreach ($paginatedBlogs as &$blog) {
+        $blog['title'] = filterProfanity($blog['title']);
+        $blog['contenu'] = filterProfanity($blog['contenu']);
+    }
+    unset($blog); // Unset the reference variable
 }
 ?>
 
--->
+
+
+
 
 
 
@@ -333,10 +343,10 @@ if ($err) {
                     <div class="blog_post_title">' . $blog['title'] . '</div>
                     <div class="blog_post_meta">' . $blog['user'] . ' | <a href="comments.php?blogid=' . $blog['id'] . '">comments</a></div>
                     <div class="blog_post_text">
-                        <p>' . $blog['contenu'] . '</p>
+					<div>' . $blog['contenu'] . '</div>
 						<button class="text_to_speech_btn" data-content="' . $blog['contenu'] . '">Convert to Audio</button>
 						<audio id="blog_audio" controls style="display: none;"></audio>
-						<button id="generate_new_content">Generate New Content</button>
+						
                     </div>
                     <div class="blog_post_link"><a href="updateblog.php?id=' . $blog['id'] . '">update</a></div>
                     <div class="blog_post_link"><a href="deleteblog.php?id=' . $blog['id'] . '">delete</a></div>

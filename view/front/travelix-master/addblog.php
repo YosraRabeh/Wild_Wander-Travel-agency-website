@@ -233,8 +233,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="row">
             <div class="col">
                 <form method="POST" action="blogC.php" class="search-form">
-                    <input type="text" name="text" placeholder="Enter text for speech" class="search-input">
-                    <button type="submit" class="button intro_button">Convert to Speech</button>
                 </form>
 
                 <!-- Contact Form -->
@@ -246,8 +244,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="text" name="date" class="contact_form_subject input_field" placeholder="DD/MM/YY" data-error="Subject is required.">
                         <button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Add Blog</button>
                     </form>
-						<button id="generate_blog_button" class="button trans_200">Generate Blog</button>
-						<div id="generated_blog_content"></div> <!-- This is where the generated blog content will be displayed -->
+					
                 </div>
 
             </div>
