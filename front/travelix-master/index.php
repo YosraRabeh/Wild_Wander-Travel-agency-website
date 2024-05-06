@@ -1,6 +1,20 @@
 <?php
+include '../../Dashboard/Controller/UserC.php';
 session_start();
-//var_dump($_SESSION);
+$userC = new UserC();
+if(isset($_SESSION['idUser'])) {
+    $user = $userC->RecupererUser($_SESSION['idUser']);
+	if($user)
+	{
+		$username = $user['username'];
+		$image = $user['image'];
+	} else 
+	{
+		echo "No user found !!";
+	}
+} else {
+	echo "idUser not setted";
+}
 ?>
 
 <!DOCTYPE html>
@@ -47,8 +61,12 @@ session_start();
 						</div>
 						<div class="user_box ml-auto">
 						<a href="profile.php?id=<?php echo $_SESSION['idUser']; ?>" class="icon">
-							<img src="images/user.png" alt="">
+							<img src="../../Dashboard/View/back/material-dashboard-master/pages/User/uploads/<?php echo $image; ?>" height="30px" width="30px" style="border-radius: 50%; object-fit: cover;">
+							<span class="text text-secondary" style="font-size:20px;">Welcome <?php echo $username; ?> !</span>
 						</a>
+						<div>
+
+    </div>
 						</div>
 
 					</div>

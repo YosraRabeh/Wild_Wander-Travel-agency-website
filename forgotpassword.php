@@ -1,56 +1,71 @@
 <?php
+// Include PHPMailer classes
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Require PHPMailer files
+require 'Dashboard/View/back/material-dashboard-master/pages/User/phpmailer/src/Exception.php';
+require 'Dashboard/View/back/material-dashboard-master/pages/User/phpmailer/src/PHPMailer.php';
+require 'Dashboard/View/back/material-dashboard-master/pages/User/phpmailer/src/SMTP.php';
+
+// Include necessary files
 include_once 'C:/xampp/htdocs/Works/UserManagment/Dashboard/Controller/UserC.php';
 include_once 'C:/xampp/htdocs/Works/UserManagment/Dashboard/Model/User.php';
-session_start(); 
 
-$UserC=new UserC();
+// Create UserC instance
+$userC = new UserC();
 
-$erreur="";
-$iserreur=false;
+// Check if email is submitted via POST
+if (isset($_POST['email'])) {
+    // Retrieve user information by email
+    $userexist = $userC->RecupererUserByEmail($_POST['email']);
 
+    if ($userexist != false) {
+        // Generate verification code
+        $code = bin2hex(random_bytes(6));
+        
+        // Sender email address
+        $senderEmail = "hlelikhairi04@gmail.com";
 
-if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
-    header("Location:front/travelix-master/index.php");  
-    exit;                                     
+        // Create a new PHPMailer instance
+        $mail = new PHPMailer(true); // Passing true enables exceptions
 
-}else{
-    $_SESSION['idUser']=-1;
-    $_SESSION['email']='';
-    $_SESSION['role']='';
+        try {
+            // Set SMTP server settings for Gmail
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'hlelikhairi04@gmail.com'; // Your Gmail account
+            $mail->Password = 'zwznfjwqohnlwoxi'; // Your application-specific password
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
 
-    if(isset($_POST['email'])&& isset($_POST['password'])){
-        $userexist=$UserC->RecupererUserByEmail($_POST['email']);        
-        if($userexist==false){
-            $iserreur=true;
-            $erreur="Email does not exist ";                                  
+            // Set sender and recipient
+            $mail->setFrom($senderEmail);
+            $mail->addAddress($_POST['email']);
 
-        }else{
-            /*   
-          echo "Hashed Password from Database: " . $userexist['password'] . "<br>";
-          echo "Hashed Password Input: " . password_hash($_POST['password'], PASSWORD_DEFAULT) . "<br>";
-          echo "Password Verify Result: " . (password_verify($_POST['password'], $userexist['password']) ? 'true' : 'false') . "<br>";  
-            */
-            if(password_verify($_POST['password'],$userexist['password'])==false){
-              var_dump($userexist);
-                $iserreur=true;
-                $erreur="Mot de passe incorrect";                      
-            }else{
-                $_SESSION['idUser']=$userexist['idUser'];                /* Recuperation par Id */
-                $_SESSION['email']=$userexist['email'];            /* Recuperation par Email */
-                $_SESSION['role']=$userexist['role'];
-                if($_SESSION['role']=="Client"){                 
-                    header("Location:front/travelix-master/index.php"); /// header: hia win bch yhezna
-                    exit;                    /* Si Client => Front */
-                }else if($_SESSION['role']=="Admin"){
-                    header("Location:/Works/UserManagment/Dashboard/View/back/material-dashboard-master/pages/User/AfficherUtilisateurs.php");   
-                    exit; 
-                }
-            }
+            // Email subject and body
+            $mail->Subject = 'Forget Password';
+            $mail->Body = "Votre Code de verification est : " . $code;
+
+            // Attempt to send the email
+            $mail->send();
+
+            // Email sent successfully
+            session_start();
+            $_SESSION['code'] = $code;
+            $_SESSION['idUser'] = $userexist['idUser'];
+            header("Location: verifcode.php");
+            exit; // Stop script execution after redirection
+        } catch (Exception $e) {
+            // Email sending failed
+            echo "Email sending failed. Error: " . $mail->ErrorInfo;
         }
+    } else {
+        // User not found by email
+        echo "<script> alert('Email incorrect') </script>";
     }
-
 }
-
 ?>
 
 
@@ -164,39 +179,17 @@ if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
 
 
               <div class="card-body">
-                <form method="POST" action="login.php">
-                  <div class="input-group input-group-outline my-3">
-                    <input type="text" id="email" name="email" class="form-control" placeholder="Email">
-                  </div>
 
+                <form method="POST" action="forgotpassword.php">
+                <h4 class="text-center">Forget Password</h4><br>
 
                   <div class="input-group input-group-outline mb-3">
-                    <input type="password" id="password" name="password" class="form-control" placeholder="password">
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email">
                   </div>
-                  <?php if($iserreur){ ?>
-                    <div class="alert alert-danger" id="erreur">
-                        <?php echo $erreur; ?>
-                    </div>
-                    <?php } ?>
                     
-                    
-                  
                   <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Login</button>
-                  </div>
-
-
-                  <p class="mt-4 text-sm text">
-                    <a href="forgotpassword.php" class="text-primary text-gradient font-weight-bold">Forgot Password ?</a>
-                  </p>
-
-
-                  <p class="mt-4 text-sm text-center">
-                    Don't have an account?
-                    <a href="signup.php" class="text-primary text-gradient font-weight-bold">Sign up</a>
-                  </p>
-
-
+                  <input class="btn btn-primary" type="submit" name="envoyer" value="Envoyer">
+                </div>
 
                 </form>
               </div>

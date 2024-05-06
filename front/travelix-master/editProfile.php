@@ -1,32 +1,59 @@
 <?php
-// Include UserC.php and start session
 include '../../Dashboard/Controller/UserC.php';
 session_start();
 
-// Check if user is logged in
-if (!isset($_SESSION['idUser'])) {
-    header("Location: ../../login.php");
-    exit;
-}
-
-// Initialize UserC instance
 $userC = new UserC();
+$erreur = "";
+$iserreur = false;
 
-// Fetch user data based on session ID
-$userId = $_SESSION['idUser'];
-$user = $userC->RecupererUser($userId);
+// Check if user ID is specified in the URL
+if (isset($_GET['id'])) {
+    $userId = $_GET['id'];   /// ID hetha li jebneh m session
+    
+    // Retrieve user details based on ID
+    $user = $userC->RecupererUser($userId);   /// user hetha li jebneh m session
 
-// Check if user data is retrieved successfully
-if ($user) {
-    $username = $user['username'];
-    $role = $user['role'];
-    $dob = $user['dob'];
-    $email = $user['email'];
-    $password = $user['password'];
-    $profileImage = $user['image']; // Assuming 'image' is the column name for profile picture
+    // Check if form is submitted
+    if (isset($_POST['submit'])) {
+        // Check if required fields are set
+        if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['dob']) && isset($_FILES['image'])) {
+            // Check if the email is already registered
+            
+                // Process and upload image
+                $filename = $_FILES["image"]["name"];
+                $tempname = $_FILES["image"]["tmp_name"];
+                $folder = "../../Dashboard/View/back/material-dashboard-master/pages/User/uploads/" . $filename;
+                
+                if (move_uploaded_file($tempname, $folder)) {
+                    // Image uploaded successfully
+                    echo "<h3>Image uploaded successfully!</h3>";
+                } else {
+                    // Failed to upload image
+                    echo "<h3>Failed to upload image!</h3>";
+                }
+                
+                // Hash the password
+                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+                // Create a new User object with updated data
+                $user = new User(
+                    $_POST['username'],
+                    $_POST['email'],
+                    $password,
+                    $_POST['dob'],
+                    "Client",  // Default role
+                    $filename  // Updated image filename
+                );
+
+                // Update user details in the database
+                $userC->ModifierUser($user, $userId);    //// bch naamlou modification lel session connecté
+
+                // Redirect to the profile page after successful update
+                header("Location: profile.php");
+        }
+    }
 } else {
-    echo "User not found";
-    exit; // Exit script if user data is not found
+    echo "User ID not specified";
 }
 ?>
 <!DOCTYPE html>
@@ -75,8 +102,7 @@ if ($user) {
 						</div>
 						<div class="user_box ml-auto">
 						<a href="profile.php?id=<?php echo $_SESSION['idUser']; ?>" class="icon">
-							<img src="../../Dashboard/View/back/material-dashboard-master/pages/User/uploads/<?php echo $profileImage; ?>" height="30px" width="30px" style="border-radius: 50%; object-fit: cover;">
-							<span class="text text-secondary" style="font-size:20px;">Welcome <?php echo $username; ?> !</span>
+							<img src="images/user.png" >
 						</a>
 						<div>
 					</div>
@@ -176,86 +202,54 @@ if ($user) {
 				<div class="col">
 
 					<!-- Contact Form -->
-					<div class="card card-body mx-3 mx-md-3 mt-n6">
-						<div class="row gx-4 mb-2">
-						  <div class="col-auto">
-							<div class="avatar avatar-xl position-relative">
-							  <img src="../../Dashboard/View/back/material-dashboard-master/pages/User/uploads/<?php echo $profileImage; ?>" alt="profile_image" height="200px" width="200px">
-							</div>
-						  </div>
-						  <div class="col-auto my-auto">
-							<div class="h-100">
-							  <h5 class="mb-1">
-								<?php  echo $username; ?>
-							  </h5>
-							  <p class="mb-0 font-weight-normal text-sm">
-								<?php  echo $role; ?>
-							  </p>
-							  <br>
-							  <a id="editprofile" href="editProfile.php?id=<?php echo $_SESSION['idUser']; ?>" class="btn btn-secondary btn-icon-text"><i class="fas fa-user-edit "></i> Edit Profile</a>
+					<div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+				<h2 class="card-title">Edit Profile</h2>
+                  
 
-							</div>
-						  </div>
-				
-				
-						</div>
-						<div class="row">
-						  <div class="row">
-				
-				
-							<div class="col-12 col-xl-4">
-							  <div class="card card-plain h-100">
-								<div class="card-header pb-0 p-3">
-								  <div class="row">
-									<div class="col-md-8 d-flex align-items-center">
-									  <h6 class="mb-0">Profile Information</h6>
-									</div>
-									<div class="col-md-4 text-end">
-									  <a href="javascript:;">
-									  </a>
-									</div>
-								  </div>
-								</div>
-								<div class="card-body p-3">
-								  <p class="text-sm">
-									Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality).
-								  </p>
-								  <hr class="horizontal gray-light my-4">
-								  <ul class="list-group">
-									<li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Full Name:</strong> &nbsp; <?php  echo $username; ?></li>
-									<li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Date of Birth:</strong> &nbsp; <?php  echo $dob; ?></li>
-									<li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Password:</strong> &nbsp; <?php  echo $password; ?></li>
-									<li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Email:</strong> &nbsp;<?php  echo $email; ?></li>
-									<li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Location:</strong> &nbsp; USA</li>
-									<li class="list-group-item border-0 ps-0 pb-0">
-									  <strong class="text-dark text-sm">Social:</strong> &nbsp;
-									  <a class="btn btn-facebook btn-simple mb-0 ps-1 pe-2 py-0" href="javascript:;">
-										<i class="fab fa-facebook fa-lg"></i>
-									  </a>
-									  <a class="btn btn-twitter btn-simple mb-0 ps-1 pe-2 py-0" href="javascript:;">
-										<i class="fab fa-twitter fa-lg"></i>
-									  </a>
-									  <a class="btn btn-instagram btn-simple mb-0 ps-1 pe-2 py-0" href="javascript:;">
-										<i class="fab fa-instagram fa-lg"></i>
-									  </a>
-									</li>
-									<br><br>
-									<a class="btn btn-outline-primary" href="index.php">Cancel</a>
-								  </ul>
-								</div>
-							  </div>
-							</div>
-				
-				
-				
-				
-				
-						  </div>
-						</div>
-					  </div>
+                            
+                  <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
+				  <form method="post" class="forms-sample" name="form" id="form" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="Username" style="border: 1px solid #dee2e6;" value="<?php echo $user['username']; ?>">
+        <div id="usernameError" class="error-message"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" name="email" id="email" placeholder="Email" style="border: 1px solid #dee2e6;" value="<?php echo $user['email']; ?>">
+        <div id="emailError" class="error-message"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="password" class="text text-danger">Re-Create Your Password (Required)</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" style="border: 1px solid #dee2e6;">
+        <div id="passwordError" class="error-message"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="dob">Date of Birth</label>
+        <input type="date" class="form-control" id="dob" name="dob" style="border: 1px solid #dee2e6;" value="<?php echo $user['dob']; ?>">
+    </div>
+
+    <div class="form-group">
+        <label for="image">Image</label>
+        <input type="file" class="form-control" name="image" id="imageee" style="border: 1px solid #dee2e6;">
+        <span>Image Path : <?php echo basename($user['image']); ?></span>
+        <div id="imageError" class="error-message"></div>
+    </div>
+
+    <br>
+    <button type="submit" id="submit" name="submit" class="btn btn-primary me-2">Submit</button>
+    <a class="btn btn-light" href="profile.php" role="button">Cancel</a>
+</form>
 
 
-				</div>
+                </div>
+              </div>
+            </div> 
 			</div>
 		</div>
 	</div>

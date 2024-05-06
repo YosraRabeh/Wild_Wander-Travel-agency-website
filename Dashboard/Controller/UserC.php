@@ -192,6 +192,34 @@
 		}
 	}
 
+    function CountUsersByRole() {
+        $sql = "SELECT role, COUNT(*) AS count FROM user GROUP BY role";
+        $db = config::getConnexion();
+    
+        try {
+            $query = $db->query($sql);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
+
+
+    function ModifierPassword($idUser,$password){
+        try {
+            $db = config::getConnexion();
+    $query = $db->prepare('UPDATE user SET  password = :password    WHERE idUser =:idUser');
+            $query->execute([
+                
+                'password' => $password,
+                'idUser' => $idUser,
+        
+            ]);
+        } catch (PDOException $e) {
+            die($e->getMessage());
+        }
+    }
+
 
 
             }

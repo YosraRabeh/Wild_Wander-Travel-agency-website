@@ -50,6 +50,12 @@ $userNumber = $UserC->getTotalUsers();
 		$userList = $UserC->getUserWithPagination($start, $itemsPerPage);
 	}
 
+  $roleCounts = $UserC->CountUsersByRole();
+
+  $roleData = [];
+  foreach ($roleCounts as $roleCount) {
+      $roleData[$roleCount['role']] = (int)$roleCount['count'];
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -200,9 +206,9 @@ $userNumber = $UserC->getTotalUsers();
 
             <!------------------------Search bar----------------------->
           <div class="input-group input-group-outline">
-              
+              <label class="form-label">Type here...</label>
               <form method="GET">
-              <input type="text" name="Search" id="Search" class="form-control" placeholder="Search ...">
+              <input type="text" name="Search" id="Search" class="form-control">
               </form>
             </div>
 
@@ -472,37 +478,30 @@ $userNumber = $UserC->getTotalUsers();
                     echo ">$i</a>";
                 }
             ?>
-        </div>       
-		<style>
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .pagination a {
-        color: #333;
-        padding: 8px 16px;
-        text-decoration: none;
-        border: 1px solid #ddd;
-        margin: 0 4px;
-        border-radius: 4px;
-    }
-
-    .pagination a.active {
-        background-color: #4CAF50;
-        color: white;
-    }
-
-    .pagination a:hover:not(.active) {
-        background-color: #ddd;
-    }
-</style>
-              </div>
-            </div>
-          </div>
         </div>
+
+
+              </div>
+              
+            </div>
+
+
+             </div>  
+
+          </div>
+          
+        </div>
+        <div class="card">
+              <div class="card-body">
+                <div class="card-title">
+                  <h4>Users By Role</h4>
+                </div>
+                <canvas id="rolePieChart" width="400" height="400"></canvas>
+              </div>
       </div>
+      
+
+      
      
       <footer class="footer py-4  ">
 
@@ -583,6 +582,50 @@ $userNumber = $UserC->getTotalUsers();
       </div>
     </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+var ctx = document.getElementById('rolePieChart').getContext('2d');
+var roleData = <?php echo json_encode($roleData); ?>;
+
+var myPieChart = new Chart(ctx, {
+type: 'pie',
+data: {
+labels: Object.keys(roleData),
+datasets: [{
+  data: Object.values(roleData),
+  backgroundColor: ['#FF6384', '#36A2EB'], // Customize colors as needed
+  hoverBackgroundColor: ['#FF6384', '#36A2EB']
+}]
+}
+});
+</script>
+<style>
+.pagination {
+display: flex;
+justify-content: center;
+margin-top: 20px;
+}
+
+.pagination a {
+color: #333;
+padding: 8px 16px;
+text-decoration: none;
+border: 1px solid #ddd;
+margin: 0 4px;
+border-radius: 4px;
+}
+
+.pagination a.active {
+background-color: #4CAF50;
+color: white;
+}
+
+.pagination a:hover:not(.active) {
+background-color: #ddd;
+}
+</style>
   <!--   Core JS Files   -->
   <script src="../../assets/js/core/popper.min.js"></script>
   <script src="../../assets/js/core/bootstrap.min.js"></script>

@@ -1,56 +1,21 @@
-<?php
-include_once 'C:/xampp/htdocs/Works/UserManagment/Dashboard/Controller/UserC.php';
-include_once 'C:/xampp/htdocs/Works/UserManagment/Dashboard/Model/User.php';
-session_start(); 
+<?php 
+$succes=false;
 
-$UserC=new UserC();
-
-$erreur="";
-$iserreur=false;
-
-
-if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
-    header("Location:front/travelix-master/index.php");  
-    exit;                                     
-
-}else{
-    $_SESSION['idUser']=-1;
-    $_SESSION['email']='';
-    $_SESSION['role']='';
-
-    if(isset($_POST['email'])&& isset($_POST['password'])){
-        $userexist=$UserC->RecupererUserByEmail($_POST['email']);        
-        if($userexist==false){
-            $iserreur=true;
-            $erreur="Email does not exist ";                                  
-
-        }else{
-            /*   
-          echo "Hashed Password from Database: " . $userexist['password'] . "<br>";
-          echo "Hashed Password Input: " . password_hash($_POST['password'], PASSWORD_DEFAULT) . "<br>";
-          echo "Password Verify Result: " . (password_verify($_POST['password'], $userexist['password']) ? 'true' : 'false') . "<br>";  
-            */
-            if(password_verify($_POST['password'],$userexist['password'])==false){
-              var_dump($userexist);
-                $iserreur=true;
-                $erreur="Mot de passe incorrect";                      
-            }else{
-                $_SESSION['idUser']=$userexist['idUser'];                /* Recuperation par Id */
-                $_SESSION['email']=$userexist['email'];            /* Recuperation par Email */
-                $_SESSION['role']=$userexist['role'];
-                if($_SESSION['role']=="Client"){                 
-                    header("Location:front/travelix-master/index.php"); /// header: hia win bch yhezna
-                    exit;                    /* Si Client => Front */
-                }else if($_SESSION['role']=="Admin"){
-                    header("Location:/Works/UserManagment/Dashboard/View/back/material-dashboard-master/pages/User/AfficherUtilisateurs.php");   
-                    exit; 
-                }
-            }
-        }
-    }
-
+session_start();
+if(!isset($_SESSION['code'])){
+    header("Location:forgetpassword.php");
 }
-
+if(isset($_POST['password'])){
+    
+    include_once 'Dashboard/Controller/UserC.php';
+    $userC = new UserC();
+    $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    
+    $userC->ModifierPassword($_SESSION['idUser'],$hashed_password);
+    $succes=true;
+    session_unset();
+    session_destroy();
+    }
 ?>
 
 
@@ -164,41 +129,48 @@ if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
 
 
               <div class="card-body">
-                <form method="POST" action="login.php">
-                  <div class="input-group input-group-outline my-3">
-                    <input type="text" id="email" name="email" class="form-control" placeholder="Email">
-                  </div>
 
+              <?php if($succes){?>
+    <div class="alert alert-success">
+password Updated , <a href="login.php">go to main page</a>     
+</div>
+    <?php }else{ ?>
+                <?php if(!isset($_POST['code'])){ ?>
+
+                <form method="POST" action="verifcode.php">
+                <h4 class="text-center">Enter your code </h4><br>
 
                   <div class="input-group input-group-outline mb-3">
-                    <input type="password" id="password" name="password" class="form-control" placeholder="password">
+                    <input type="text" id="code" name="code" class="form-control" placeholder="Code">
                   </div>
-                  <?php if($iserreur){ ?>
-                    <div class="alert alert-danger" id="erreur">
-                        <?php echo $erreur; ?>
-                    </div>
-                    <?php } ?>
                     
-                    
-                  
                   <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Login</button>
+                  <input class="btn btn-primary" type="submit" name="envoyer" value="Envoyer">
+                </div>
+                </form>
+                <?php }else if($_POST['code']==$_SESSION['code']){ ?>
+                  <form action="verifcode.php" method="POST">
+
+                  <h4 class="text-center">Reset Your Password</h4><br>
+
+                  <div class="form-group">
+                    <input type="password" id="password" name="password" class="form-control" placeholder=" Your Password">
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">
+                          <i class="fa fa-eye" aria-hidden="true"></i>
+                      </span>
                   </div>
 
-
-                  <p class="mt-4 text-sm text">
-                    <a href="forgotpassword.php" class="text-primary text-gradient font-weight-bold">Forgot Password ?</a>
-                  </p>
-
-
-                  <p class="mt-4 text-sm text-center">
-                    Don't have an account?
-                    <a href="signup.php" class="text-primary text-gradient font-weight-bold">Sign up</a>
-                  </p>
-
-
-
+                  <br><br>
+                  <div class="text-center">
+                  <input class="btn btn-primary" type="submit" name="envoyer" value="Envoyer">
+                </div>
                 </form>
+                <?php }else{ ?>
+                        <div class="alert alert-danger" id="erreur">
+                        Code incorrect
+                        </div>
+                        <?php }} ?>
+
               </div>
             </div>
           </div>
@@ -256,6 +228,7 @@ if(isset($_SESSION['idUser'])&& $_SESSION['idUser']!=-1){
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="Dashboard/View/back/material-dashboard-master/assets/js/material-dashboard.min.js?v=3.1.0"></script>
+  <script src="C:/xamppp/htdocs/Works/UserManagment/Dashboard/View/back/material-dashboard-master/pages/User/assets/javascript.js"></script>
 </body>
 
 </html>
