@@ -14,7 +14,13 @@ $PuckNumber = $ReservationC->getTotalres();
 	$totalPages = ceil($totalRES / $itemsPerPage);
 	$currentPage = 1;
 	$start = 0;    
-
+  if(isset($_GET['Search'])) {
+    // Traiter la recherche en utilisant la méthode Recherche de votre classe OffreC
+    $reservationList = $ReservationC->RechercheB($_GET['Search']);
+  } else {
+    // Si aucune recherche n'a été effectuée, afficher tous les Packs normalement
+    $reservationList = $ReservationC->AfficherReservation();
+  }
     if (isset($_GET['page']) && !empty($_GET['page'])) {
         $currentPage = (int) strip_tags($_GET['page']);
 
@@ -23,7 +29,7 @@ $PuckNumber = $ReservationC->getTotalres();
 
     }	elseif(isset($_GET['Search']))
 		{
-		$reservationList = $ReservationC->Recherche($_GET['Search']);
+		$reservationList = $ReservationC->RechercheB($_GET['Search']);
 		}
      elseif(isset($_GET['dateACS']))
     {
@@ -42,6 +48,10 @@ $PuckNumber = $ReservationC->getTotalres();
 		$reservationList = $ReservationC->getresWithPagination($start, $itemsPerPage);
 	}
 
+  $data = $ReservationC->getOffresLesPlusReservees();
+
+// Conversion des données en format JSON et retour
+$data_json = json_encode($data);
 
 
 
@@ -82,7 +92,7 @@ $PuckNumber = $ReservationC->getTotalres();
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
         <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white">Safrti</span>
+        <span class="ms-1 font-weight-bold text-white">Wild Wander</span>
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
@@ -212,10 +222,9 @@ $PuckNumber = $ReservationC->getTotalres();
             <div class="input-group input-group-outline">
                   <!------------------------Search bar----------------------->
           <div class="input-group input-group-outline">
-              <label class="form-label">Type here...</label>
-               <form method="GET">
-               <input type="text" name="Search" id="Search" class="form-control">
-             </form>
+                      <form method="GET">
+                        <input type="text" name="Search" id="Search" class="form-control" placeholder="Search...">
+                      </form>
            </div>
             </div>
           </div>
@@ -322,9 +331,13 @@ $PuckNumber = $ReservationC->getTotalres();
             <div class="card">
               <div class="card-body">
                 <h4 class="card-title">Reservation Table</h4>
-
+                <div class="input-group input-group-outline">
+                      
+                    </div>
 
                 <a href="afficherPack.php" class="btn btn-primary">Pack List </a>
+                <a href="stat.php" class="btn btn-primary">statistique  </a>
+
                 <div class="dropdown">
                 <a class="btn btn-secondary dropdown-toggle" href="AfficherReservations.php" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   Filter By
@@ -434,7 +447,68 @@ $PuckNumber = $ReservationC->getTotalres();
 
 
               </div>
+              <div class="card">
+  <div class="card-title">
+    <h4>Offre By Reservartion</h4>
+  </div>
+  <div class="card-body">
+  <canvas id="statistiqueChart" width="400" height="400"></canvas> <!-- Modifier la taille du canvas -->
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var jsonData = <?php echo $data_json; ?>; // Inclure les données JSON directement dans le script
+
+        var labels = [];
+        var values = [];
+        var colors = []; // Tableau de couleurs
+
+        // Parcourir les données et extraire les labels, les valeurs et les couleurs
+        jsonData.forEach(function(item) {
+            labels.push(item.nom_offre); // Nom de l'offre
+            values.push(item.nombreReservations); // Nombre de réservations
+            colors.push(getRandomColor()); // Ajouter une couleur aléatoire
+        });
+
+        var ctx = document.getElementById('statistiqueChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie', // Changer le type de graphique en "doughnut" pour un graphique circulaire
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nombre de réservations',
+                    data: values,
+                    backgroundColor: colors, // Utiliser les couleurs définies
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true, // Afficher la légende
+                        position: 'right' // Position de la légende
+                    }
+                }
+            }
+        });
+    });
+
+    // Fonction pour obtenir une couleur aléatoire
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+</script>
             </div>
+         
           </div>
           <!-- content-wrapper ends -->
           <!-- partial:../../partials/_footer.html -->

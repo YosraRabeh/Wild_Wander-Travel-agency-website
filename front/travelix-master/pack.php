@@ -9,7 +9,6 @@ $PuckNumber = $OffreC->getTotaloffre();
 
 	//// number of taxis per page
 	$itemsPerPage = 3; // Adjust as needed
-	// Get the total number of users
 	$totalPack = $OffreC->getTotaloffre();
 	// Calculate the total number of pages
 	$totalPages = ceil($totalPack / $itemsPerPage);

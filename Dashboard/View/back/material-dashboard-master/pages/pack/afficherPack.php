@@ -6,43 +6,43 @@ $PackList = $OffreC->AfficherOffre();
 
 $PuckNumber = $OffreC->getTotaloffre();
 
-	//// number of taxis per page
-	$itemsPerPage = 3; // Adjust as needed
-	// Get the total number of users
-	$totalPack = $OffreC->getTotaloffre();
-	// Calculate the total number of pages
-	$totalPages = ceil($totalPack / $itemsPerPage);
-	$currentPage = 1;
-	$start = 0;    
-  
+//// number of taxis per page
+$itemsPerPage = 3; // Adjust as needed
+// Get the total number of users
+$totalPack = $OffreC->getTotaloffre();
+// Calculate the total number of pages
+$totalPages = ceil($totalPack / $itemsPerPage);
+$currentPage = 1;
+$start = 0;
 
-    if (isset($_GET['page']) && !empty($_GET['page'])) {
-        $currentPage = (int) strip_tags($_GET['page']);
+if (isset($_GET['Search'])) {
+  $PackList = $OffreC->RechercheB($_GET['Search']);
+} else {
+  $PackList = $OffreC->AfficherOffre();
+}
 
-			$currentPage = max(1, min($currentPage, $totalPages));
-			$start = ($currentPage - 1) * $itemsPerPage;
 
-    }	elseif(isset($_GET['Search']))
-		{
-		$PackList = $OffreC->Recherche($_GET['Search']);
-		} elseif(isset($_GET['nomOf']))
-    {
-      $PackList = $OffreC->Trioffre();
-    }elseif(isset($_GET['prix']))
-    {
-      $PackList = $OffreC->Triprix();
-    }elseif(isset($_GET['prixd']))
-    {
-      $PackList = $OffreC->Triprixdesc();
-    }
-	 else 
-		{
-		$PackList = $OffreC->AfficherOffre();
-		}
+if (isset($_GET['page']) && !empty($_GET['page'])) {
+  $currentPage = (int) strip_tags($_GET['page']);
 
-	if (!isset($_GET['Search']) && !isset($_GET['nomOf']) && !isset($_GET['prix']) && !isset($_GET['prixd']) ) {          ////// if cat (Afficher taxis per category) not present he display the pagination
-		$PackList = $OffreC->getPackWithPagination($start, $itemsPerPage);
-	}
+  $currentPage = max(1, min($currentPage, $totalPages));
+  $start = ($currentPage - 1) * $itemsPerPage;
+
+} elseif (isset($_GET['Search'])) {
+  $PackList = $OffreC->RechercheB($_GET['Search']);
+} elseif (isset($_GET['nomOf'])) {
+  $PackList = $OffreC->Trioffre();
+} elseif (isset($_GET['prix'])) {
+  $PackList = $OffreC->Triprix();
+} elseif (isset($_GET['prixd'])) {
+  $PackList = $OffreC->Triprixdesc();
+} else {
+  $PackList = $OffreC->AfficherOffre();
+}
+
+if (!isset($_GET['Search']) && !isset($_GET['nomOf']) && !isset($_GET['prix']) && !isset($_GET['prixd'])) {          ////// if cat (Afficher taxis per category) not present he display the pagination
+  $PackList = $OffreC->getPackWithPagination($start, $itemsPerPage);
+}
 
 
 
@@ -64,7 +64,8 @@ $PuckNumber = $OffreC->getTotaloffre();
     Pack
   </title>
   <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+  <link rel="stylesheet" type="text/css"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
   <link href="../../assets/css/nucleo-icons.css" rel="stylesheet" />
   <link rel="stylesheet" href="assets/style.css">
@@ -82,10 +83,14 @@ $PuckNumber = $OffreC->getTotaloffre();
 
 <body class="g-sidenav-show  bg-gray-200">
 
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+  <aside
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+    id="sidenav-main">
     <div class="sidenav-header">
-      <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
+      <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+        aria-hidden="true" id="iconSidenav"></i>
+      <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard "
+        target="_blank">
         <img src="../../assets/img/logos/logo web.png" class="navbar-brand-img h-100" alt="main_logo">
         <span class="ms-1 font-weight-bold text-white">Wild Wander</span>
       </a>
@@ -210,248 +215,276 @@ $PuckNumber = $OffreC->getTotaloffre();
     <!-- Navbar -->
 
     <div class="container-fluid py-4">
-          <footer class="footer py-4  ">
-        
+      <footer class="footer py-4  ">
 
-    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
-      <div class="container-fluid py-1 px-3">
-      <h6 class="font-weight-bolder mb-0">Pack</h6>
-        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-        <div class="ms-md-auto pe-md-3 d-flex align-items-center">
 
-            <!------------------------Search bar----------------------->
-          <div class="input-group input-group-outline">
-              <label class="form-label">Type here...</label>
-               <form method="GET">
-               <input type="text" name="Search" id="Search" class="form-control">
-               </form>
-           </div>
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+          data-scroll="true">
+          <div class="container-fluid py-1 px-3">
+            <h6 class="font-weight-bolder mb-0">Pack</h6>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+              <div class="ms-md-auto pe-md-3 d-flex align-items-center">
 
-</div>
-          <ul class="navbar-nav  justify-content-end">
-            
-           
-            <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                <div class="sidenav-toggler-inner">
-                  <i class="sidenav-toggler-line"></i>
-                  <i class="sidenav-toggler-line"></i>
-                  <i class="sidenav-toggler-line"></i>
+                <!------------------------Search bar----------------------->
+                <div class="input-group input-group-outline">
+                       <form method="GET">
+                        <input type="text" name="Search" id="Search" class="form-control" placeholder="Search...">
+                      </form>
                 </div>
-              </a>
-            </li>
-            
-            <li class="nav-item px-3 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0">
-                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-              </a>
-            </li>
-            <li class="nav-item dropdown pe-2 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-bell cursor-pointer"></i>
-              </a>
-              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">New message</span> from Laur
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          13 minutes ago
-                        </p>
-                      </div>
+
+              </div>
+              <ul class="navbar-nav  justify-content-end">
+
+
+                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                  <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                    <div class="sidenav-toggler-inner">
+                      <i class="sidenav-toggler-line"></i>
+                      <i class="sidenav-toggler-line"></i>
+                      <i class="sidenav-toggler-line"></i>
                     </div>
                   </a>
                 </li>
-                
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="../../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">New album</span> by Travis Scott
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          1 day
-                        </p>
-                      </div>
-                    </div>
+
+                <li class="nav-item px-3 d-flex align-items-center">
+                  <a href="javascript:;" class="nav-link text-body p-0">
+                    <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
                   </a>
                 </li>
-                <li>
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
-                        <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                          <title>credit-card</title>
-                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                              <g transform="translate(1716.000000, 291.000000)">
-                                <g transform="translate(453.000000, 454.000000)">
-                                  <path class="color-background" d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z" opacity="0.593633743"></path>
-                                  <path class="color-background" d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"></path>
+                <li class="nav-item dropdown pe-2 d-flex align-items-center">
+                  <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-bell cursor-pointer"></i>
+                  </a>
+                  <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                    <li class="mb-2">
+                      <a class="dropdown-item border-radius-md" href="javascript:;">
+                        <div class="d-flex py-1">
+                          <div class="my-auto">
+                            <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="text-sm font-weight-normal mb-1">
+                              <span class="font-weight-bold">New message</span> from Laur
+                            </h6>
+                            <p class="text-xs text-secondary mb-0">
+                              <i class="fa fa-clock me-1"></i>
+                              13 minutes ago
+                            </p>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+
+                    <li class="mb-2">
+                      <a class="dropdown-item border-radius-md" href="javascript:;">
+                        <div class="d-flex py-1">
+                          <div class="my-auto">
+                            <img src="../../assets/img/small-logos/logo-spotify.svg"
+                              class="avatar avatar-sm bg-gradient-dark  me-3 ">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="text-sm font-weight-normal mb-1">
+                              <span class="font-weight-bold">New album</span> by Travis Scott
+                            </h6>
+                            <p class="text-xs text-secondary mb-0">
+                              <i class="fa fa-clock me-1"></i>
+                              1 day
+                            </p>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item border-radius-md" href="javascript:;">
+                        <div class="d-flex py-1">
+                          <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
+                            <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1"
+                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                              <title>credit-card</title>
+                              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                                  <g transform="translate(1716.000000, 291.000000)">
+                                    <g transform="translate(453.000000, 454.000000)">
+                                      <path class="color-background"
+                                        d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
+                                        opacity="0.593633743"></path>
+                                      <path class="color-background"
+                                        d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z">
+                                      </path>
+                                    </g>
+                                  </g>
                                 </g>
                               </g>
-                            </g>
-                          </g>
-                        </svg>
-                      </div>
-                      
-                    </div>
-                  </a>
+                            </svg>
+                          </div>
+
+                        </div>
+                      </a>
+                    </li>
+                  </ul>
                 </li>
+                </li>
+
+
               </ul>
-            </li>
-            </li>
-
-
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <div class="main-panel">
-      <div class="content-wrapper">
-        <div class="row">
-
-
-          <div class="col-12 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Pack Table</h4>
-
-
-                <a href="AfficherReservations.php" class="btn btn-primary">Liste Reservation</a>
-                <a href="../../../../../../front/travelix-master/index.php" class="btn btn-primary">Front office</a>
-                <div class="dropdown">
-                <a class="btn btn-secondary dropdown-toggle" href="afficherPack.php" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                  Filter By
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="afficherPack.php?nomOf">Pack Name</a></li>
-                  <li><a class="dropdown-item" href="afficherPack.php?prix">Price in ascending order</a></li>
-                  <li><a class="dropdown-item" href="afficherPack.php?prixd">Price in descending order</a></li>
-                </ul>
-           </div>
-                <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
-                <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Id</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack Name</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">End date</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prix</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Reservation</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modifier</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Supprimer</th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <?php
-                  foreach ($PackList as $Pack) {
-                  ?>
-                    <tbody>
-                      <tr>
-                      <td><?php echo $Pack['ID_offre']; ?></td>
-                        <td><?php echo $Pack['nom_offre']; ?></td>
-                        <td><?php echo $Pack['date_debut']; ?></td>
-                        <td><?php echo $Pack['date_fin']; ?></td>
-                        <td><img src="uploads/<?php echo $Pack['image']; ?>" height="150px" width="150px" alt=""></td>
-                        <td><?php echo $Pack['prix']; ?> $</td>
-                        <td>
-                          <form method="GET" action="ajouterReservation.php">
-                            <input type="submit" class="btn btn-info btn-sm" name="Reserver" value="Reserver">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
-                        <td>
-                          <form method="GET" action="modifierPack.php">
-                            <input type="submit" class="btn btn-success btn-sm" name="Modifier" value="Edit">
-                            <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
-                          </form>
-                        </td>
-                        <td>
-                          <a class="btn btn-danger btn-sm" href="supprimerPack.php?ID_offre=<?php echo $Pack['ID_offre']; ?>">Delete</a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  <?php
-                  }
-                  ?>
-
-                  </table> 
-                <div class="pagination">
-            <?php
-                for ($i = 1; $i <= $totalPages; $i++) {
-                    echo "<a href='afficherPack.php?page=$i' ";
-                    if ($i == $currentPage) {
-                        echo "class='active'";
-                    }
-                    echo ">$i</a>";
-                }
-            ?>
-              </div>
-              <style>
-.pagination {
-  display: flex;
-  justify-content: center;
-}
-
-.pagination a {
-  border: 1px solid #ddd;
-  color: black;
-  padding: 10px 12px;
-  text-decoration: none;
-  transition: background-color .3s;
-}
-
-.pagination a.active {
-  background-color: #6B4CAF;
-  color: white;
-  border: 1px solid #4CAF50;
-}
-
-.pagination a:hover:not(.active) {
-  background-color: #ddd;
-}   </style>
-
-
-</style>
-            </div>
-
-
-
-              </div>
             </div>
           </div>
-          <!-- content-wrapper ends -->
-          <!-- partial:../../partials/_footer.html -->
-          <footer class="footer">
+        </nav>
 
-          </footer>
-          <!-- partial -->
-        </div>
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
 
 
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Pack Table</h4>
 
-        <!-- End Navbar -->
-        
-          </footer>
-        </div>
+                    
+
+                    <a href="AfficherReservations.php" class="btn btn-primary">Liste Reservation</a>
+                    <a href="../../../../../../front/travelix-master/index.php" class="btn btn-primary">Front office</a>
+                    <div class="dropdown">
+                      <a class="btn btn-secondary dropdown-toggle" href="afficherPack.php" role="button"
+                        id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter By
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" href="afficherPack.php?nomOf">Pack Name</a></li>
+                        <li><a class="dropdown-item" href="afficherPack.php?prix">Price in ascending order</a></li>
+                        <li><a class="dropdown-item" href="afficherPack.php?prixd">Price in descending order</a></li>
+                      </ul>
+                    </div>
+                    <!-- "validateForm" marbouta bl fichier controle.js mawjoud f dossier 'js'  -->
+                    <div class="card-body px-0 pb-2">
+                      <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                          <thead>
+                            <tr>
+                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack
+                                Id</th>
+                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pack
+                                Name</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Start date</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                End date</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Image</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Prix</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Reservation</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Modifier</th>
+                              <th
+                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Supprimer</th>
+                              <th class="text-secondary opacity-7"></th>
+                            </tr>
+                          </thead>
+                          <?php
+                          foreach ($PackList as $Pack) {
+                            ?>
+                            <tbody>
+                              <tr>
+                                <td><?php echo $Pack['ID_offre']; ?></td>
+                                <td><?php echo $Pack['nom_offre']; ?></td>
+                                <td><?php echo $Pack['date_debut']; ?></td>
+                                <td><?php echo $Pack['date_fin']; ?></td>
+                                <td><img src="uploads/<?php echo $Pack['image']; ?>" height="150px" width="150px" alt="">
+                                </td>
+                                <td><?php echo $Pack['prix']; ?> $</td>
+                                <td>
+                                  <form method="GET" action="ajouterReservation.php">
+                                    <input type="submit" class="btn btn-info btn-sm" name="Reserver" value="Reserver">
+                                    <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
+                                  </form>
+                                </td>
+                                <td>
+                                  <form method="GET" action="modifierPack.php">
+                                    <input type="submit" class="btn btn-success btn-sm" name="Modifier" value="Edit">
+                                    <input type="hidden" value=<?php echo $Pack['ID_offre']; ?> name="ID_offre">
+                                  </form>
+                                </td>
+                                <td>
+                                  <a class="btn btn-danger btn-sm"
+                                    href="supprimerPack.php?ID_offre=<?php echo $Pack['ID_offre']; ?>">Delete</a>
+                                </td>
+                              </tr>
+                            </tbody>
+                            <?php
+                          }
+                          ?>
+
+                        </table>
+                        <div class="pagination">
+                          <?php
+                          for ($i = 1; $i <= $totalPages; $i++) {
+                            echo "<a href='afficherPack.php?page=$i' ";
+                            if ($i == $currentPage) {
+                              echo "class='active'";
+                            }
+                            echo ">$i</a>";
+                          }
+                          ?>
+                        </div>
+                        <style>
+                          .pagination {
+                            display: flex;
+                            justify-content: center;
+                          }
+
+                          .pagination a {
+                            border: 1px solid #ddd;
+                            color: black;
+                            padding: 10px 12px;
+                            text-decoration: none;
+                            transition: background-color .3s;
+                          }
+
+                          .pagination a.active {
+                            background-color: #6B4CAF;
+                            color: white;
+                            border: 1px solid #4CAF50;
+                          }
+
+                          .pagination a:hover:not(.active) {
+                            background-color: #ddd;
+                          }
+                        </style>
+
+
+                        </style>
+                      </div>
+
+
+
+                    </div>
+                  </div>
+                </div>
+                <!-- content-wrapper ends -->
+                <!-- partial:../../partials/_footer.html -->
+                <footer class="footer">
+
+                </footer>
+                <!-- partial -->
+              </div>
+
+
+
+              <!-- End Navbar -->
+
+      </footer>
+    </div>
   </main>
   <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
@@ -463,7 +496,7 @@ $PuckNumber = $OffreC->getTotaloffre();
           <h5 class="mt-3 mb-0">Material UI Configurator</h5>
           <p>See our dashboard options.</p>
         </div>
-        
+
 
 
         <div class="float-end mt-4">
@@ -481,7 +514,8 @@ $PuckNumber = $OffreC->getTotaloffre();
         </div>
         <a href="javascript:void(0)" class="switch-trigger background-color">
           <div class="badge-colors my-2 text-start">
-            <span class="badge filter bg-gradient-primary active" data-color="primary" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-primary active" data-color="primary"
+              onclick="sidebarColor(this)"></span>
             <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
             <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
             <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
@@ -495,9 +529,12 @@ $PuckNumber = $OffreC->getTotaloffre();
           <p class="text-sm">Choose between 2 different sidenav types.</p>
         </div>
         <div class="d-flex">
-          <button class="btn bg-gradient-dark px-3 mb-2 active" data-class="bg-gradient-dark" onclick="sidebarType(this)">Dark</button>
-          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent" onclick="sidebarType(this)">Transparent</button>
-          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 active" data-class="bg-gradient-dark"
+            onclick="sidebarType(this)">Dark</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent"
+            onclick="sidebarType(this)">Transparent</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-white"
+            onclick="sidebarType(this)">White</button>
         </div>
         <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
         <!-- Navbar Fixed -->

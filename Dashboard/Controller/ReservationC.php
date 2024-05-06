@@ -103,8 +103,23 @@
             }
         }
         
-           
+          /////..............................recherche back ............................../////
 
+           
+          public function RechercheB($searchTerm)
+          {
+              $sql = "SELECT * FROM reservation WHERE paiement LIKE '%$searchTerm%' OR source LIKE '%$searchTerm%'";
+              $db = config::getConnexion();
+          
+              try {
+                  $query = $db->prepare($sql);
+                  $query->execute();
+                  return $query->fetchAll(PDO::FETCH_ASSOC);
+              } catch (Exception $e) {
+                  die('Erreur: ' . $e->getMessage());
+              }
+          }
+          
 
 
 
@@ -181,5 +196,25 @@ function tridatecreationD(){
     }
 }
 
+
+//////////////.............. fonction de la statistique ............//////////
+
+function getOffresLesPlusReservees()
+{
+    $sql = "SELECT o.nom_offre, COUNT(r.idOffre) AS nombreReservations
+            FROM reservation r
+            INNER JOIN offre o ON r.idOffre = o.ID_offre
+            GROUP BY r.idOffre
+            ORDER BY nombreReservations ASC";
+
+    $db = config::getConnexion();
+
+    try {
+        $query = $db->query($sql);
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
 
 }
