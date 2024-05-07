@@ -55,13 +55,69 @@ try {
     $mail->addAddress($_POST["email"]);
 
      // Contenu du message
-    $mail->isHTML(true);
-    $mail->Subject = 'Wild Wander';
-    $mail->Body = "Adults : {$_POST['nombrePlaces']}<br>";
-    $mail->Body .= "booking source : {$_POST['source']}<br>";
-    $mail->Body .= "method of payment : {$_POST['paiement']}<br>";
-    $mail->Body .= "thank you for trusting us <br> ";
-    $mail->Body .= "Wild Wander , We have the best tours  ";
+   $mail->isHTML(true);
+$mail->Subject = 'Wild Wander - details of your reservation';
+
+$mail->Body = "
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #555555;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #6a1b9a; /* Couleur violet */
+            text-align: center;
+            font-weight: bold; /* Texte en gras */
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 16px; /* Taille de police plus grande */
+        }
+        .footer {
+            text-align: center;
+            color: #999999;
+            margin-top: 30px;
+        }
+        .highlight {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .accent {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <div class='container'>
+       <center> <h1>HELLO ,</h1></center>
+        <p style='text-align: center; color: #6a1b9a; font-weight: bold;'>Here are the details of your reservation:</p>
+        <p><span class='highlight'><strong>Number of places :</strong></span> {$_POST['nombrePlaces']}</p>
+        <p><span class='highlight'><strong>Reservation source :</strong></span> {$_POST['source']}</p>
+        <p><span class='highlight'><strong>Payment method:</strong></span> {$_POST['paiement']}</p>
+        <p style='color: #6a1b9a; font-weight: bold; font-size: 18px;'>Thank you for trusting us!!<br>Wild Wander, we offer the best tours.</p>
+    </div>
+    <p style='font-family: Arial, sans-serif; font-size: 16px; color: #333333; line-height: 1.6;'>
+    We are honored to have you at our travel agency to complete the trip procedures.
+</p>
+
+    <div class='footer'>
+        <p><span class='highlight'><strong>This is an automated email. Please do not reply.</span></strong></p>
+    </div>
+";
+
     // Envoi du message
     $mail->send();
     $successMessage = 'Votre e-mail a été envoyé avec succès.';

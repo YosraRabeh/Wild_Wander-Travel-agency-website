@@ -59,9 +59,9 @@ $data_json = json_encode($data);
         <li class="nav-item">
           <a class="nav-link text-white active bg-gradient-primary">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">dashboard</i>
+              <i class="material-icons opacity-10"></i>
             </div>
-            <span class="nav-link-text ms-1">Dashboard</span>
+            <span class="nav-link-text ms-1"></span>
           </a>
         </li>
         <li class="nav-item">
@@ -175,18 +175,12 @@ $data_json = json_encode($data);
       data-scroll="true">
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Dashboard</li>
-          </ol>
-          <h6 class="font-weight-bolder mb-0">Dashboard</h6>
+    
+          <h5 class="font-weight-bolder mb-0">Dashboard</h5>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-            <div class="input-group input-group-outline">
-              <label class="form-label">Type here...</label>
-              <input type="text" class="form-control">
-            </div>
+            
           </div>
           <ul class="navbar-nav  justify-content-end">
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
@@ -306,43 +300,75 @@ $data_json = json_encode($data);
       </div>
     </nav>
     <!-- End Navbar -->
-    <div class="container-fluid py-4">
-      <div class="container-fluid py-4">
+      
 
 
 
-      <div class="container-fluid py-4">
+      
  
     <div class="col-lg-6 col-md-8 mt-4 mb-4 mx-auto">
-      <div class="card z-index-2">
-        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-          <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
-         
+        
+    <h4>Pack By Reservartion</h4>
+    
+  <canvas id="statistiqueChart" width="50" height="50"></canvas> <!-- Modifier la taille du canvas -->
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-          </div>
-        </div>
-       
+<script>
+    $(document).ready(function() {
+        var jsonData = <?php echo $data_json; ?>; // Inclure les données JSON directement dans le script
+
+        var labels = [];
+        var values = [];
+        var colors = []; // Tableau de couleurs
+
+        // Parcourir les données et extraire les labels, les valeurs et les couleurs
+        jsonData.forEach(function(item) {
+            labels.push(item.nom_offre); // Nom de l'offre
+            values.push(item.nombreReservations); // Nombre de réservations
+            colors.push(getRandomColor()); // Ajouter une couleur aléatoire
+        });
+
+        var ctx = document.getElementById('statistiqueChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie', // Changer le type de graphique en "doughnut" pour un graphique circulaire
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nombre de réservations',
+                    data: values,
+                    backgroundColor: colors, // Utiliser les couleurs définies
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true, // Afficher la légende
+                        position: 'right' // Position de la légende
+                    }
+                }
+            }
+        });
+    });
+
+    // Fonction pour obtenir une couleur aléatoire
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+</script>
       </div>
     </div>
   
 </div>
 <script src="script.js"></script>
-<div class="container-fluid py-4">
-    <div class="row mt-4">
-        <div class="col-lg-6 col-md-8 mt-4 mb-4 mx-auto">
-            <div class="card z-index-2">
-                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-                    <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
-                        <div class="chart">
-                            <canvas id="topOffersChart" class="chart-canvas" width="400" height="400"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-</div>
         <footer class="footer py-4  ">
           <div class="container-fluid">
             <div class="row align-items-center justify-content-lg-between">

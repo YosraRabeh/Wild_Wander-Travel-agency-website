@@ -48,10 +48,6 @@ $PuckNumber = $ReservationC->getTotalres();
 		$reservationList = $ReservationC->getresWithPagination($start, $itemsPerPage);
 	}
 
-  $data = $ReservationC->getOffresLesPlusReservees();
-
-// Conversion des données en format JSON et retour
-$data_json = json_encode($data);
 
 
 
@@ -336,8 +332,6 @@ $data_json = json_encode($data);
                     </div>
 
                 <a href="afficherPack.php" class="btn btn-primary">Pack List </a>
-                <a href="stat.php" class="btn btn-primary">statistique  </a>
-
                 <div class="dropdown">
                 <a class="btn btn-secondary dropdown-toggle" href="AfficherReservations.php" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   Filter By
@@ -447,68 +441,7 @@ $data_json = json_encode($data);
 
 
               </div>
-              <div class="card">
-  <div class="card-title">
-    <h4>Offre By Reservartion</h4>
-  </div>
-  <div class="card-body">
-  <canvas id="statistiqueChart" width="400" height="400"></canvas> <!-- Modifier la taille du canvas -->
-  </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        var jsonData = <?php echo $data_json; ?>; // Inclure les données JSON directement dans le script
-
-        var labels = [];
-        var values = [];
-        var colors = []; // Tableau de couleurs
-
-        // Parcourir les données et extraire les labels, les valeurs et les couleurs
-        jsonData.forEach(function(item) {
-            labels.push(item.nom_offre); // Nom de l'offre
-            values.push(item.nombreReservations); // Nombre de réservations
-            colors.push(getRandomColor()); // Ajouter une couleur aléatoire
-        });
-
-        var ctx = document.getElementById('statistiqueChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'pie', // Changer le type de graphique en "doughnut" pour un graphique circulaire
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Nombre de réservations',
-                    data: values,
-                    backgroundColor: colors, // Utiliser les couleurs définies
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: true, // Afficher la légende
-                        position: 'right' // Position de la légende
-                    }
-                }
-            }
-        });
-    });
-
-    // Fonction pour obtenir une couleur aléatoire
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-</script>
             </div>
-         
           </div>
           <!-- content-wrapper ends -->
           <!-- partial:../../partials/_footer.html -->
