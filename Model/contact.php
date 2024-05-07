@@ -2,7 +2,9 @@
 class contact
 {
     private ?int $id_contact = null;
-  
+
+    private ?string $iduser = null;
+ 
     private ?DateTime $date_envoie = null;
     private ?string $sujet_contact = null;
     private ?string $description = null;
@@ -10,10 +12,10 @@ class contact
 
 
 
-    public function __construct($id = null, $date, $s ,$m )
+    public function __construct($id = null,$user, $date, $s ,$m )
     {
         $this->id_contact = $id;
-
+        $this->iduser = $user;
         $this->date_envoie = $date;
         $this->sujet_contact = $s;
         $this->description = $m;
@@ -21,6 +23,11 @@ class contact
 
     }
 
+
+    public function idUser()
+    {
+        return $this->iduser;
+    }
 
     public function getIdcontact()
     {

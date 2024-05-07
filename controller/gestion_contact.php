@@ -3,19 +3,43 @@
 include_once("C:/xampp/htdocs/PROJECT1/projet web/config.php");
 include_once("C:/xampp/htdocs/PROJECT1/projet web/Model/contact.php");
 
+
+
+
 class contact_gestion
 {
    
 
+
+    /**********************************************************************************************************/
+    /*****************************bidayet il 5idma mil louwil ijdid*******/
+    function showClient($id)
+    {
+        $sql = "SELECT * from user where idUser = $id";
+        $config = new Config();
+        $db = $config->getConexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute();
+
+            $reclamation = $query->fetch();
+            return $reclamation;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
+
     function addcontact($contact)
 {
-    $sql = "INSERT INTO contact  VALUES (NULL,:sujet_contact,:date_envoie,DEFAULT,:description)";
+    $sql = "INSERT INTO contact  VALUES (NULL,:idClient,:sujet_contact,:date_envoie,DEFAULT,:description)";
 
     $config = new Config();
     $db = $config->getConexion();   
     try {
         $query = $db->prepare($sql);
         $query->execute([
+            'idClient' => $contact->idUser(),
             'sujet_contact' => $contact->getSujet_contact(),
             'date_envoie' => $contact->getDateEnvoie()->format('Y-m-d H:i:s'),
             'description' => $contact->getdescription(),
@@ -69,6 +93,15 @@ function showContact($id)
     }
 }
 
+public function getResponses($contactId) {
+    $config = new Config();
+    $db = $config->getConexion();
+    $stmt = $db->prepare("SELECT * FROM reponse WHERE idContact = ?");
+    $stmt->execute([$contactId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 
 
 function updateContact($contact, $id)
@@ -77,9 +110,10 @@ function updateContact($contact, $id)
         $config = new Config();
         $db = $config->getConexion();
         
-        $query = $db->prepare('UPDATE contact SET sujet_contact = :sujet, date_envoie = :date_envoie, etat_contact = :etat, description = :description WHERE id_contact = :id');
+        $query = $db->prepare('UPDATE contact SET iduser = :iduser, sujet_contact = :sujet, date_envoie = :date_envoie, etat_contact = :etat, description = :description WHERE id_contact = :id');
         $query->execute([
             'id' => $id,
+            'iduser' => $contact->idUser(),
             'sujet' => $contact->getSujet_contact(),
             'date_envoie' => $contact->getDateEnvoie()->format('Y-m-d H:i:s'),
             'etat' => $contact->getEtat_contact(),
@@ -120,6 +154,25 @@ function updateContact($contact, $id)
  
 
 
+   // fonction a3maltha bich itwarik les repenses imta3 il rajik ki ijaweb il client
+   function show_Notification($rec_ ,$idUser)
+   {
+       $sql = "SELECT * FROM contact WHERE etat_contact = :etat_contact AND idUser = :idUser";
+       $config = new Config();
+       $db = $config->getConexion();
+       try {
+           $query = $db->prepare($sql);
+           $query->bindParam(':etat_contact', $rec_);
+           $query->bindParam(':idUser', $idUser);
+           $query->execute();
+   
+           $notifications = $query->fetchAll(PDO::FETCH_ASSOC);
+           return $notifications;
+       } catch (Exception $e) {
+           die('Error: ' . $e->getMessage());
+       }
+   }
+
 }  
 
 
@@ -148,6 +201,65 @@ class reponse_gestion
         }
     }
 
+   /*************** */
+    function listeReponse_idR($idContact)
+    {
+        $sql = "SELECT * from reponse where idContact =  idContact";
+        $config = new Config();
+        $db = $config->getConexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->bindParam(':idContact', $idContact);
+            $query->execute();
+    
+            $notifications = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $notifications;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
+    function updateReponseEtat($idContact, $etat)
+    {
+        try {
+            $config = new Config();
+            $db = $config->getConexion();
+            
+            $query = $db->prepare('UPDATE reponse SET etat_rep = :etat_rep WHERE idContact = :idContact');
+            $query->execute([
+                'etat_rep' => $etat,
+                'idContact' => $idContact,
+            ]);
+            
+            // echo $query->rowCount() . " records UPDATED successfully <br>";
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+// kan ifasa5ha il user il reponse il i9dom im3ach yo8hrou
+    function voir_repon($idContact ,$etat_rep)
+    {
+        $sql = "SELECT * FROM reponse WHERE idContact = :idContact AND etat_rep = :etat_rep";
+        $config = new Config();
+        $db = $config->getConexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->bindParam(':idContact', $idContact);
+            $query->bindParam(':etat_rep', $etat_rep);
+  
+            $query->execute();
+    
+            $notifications = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $notifications;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+    
+
+  
+
+ 
    
 
 

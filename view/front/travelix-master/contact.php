@@ -1,3 +1,19 @@
+<?php
+include 'C:/xampp/htdocs/PROJECT1/projet web/controller/gestion_contact.php';
+
+// fonction bich ta5ou il id wa tod5ol il tableau clients wa itraj3alik il information imta3ou 
+
+
+$contact_gestion = new contact_gestion();
+
+$client =  $contact_gestion->showClient(2)  ; 
+
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +81,7 @@
 								<li class="main_nav_item"><a href="accomodations.html">accomodations</a></li>
 								<li class="main_nav_item"><a href="pack.html">packs</a></li>
 								<li class="main_nav_item"><a href="blog.html">blogs</a></li>
-								<li class="main_nav_item"><a href="contact.html">contact</a></li>
+								<li class="main_nav_item"><a href="contact.php">contact</a></li>
 								<li class="main_nav_item"><a href="claim.html">claim</a></li>
 							</ul>
 						</div>
@@ -141,14 +157,24 @@
 					<div class="contact_form_container">
 						<div class="contact_title text-center">get in touch</div>
 						<form id="contact_form" class="contact_form text-center" action="../../../Controller/traitement_contact.php" method="POST">
-							<!--<input type="text" id="contact_form_name" class="contact_form_name input_field" placeholder="Name" required="required" data-error="Name is required.">
-							<input type="text" id="contact_form_email" class="contact_form_email input_field" placeholder="E-mail" required="required" data-error="Email is required.">-->
+						<a href="repense_contact_tableau_view.php"  ><h3 class="h3">voir message</h3> <img  src="imageRanime/message.png" class="voirmess"></a> 
+
+							<input type="hidden" name="idUser"  value="<?= $client['idUser']; ?>">
+							<div  >                       
+                              <input type="text" class="contact_form_subject input_field"   value="<?php echo $client['username']; ?>" readonly>
+                           </div>
+
+						   <div >  
+                              <input type="text"   class="contact_form_subject input_field"  value="<?php echo $client['email']; ?>"  readonly>
+                           </div>
+
+							
 							<select id="contact_form_subject" class="contact_form_subject input_field" required="required" data-error="Subject is required." name="sujet">
-    <option value="">Choisissez un sujet</option>
-    <option value="question">question </option>
-    <option value="reclamation">reclamation </option>
-    <option value="votre_opinion ">votre_opinion </option>
-</select>
+    									<option value="">Choisissez un sujet</option>
+    									<option value="question">question </option>
+    									<option value="reclamation">reclamation </option>
+   									    <option value="votre_opinion ">votre_opinion </option>
+							</select>
 
 							<textarea id="contact_form_message" class="text_field contact_form_message" name="message" rows="4" placeholder="Message" required="required" data-error="Please, write us a message."></textarea>
 							<button type="submit" id="form_submit_button" class="form_submit_button button trans_200">Send Message<span></span><span></span><span></span></button>

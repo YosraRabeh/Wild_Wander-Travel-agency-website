@@ -3,8 +3,8 @@
 
 include 'C:/xampp/htdocs/PROJECT1/projet web/controller/gestion_contact.php';
 
-
 $contact_gestion = new contact_gestion();
+
 
 
 
@@ -112,7 +112,7 @@ User Management  </title>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary " href="../pages/claim.php">
+          <a class="nav-link text-white active bg-gradient-primary " href="../pages/claim.html">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -127,9 +127,6 @@ User Management  </title>
             <span class="nav-link-text ms-1">Blog Management</span>
           </a>
         </li>
-
-
-
         <li class="nav-item">
           <a class="nav-link text-white " href="../pages/notifications.html">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -297,10 +294,12 @@ User Management  </title>
             </div>
             <div class="card-body px-0 pb-2">
               <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0 table datatable"  id="ContactTable" >
+                <table class="table align-items-center mb-0  "  id="ContactTable" >
                   <thead>
                     
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Num</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">user</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">email</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">sujet</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date et Heure</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">etat</th>
@@ -313,10 +312,15 @@ User Management  </title>
                      <tbody>       
                 <?php
                  foreach ($list as $contact) {
+                  $client =  $contact_gestion->showClient($contact['idUser'])  ; 
+
                         
                 ?>
                     <tr class="trcolor">
                         <td ><?= $contact['id_contact']; ?></td>
+
+                        <td ><?= $client['username']; ?></td>
+                        <td><?= $client['email']; ?></td>
                       
                         <td ><?= $contact['sujet_contact']; ?></td>
 
