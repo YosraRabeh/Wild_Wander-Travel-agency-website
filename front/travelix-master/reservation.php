@@ -1,44 +1,54 @@
 <?php
 include '../../Dashboard/Controller/ReservationC.php';
 
-$reservation = null ;
-$reservationC = new ReservationC();
+session_start();
 
 $errorMessage = "";
-$successMessage = "";
+$successMessage = "" ;
 
+
+// create reservation
+$reservation = null;
+
+// create an instance of the controller
 $ReservationC = new ReservationC();
+if (
+    isset($_POST["id_acc"]) &&
+    isset($_POST["id_user"]) &&
+    isset($_POST["date_start"]) &&
+    isset($_POST["date_end"]) &&
+    isset($_POST["payment_method"]) &&
+    isset($_POST["payment_status"])
 
-// Check if 'Reserver' and 'idL' are set in GET parameters
-if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
-    $idOffre = $_GET["ID_offre"];
 
-    // Check if POST data is set
-    if (isset($_POST["nombrePlaces"]) &&
-        isset($_POST["source"]) &&
-        isset($_POST["paiement"])) {
 
-        // Check if POST data is not empty
-        if (!empty($_POST["nombrePlaces"]) &&
-            !empty($_POST["source"]) &&
-            !empty($_POST["paiement"])) {
+){
+    if (
+        !empty($_POST["id_acc"]) &&
+        !empty($_POST["id_user"]) &&
+        !empty($_POST["date_start"]) &&
+        !empty($_POST["date_end"]) &&
+        !empty($_POST["payment_method"]) &&
+        !empty($_POST["payment_status"])
+    )
+    {
+        // Create accommodation instance with uploaded images
+        $reservation = new reservation(
+            $_POST['id_acc'],
+            $_POST['id_user'],
+            $_POST['date_start'],
+            $_POST['date_end'],
+            $_POST['payment_method'],
+            $_POST['payment_status'],
+        );
 
-            // Create Reservation object and add reservation
-            $Reservation = new Reservation(
-                $_POST['nombrePlaces'], 
-                $_POST['source'],
-                $_POST['paiement'],
-                $idOffre
-            );
-            $ReservationC->AjouterReservation($Reservation);
-            header("Location: ListReservations.php?successMessage=reservation ajouté avec succès");
-            exit();
-        } else {
-            $errorMessage = "<label id='form' style='color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>";
-        }
+        // Add reservation to database
+        $ReservationC->AjouterReservation($reservation); //
+        header("Location:Afficherreservation.php?successMessage= reservation ajouté avec succés"); // bch thezk lel afficheraccomodation
     }
+    else
+        $errorMessage = "<label id = 'form' style = 'color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>   ";
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -53,6 +63,8 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="styles/offers_styles.css">
 <link rel="stylesheet" type="text/css" href="styles/offers_responsive.css">
+    <link rel="stylesheet" type="text/css" href="styles/contact_styles.css">
+    <link rel="stylesheet" type="text/css" href="styles/contact_responsive.css">
 </head>
 
 <body>
@@ -101,7 +113,7 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 								<li class="main_nav_item"><a href="index.html">home</a></li>
 								<li class="main_nav_item"><a href="about.html">about us</a></li>
 								<li class="main_nav_item"><a href="flights.html">flights</a></li>
-								<li class="main_nav_item"><a href="accomodations.html">accomodations</a></li>
+								<li class="main_nav_item"><a href="accomodations.php">accomodations</a></li>
 								<li class="main_nav_item"><a href="pack.html">packs</a></li>
 								<li class="main_nav_item"><a href="blog.html">blogs</a></li>
 								<li class="main_nav_item"><a href="contact.html">contact</a></li>
@@ -184,37 +196,70 @@ if (isset($_GET["Reserver"]) && isset($_GET["ID_offre"])) {
 						<div class="col fill_height no-padding">
 							<center> <h1 class="card-title">New Reservation</h1></center>
 							<br><br><br>
-							<div class="search_panel active">
-								<form method="POST"  id="formR" class="search_panel_content d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-lg-between justify-content-start">
-									
+                            <div class="contact_form_section">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col">
 
-									<div class="search_item">
-										<input type="number" id="nombrePlaces" name="nombrePlaces" class="check_in search_input" placeholder="Nombre des Places">
-									</div>
+                                            <div class="contact_form_container">
+                                                <div class="contact_title text-center">Reservation</div>
+                                                <form action="#" id="contact_form" class="contact_form text-center">
+                                                    <input type="text" id="contact_form_name" class="contact_form_name input_field" placeholder="Name" required="required" data-error="Name is required.">
+                                                    <input type="email" id="contact_form_email" class="contact_form_email input_field" placeholder="E-mail" required="required" data-error="Email is required.">
+                                                    <input type="text" id="contact_form_subject" class="contact_form_subject input_field" placeholder="Number of guests" required="required" data-error="Subject is required.">
 
+                                                    <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%; margin-top: 20px;">
+                                                        <label for="date_start" style="font-size: 0.875rem;font-weight: 400;margin-bottom: 1rem;color: #FFFFFF;margin-left: 0.25rem;">Start date</label>
+                                                        <input type="date" class="form-control" name="date_start" id="date_start"  style="border: 1px solid #dee2e6;">
+                                                        <div id="date_startError" class="error-message"></div>
+                                                    </div>
+                                                    <div class="form-group" style="display: inline-block; width: 49%;">
+                                                        <label for="date_end" style="font-size: 0.875rem;font-weight: 400;margin-bottom: 1rem;color: #FFFFFF;margin-left: 0.25rem">End date</label>
+                                                        <input type="date" class="form-control" name="date_end" id="date_end"  style="border: 1px solid #dee2e6;">
+                                                        <div id="date_endError" class="error-message"></div>
+                                                    </div>
+                                                    <div class="form-group" style=" width: 49%; margin-left: 25%;">
+                                                        <label for="payment_method" style="font-size: 0.875rem;font-weight: 400;margin-bottom: 1rem;color: #FFFFFF;margin-left: 0.25rem">Payment method</label>
+                                                        <select class="form-select" name="payment_method" id="payment_method" aria-label="Default select example">
+                                                            <option value="in_person">In person</option>
+                                                            <option value="card">Card</option>
+                                                            <option value="check">Check</option>
+                                                        </select>
+                                                    </div>
+                                                    <button type="submit" id="submit" name="submit" class="button search_button">Book <span></span><span></span><span></span></button>
 
-									<div class="search_item">
-										<select class="form-select" id="source" name="source" aria-label="Default select example">
-											<option value="Online">Online</option>
-											<option value="Mobile">Mobile</option>
-											<option value="In-Person">In-Person</option>
-										</select>
-									</div>
+                                                    <!-- This button will be shown only when the payment method is 'card' -->
+                                                    <button type="submit" id="pay_now_button" class="button search_button" style="display: none;">Pay Now</button>
+                                                </form>
+                                            </div>
 
-									<div class="search_item">
-									<select class="form-select" id="paiement" name="paiement" aria-label="Default select example">
-										<option value="Online">Espèce</option>
-										<option value="Carte">Carte</option>
-										<option value="Cheque">Cheque</option>
-									</select>									
-									</div>
+                                        </div>
+                                        <script>
+                                            // Get references to the payment method select and the 'Pay Now' button
+                                            const paymentMethodSelect = document.getElementById('payment_method');
+                                            const payNowButton = document.getElementById('pay_now_button');
 
-									<button type="submit" id="submit" name="submit" class="button search_button" >reservee <span></span><span></span><span></span></button>
-								</form>
-							</div>
+                                            // Function to toggle the visibility of the 'Pay Now' button based on the selected payment method
+                                            function togglePayNowButton() {
+                                                if (paymentMethodSelect.value === 'card') {
+                                                    payNowButton.style.display = 'inline-block';
+                                                } else {
+                                                    payNowButton.style.display = 'none';
+                                                }
+                                            }
 
-							
-							<!-- Search Panel -->
+                                            // Add event listener to the payment method select to trigger the toggle function
+                                            paymentMethodSelect.addEventListener('change', togglePayNowButton);
+
+                                            // Add event listener to the 'Pay Now' button to redirect to payment.php when clicked
+                                            payNowButton.addEventListener('click', function() {
+                                                // Redirect to payment.php
+                                                window.location.href = 'payment.php';
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
 
 							
 							
