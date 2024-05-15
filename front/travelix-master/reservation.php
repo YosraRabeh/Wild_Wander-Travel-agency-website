@@ -1,10 +1,10 @@
 <?php
 include '../../Dashboard/Controller/ReservationC.php';
 
-session_start();
-
 $errorMessage = "";
 $successMessage = "" ;
+$id_user=1;
+
 
 
 // create reservation
@@ -12,43 +12,40 @@ $reservation = null;
 
 // create an instance of the controller
 $ReservationC = new ReservationC();
-if (
-    isset($_POST["id_acc"]) &&
-    isset($_POST["id_user"]) &&
-    isset($_POST["date_start"]) &&
-    isset($_POST["date_end"]) &&
-    isset($_POST["payment_method"]) &&
-    isset($_POST["payment_status"])
+if (isset($_GET["Reserver"]) && isset($_GET["id_Acc"])) {
+    $id_acc=$_GET["id_Acc"];
 
-
-
-){
     if (
-        !empty($_POST["id_acc"]) &&
-        !empty($_POST["id_user"]) &&
-        !empty($_POST["date_start"]) &&
-        !empty($_POST["date_end"]) &&
-        !empty($_POST["payment_method"]) &&
-        !empty($_POST["payment_status"])
-    )
-    {
-        // Create accommodation instance with uploaded images
-        $reservation = new reservation(
-            $_POST['id_acc'],
-            $_POST['id_user'],
-            $_POST['date_start'],
-            $_POST['date_end'],
-            $_POST['payment_method'],
-            $_POST['payment_status'],
-        );
+        isset($_POST["date_start"]) &&
+        isset($_POST["date_end"]) &&
+        isset($_POST["payment_method"])
 
-        // Add reservation to database
-        $ReservationC->AjouterReservation($reservation); //
-        header("Location:Afficherreservation.php?successMessage= reservation ajouté avec succés"); // bch thezk lel afficheraccomodation
+
+    ) {
+        if (
+            !empty($_POST["date_start"]) &&
+            !empty($_POST["date_end"]) &&
+            !empty($_POST["payment_method"])
+        ) {
+            // Create accommodation instance with uploaded images
+            $reservation = new reservation(
+                $id_acc,
+                $id_user,
+                $_POST['date_start'],
+                $_POST['date_end'],
+                $_POST['payment_method'],
+                "Unpaid"
+            );
+
+            // Add reservation to database
+            $ReservationC->AjouterReservation($reservation); //
+            header("Location:accomodations.php?successMessage= reservation ajouté avec succés"); // bch thezk lel afficheraccomodation
+            exit();
+        } else
+            echo "Une Information manquant !";
     }
-    else
-        $errorMessage = "<label id = 'form' style = 'color: red; font-weight: bold;'>&emsp;Une Information manquant !</label>   ";
-}
+}else
+    echo "Une Information manquant !";
 ?>
 
 <!DOCTYPE html>
@@ -110,7 +107,7 @@ if (
 						</div>
 						<div class="main_nav_container ml-auto">
 							<ul class="main_nav_list">
-								<li class="main_nav_item"><a href="index.html">home</a></li>
+								<li class="main_nav_item"><a href="index.php">home</a></li>
 								<li class="main_nav_item"><a href="about.html">about us</a></li>
 								<li class="main_nav_item"><a href="flights.html">flights</a></li>
 								<li class="main_nav_item"><a href="accomodations.php">accomodations</a></li>
@@ -193,7 +190,12 @@ if (
 				
 				<div class="container fill_height no-padding">
 					<div class="row fill_height no-margin">
-						<div class="col fill_height no-padding">
+                        <div class="error"><?php echo $errorMessage; ?></div>
+                        <?php if (isset($errorMessage)) { ?>
+                            <div class="error"><?php echo $errorMessage; ?></div>
+                        <?php } ?>
+
+                        <div class="col fill_height no-padding">
 							<center> <h1 class="card-title">New Reservation</h1></center>
 							<br><br><br>
                             <div class="contact_form_section">
@@ -203,11 +205,7 @@ if (
 
                                             <div class="contact_form_container">
                                                 <div class="contact_title text-center">Reservation</div>
-                                                <form action="#" id="contact_form" class="contact_form text-center">
-                                                    <input type="text" id="contact_form_name" class="contact_form_name input_field" placeholder="Name" required="required" data-error="Name is required.">
-                                                    <input type="email" id="contact_form_email" class="contact_form_email input_field" placeholder="E-mail" required="required" data-error="Email is required.">
-                                                    <input type="text" id="contact_form_subject" class="contact_form_subject input_field" placeholder="Number of guests" required="required" data-error="Subject is required.">
-
+                                                <form method="post" id="contact_form" class="contact_form text-center">
                                                     <div class="form-group" style="display: inline-block; width: 49%; margin-right: 1.5%; margin-top: 20px;">
                                                         <label for="date_start" style="font-size: 0.875rem;font-weight: 400;margin-bottom: 1rem;color: #FFFFFF;margin-left: 0.25rem;">Start date</label>
                                                         <input type="date" class="form-control" name="date_start" id="date_start"  style="border: 1px solid #dee2e6;">
@@ -228,8 +226,9 @@ if (
                                                     </div>
                                                     <button type="submit" id="submit" name="submit" class="button search_button">Book <span></span><span></span><span></span></button>
 
+
                                                     <!-- This button will be shown only when the payment method is 'card' -->
-                                                    <button type="submit" id="pay_now_button" class="button search_button" style="display: none;">Pay Now</button>
+                                                    <button type="button" id="pay_now_button" class="button search_button" style="display: none;">Pay Now</button>
                                                 </form>
                                             </div>
 
@@ -245,6 +244,7 @@ if (
                                                     payNowButton.style.display = 'inline-block';
                                                 } else {
                                                     payNowButton.style.display = 'none';
+
                                                 }
                                             }
 
@@ -253,8 +253,10 @@ if (
 
                                             // Add event listener to the 'Pay Now' button to redirect to payment.php when clicked
                                             payNowButton.addEventListener('click', function() {
-                                                // Redirect to payment.php
-                                                window.location.href = 'payment.php';
+                                                var price = <?php echo getPrice($id_acc); ?>;
+
+                                                // Redirect to payment.php with the price parameter appended to the URL
+                                                window.location.href = 'payment.php?Price=' + price;
                                             });
                                         </script>
                                     </div>

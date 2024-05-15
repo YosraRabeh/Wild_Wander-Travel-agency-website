@@ -132,3 +132,31 @@ function getuserIDS(){
         die('Erreur: '.$e->getMessage());
     }
 }
+
+function getPrice($id_acc)
+{
+    // SQL query to select the price of the accommodation with the given ID
+    $sql = "SELECT price FROM accomodation WHERE id_Acc = $id_acc";
+
+    // Get database connection
+    $db = config::getConnexion();
+
+    try {
+        // Prepare the SQL statement
+        $query = $db->prepare($sql);
+
+
+        // Execute the query
+        $query->execute();
+
+        // Fetch the price from the result
+        $price = $query->fetchColumn();
+
+        // Return the price
+        return $price;
+    } catch (Exception $e) {
+        // Handle any errors
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+

@@ -40,7 +40,7 @@ if (
                 $_POST['date_start'],
                 $_POST['date_end'],
                 $_POST['payment_method'],
-                $_POST['payment_status'],
+                $_POST['payment_status']
             );
 
             // Add reservation to database

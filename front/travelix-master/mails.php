@@ -29,61 +29,63 @@ try {
     $mail->Body    = '<!DOCTYPE html>
 <html>
 <head>
-    <title>Your Email Title</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f6f6f6;
-        }
-        .email-container {
-            width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .header {
-            background-color: #007BFF;
-            color: #ffffff;
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
-        }
-        .content {
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .footer {
-            background-color: #007BFF;
-            color: #ffffff;
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-        }
-    </style>
+	<title>Your Email Title</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f6f6f6;
+		}
+		.email-container {
+			width: 600px;
+			margin: 0 auto;
+			background-color: #ffffff;
+			padding: 20px;
+			box-sizing: border-box;
+		}
+		.header {
+			background:linear-gradient(to right, #fa9e1b, #8d4fff, #fa9e1b);
+			color: #ffffff;
+			padding: 10px;
+			text-align: center;
+			font-size: 24px;
+		}
+		.content {
+			margin-top: 50px;
+			margin-bottom: 50px;
+		}
+		.footer {
+			background:linear-gradient(to right, #fa9e1b, #8d4fff, #fa9e1b);
+			color: #ffffff;
+			text-align: center;
+			padding: 10px;
+			font-size: 14px;
+		}
+	</style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="header">
-            Your Email Header
-        </div>
-        <div class="content">
-            Your email content goes here. You can use HTML to format this section.
-        </div>
-        <div class="footer">
-            Your Email Footer
-        </div>
-    </div>
+<div class="email-container">
+	<div class="header">
+		payment status
+	</div>
+	<div class="content" style="text-align: center">
+	payment recived successfully
+	</div>
+	<div class="footer">
+		thank you for your payment
+	</div>
+</div>
 </body>
 </html>
+
 ';
     $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
     $mail->send();
-    echo 'Message has been sent';
+    header("Location:" . 'reservation.php');
 } catch (Exception $e) {
     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
 }
+
 ?>

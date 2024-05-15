@@ -3,7 +3,7 @@ include '../../Dashboard/Controller/accomodationC.php';
 
 
 $accomodationC = new accomodationC();
-$listaccomodation = $accomodationC->Afficheraccomodation();
+$listaccomodation = $accomodationC->Afficheraccomodation()->fetchAll(PDO::FETCH_ASSOC);
 //n
 ?>
 
@@ -523,60 +523,98 @@ $listaccomodation = $accomodationC->Afficheraccomodation();
 
 						<!-- Offers Item -->
                         <?php
-                        foreach($listaccomodation as $accomodation){
-                            $imageUrl = GetUrls($accomodation['id_Acc']);
-                            $json=json_decode($imageUrl["images"],true);
+                        // Define the number of accommodations per page
+                        $accommodationsPerPage = 5;
 
+                        // Determine the current page number from the URL parameter
+                        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+                        // Calculate the offset for retrieving accommodations from the list
+                        $offset = ($page - 1) * $accommodationsPerPage;
+
+                        // Get the total number of accommodations
+                        $totalAccommodations=count($listaccomodation);
+
+                        // Calculate the total number of pages
+                        $totalPages = ceil($totalAccommodations / $accommodationsPerPage);
+
+                        // Get a subset of accommodations for the current page
+                        $currentPageAccommodations = array_slice($listaccomodation, $offset, $accommodationsPerPage);
                         ?>
 
-						<div class="offers_item rating_4">
-							<div class="row">
-								<div class="col-lg-1 temp_col"></div>
-								<div class="col-lg-3 col-1680-4">
-									<div class="offers_image_container">
-										<!-- Image by https://unsplash.com/@kensuarez -->
-										<div class="offers_image_background" style="background-image:url(<?php if ((is_array($json))){echo $json[0];}else{echo $json;}   ?>)"></div>
-										<div class="offer_name"><a href="single_listing.html">grand castle</a></div>
-									</div>
-								</div>
-								<div class="col-lg-8">
-									<div class="offers_content">
-										<div class="offers_price">$<?php echo $accomodation['price']; ?><span>per night</span></div>
-										<div class="rating_r rating_r_4 offers_rating" data-rating="4">
-											<i></i>
-											<i></i>
-											<i></i>
-											<i></i>
-											<i></i>
-										</div>
-										<p class="offers_text"><?php echo $accomodation['description']; ?></p>
-										<div class="offers_icons">
-											<ul class="offers_icons_list">
-												<li class="offers_icons_item"><img src="images/post.png" alt=""></li>
-												<li class="offers_icons_item"><img src="images/compass.png" alt=""></li>
-												<li class="offers_icons_item"><img src="images/bicycle.png" alt=""></li>
-												<li class="offers_icons_item"><img src="images/sailboat.png" alt=""></li>
-											</ul>
-										</div>
-										<div class="button book_button"><a href="reservation.php">book<span></span><span></span><span></span></a></div>
-										<div class="offer_reviews">
-											<div class="offer_reviews_content">
-												<div class="offer_reviews_title">very good</div>
-												<div class="offer_reviews_subtitle">100 reviews</div>
-											</div>
-											<div class="offer_reviews_rating text-center">8.1</div>
-										</div>
-									</div>
+                        <?php
+                        foreach ($currentPageAccommodations as $accomodation) {
+                            $imageUrl = GetUrls($accomodation['id_Acc']);
+                            $json=json_decode($imageUrl["images"],true);
+                            $star=rand(1,5);
+                            ?>
+                        <div class="offers_item rating_<?php echo $star ?>">
+                            <div class="row">
+                                <div class="col-lg-1 temp_col"></div>
+                                <div class="col-lg-3 col-1680-4">
+                                    <div class="offers_image_container">
+                                        <!-- Image by https://unsplash.com/@kensuarez -->
+                                        <div class="offers_image_background" style="background-image:url(<?php if ((is_array($json))){echo $json[0];}else{echo $json;}   ?>)"></div>
+                                        <div class="offer_name"><a href="single_listing.html">grand castle</a></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="offers_content">
+                                        <div class="offers_price">$<?php echo $accomodation['price']; ?><span>per night</span></div>
+                                        <div class="rating_r rating_r_<?php echo $star ?> offers_rating" data-rating="<?php echo $star ?>">
+                                            <i></i>
+                                            <i></i>
+                                            <i></i>
+                                            <i></i>
+                                            <i></i>
+                                        </div>
+                                        <p class="offers_text"><?php echo $accomodation['description']; ?></p>
+                                        <div class="offers_icons">
+                                            <ul class="offers_icons_list">
+                                                <li class="offers_icons_item"><img src="images/post.png" alt=""></li>
+                                                <li class="offers_icons_item"><img src="images/compass.png" alt=""></li>
+                                                <li class="offers_icons_item"><img src="images/bicycle.png" alt=""></li>
+                                                <li class="offers_icons_item"><img src="images/sailboat.png" alt=""></li>
+                                            </ul>
+                                        </div>
+                                        <form method="GET" action="reservation.php">
+                                            <input type="submit" name="Reserver"class="button search_button" value="Book">
+                                            <input type="hidden" value=<?php echo $accomodation['id_Acc']; ?> name="id_Acc">
+                                        </form>
+                                        <div class="offer_reviews">
+                                            <div class="offer_reviews_content">
+                                                <div class="offer_reviews_title">very good</div>
+                                                <div class="offer_reviews_subtitle">100 reviews</div>
+                                            </div>
+                                            <div class="offer_reviews_rating text-center">8.1</div>
+                                        </div>
+                                    </div>
 
-								</div>
-							</div>
-						</div>
-
+                                </div>
+                            </div>
+                        </div>
                             <?php
                         }
                         ?>
 
-					</div>
+
+
+
+                    </div>
+                    <!-- Pagination links -->
+                    <div class="pagination">
+                        <?php if ($page > 1) : ?>
+                            <a href="accomodations.php?page=<?php echo $page - 1; ?>">Previous</a>
+                        <?php endif; ?>
+
+                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                            <a href="accomodations.php?page=<?php echo $i; ?>" <?php if ($i == $page) echo 'class="active"'; ?>><?php echo $i; ?></a>
+                        <?php endfor; ?>
+
+                        <?php if ($page < $totalPages) : ?>
+                            <a href="accomodations.php?page=<?php echo $page + 1; ?>">Next</a>
+                        <?php endif; ?>
+                    </div>
 				</div>
 
 			</div>
